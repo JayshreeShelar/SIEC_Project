@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+<link rel="manifest" href="/favicon_io/site.webmanifest">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<title>Purchase Management — Aquilon ERP</title>
+
+<script>
+  (function () {
+    try {
+      var collapsed = localStorage.getItem("sidebarCollapsed") === "true";
+      document.documentElement.classList.add(collapsed ? "sidebar-collapsed" : "sidebar-expanded");
+    } catch (e) {
+      document.documentElement.classList.add("sidebar-expanded");
+    }
+  })();
+</script>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: { DEFAULT: "#6da84c", dark: "#5c9140", soft: "#eef5e8" },
+          secondary: { DEFAULT: "#1985bf", soft: "#e7f3fa" },
+        },
+      },
+    },
+  };
+</script>
+
+<link rel="stylesheet" href="/assets/css/nav-sidebar.css" />
+<link rel="stylesheet" href="/purchase-orders/purchase.css" />
+</head>
+
+<body class="bg-gray-50 text-gray-800 antialiased text-sm">
+
+  <div class="flex min-h-screen">
+    <div id="sidebar-root"></div>
+
+    <div class="app-main flex-1 flex flex-col min-w-0">
+      <div id="topbar-root"></div>
+
+      <main class="p-3 sm:p-4 lg:p-5">
+
+        <!-- Shared toast + modal mount points (one modal is open at a time across all 4 modules) -->
+        <div id="toastWrap" class="fixed bottom-5 right-5 z-[200] flex flex-col gap-2 items-end"></div>
+        <div id="modalRoot"></div>
+
+        <div class="max-w-7xl mx-auto">
+
+          <!-- ===== PAGE HEADER ===== -->
+          <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+            <div>
+              <div class="page-breadcrumb">Purchase</div>
+              <h1 class="page-title text-gray-900">Purchase Management</h1>
+              <!-- <p class="page-subtitle mt-0.5">Raise requirements, issue orders, record what arrives, and bill it — the full purchase-to-pay flow in one place.</p> -->
+            </div>
+          </div>
+
+          <!-- ===== MODULE TABS ===== -->
+          <div class="module-tabs mb-4">
+            <button class="module-tab-btn active" data-module="pr" onclick="switchModuleTab('pr')">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/></svg>
+              Purchase Requirement
+            </button>
+            <button class="module-tab-btn" data-module="po" onclick="switchModuleTab('po')">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><path d="M14 2v6h6"/></svg>
+              Purchase Orders
+            </button>
+            <button class="module-tab-btn" data-module="grn" onclick="switchModuleTab('grn')">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+              Goods Receipt
+            </button>
+            <button class="module-tab-btn" data-module="pb" onclick="switchModuleTab('pb')">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><path d="M14 2v6h6"/></svg>
+              Purchase Bills
+            </button>
+          </div>
+
+          <!-- =========================================================
+               MODULE: PURCHASE REQUIREMENT
+               ========================================================= -->
+          <section class="module-tab-panel" data-module="pr">
+            <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+              <div>
+                <h2 class="module-title">Purchase Requirements</h2>
+                <!-- <p class="module-subtitle">Raise a material request — from a project, a sales order, or plain stock replenishment — and route it for approval before it becomes a Purchase Order.</p> -->
+              </div>
+              <div class="flex gap-2 flex-wrap items-center">
+                <div class="relative flex-1 min-w-[180px] max-w-[260px]">
+                  <input type="text" id="search-pr" placeholder="Search requirements by number, requester…" onkeyup="renderPR()"
+                    class="w-full border border-gray-200 bg-white rounded-lg pl-3 pr-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition placeholder:text-gray-400">
+                </div>
+                <!-- Inline table filters (no dropdown) -->
+                <select id="filterPriority-pr" onchange="filterPR()" class="inline-filter-select">
+                  <option value="all">All Priority</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+                <select id="filterStatus-pr" onchange="filterPR()" class="inline-filter-select">
+                  <option value="all">All Status</option>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+                <button onclick="clearFiltersPR()" class="inline-filter-reset" title="Reset filters">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 019-9 9 9 0 016.36 2.64L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-9 9 9 9 0 01-6.36-2.64L3 16"/><path d="M3 21v-5h5"/></svg>
+                  Reset
+                </button>
+                <button onclick="openAddPR()" class="inline-flex items-center gap-1.5 bg-primary hover:bg-primary-dark text-white text-[11px] font-semibold px-3 py-2 rounded-lg transition shadow-sm">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                  New Requirement
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 mb-4">
+              <div class="bg-white border border-[#6da84c] rounded-xl shadow-sm stat-card">
+                <div class="stat-label">Total</div>
+                <div class="stat-value" id="totalPR">0</div>
+              </div>
+              <div class="bg-white border border-[#6da84c] rounded-xl shadow-sm stat-card">
+                <div class="stat-label">Pending Approval</div>
+                <div class="stat-value text-amber-600" id="pendingPR">0</div>
+              </div>
+              <div class="bg-white border border-[#6da84c] rounded-xl shadow-sm stat-card">
+                <div class="stat-label">Approved</div>
+                <div class="stat-value text-green-600" id="approvedPR">0</div>
+              </div>
+              <div class="bg-white border border-[#6da84c] rounded-xl shadow-sm stat-card">
+                <div class="stat-label">Rejected</div>
+                <div class="stat-value text-red-600" id="rejectedPR">0</div>
+              </div>
+            </div>
+
+            <div id="prPanel"></div>
+          </section>
+
+          <!-- =========================================================
+               MODULE: PURCHASE ORDERS
+               ========================================================= -->
+          <section class="module-tab-panel hidden" data-module="po">
+            <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+              <div>
+                <h2 class="module-title">Purchase Orders</h2>
+                <!-- <p class="module-subtitle">Issue and track vendor purchase orders from Draft through to Closed, and hand off to Goods Receipt on delivery.</p> -->
+              </div>
+              <div class="flex gap-2 flex-wrap items-center">
+                <div class="relative flex-1 min-w-[180px] max-w-[260px]">
+                  <input type="text" id="search-po" placeholder="Search POs by number, vendor…" onkeyup="renderPO()"
+                    class="w-full border border-gray-200 bg-white rounded-lg pl-3 pr-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition placeholder:text-gray-400">
+                </div>
+                <select id="filterStatus-po" onchange="filterPO()" class="inline-filter-select">
+                  <option value="all">All Status</option>
+                  <option value="draft">Draft</option>
+                  <option value="approved">Approved</option>
+                  <option value="sent">Sent</option>
+                  <option value="partial">Partial</option>
+                  <option value="fully_received">Fully Received</option>
+                  <option value="closed">Closed</option>
+                </select>
+                <button onclick="clearFiltersPO()" class="inline-filter-reset" title="Reset filters">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 019-9 9 9 0 016.36 2.64L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-9 9 9 9 0 01-6.36-2.64L3 16"/><path d="M3 21v-5h5"/></svg>
+                  Reset
+                </button>
+                <button onclick="openAddPO()" class="inline-flex items-center gap-1.5 bg-primary hover:bg-primary-dark text-white text-[11px] font-semibold px-3 py-2 rounded-lg transition shadow-sm">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                  New Purchase Order
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-2.5 mb-4">
+              <div class="bg-white border border-[#6da84c] rounded-xl shadow-sm stat-card">
+                <div class="stat-label">Total</div>
+                <div class="stat-value" id="totalPO">0</div>
+              </div>
+              <div class="bg-white border border-[#6da84c] rounded-xl shadow-sm stat-card">
+                <div class="stat-label">Draft</div>
+                <div class="stat-value text-gray-500" id="draftPO">0</div>
+              </div>
+              <div class="bg-white border border-[#6da84c] rounded-xl shadow-sm stat-card">
+                <div class="stat-label">Open (Sent/Partial)</div>
+                <div class="stat-value text-amber-600" id="openPO">0</div>
+              </div>
+              <div class="bg-white border border-[#6da84c] rounded-xl shadow-sm stat-card">
+                <div class="stat-label">Fully Received</div>
+                <div class="stat-value text-green-600" id="receivedPO">0</div>
+              </div>
+              <div class="bg-white border border-[#6da84c] rounded-xl shadow-sm stat-card">
+                <div class="stat-label">Total Value</div>
+                <div class="stat-value text-primary" id="totalValuePO">₹0</div>
+              </div>
+            </div>
+
+            <div id="poPanel"></div>
+          </section>
+
+          <!-- =========================================================
+               MODULE: GOODS RECEIPT
+               ========================================================= -->
+          <section class="module-tab-panel hidden" data-module="grn">
+            <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+              <div>
+                <h2 class="module-title">Goods Receipt</h2>
+                <!-- <p class="module-subtitle">Record what actually arrived against a Purchase Order — the missing link between the PO and the Purchase Bill.</p> -->
+              </div>
+              <div class="flex gap-2 flex-wrap items-center">
+                <div class="relative flex-1 min-w-[180px] max-w-[260px]">
+                  <input type="text" id="search-grn" placeholder="Search GRNs by number, PO…" onkeyup="renderGRN()"
+                    class="w-full border border-gray-200 bg-white rounded-lg pl-3 pr-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition placeholder:text-gray-400">
+                </div>
+                <select id="filterStatus-grn" onchange="filterGRN()" class="inline-filter-select">
+                  <option value="all">All Status</option>
+                  <option value="draft">Draft</option>
+                  <option value="completed">Completed</option>
+                </select>
+                <button onclick="clearFiltersGRN()" class="inline-filter-reset" title="Reset filters">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 019-9 9 9 0 016.36 2.64L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-9 9 9 9 0 01-6.36-2.64L3 16"/><path d="M3 21v-5h5"/></svg>
+                  Reset
+                </button>
+                <button onclick="openAddGRN()" class="inline-flex items-center gap-1.5 bg-primary hover:bg-primary-dark text-white text-[11px] font-semibold px-3 py-2 rounded-lg transition shadow-sm">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                  New Goods Receipt
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 mb-4">
+              <div class="bg-white border border-[#6da84c] rounded-xl shadow-sm stat-card">
+                <div class="stat-label">Total</div>
+                <div class="stat-value" id="totalGRN">0</div>
+              </div>
+              <div class="bg-white border border-[#6da84c] rounded-xl shadow-sm stat-card">
+                <div class="stat-label">Draft</div>
+                <div class="stat-value text-gray-500" id="draftGRN">0</div>
+              </div>
+              <div class="bg-white border border-[#6da84c] rounded-xl shadow-sm stat-card">
+                <div class="stat-label">Completed</div>
+                <div class="stat-value text-green-600" id="completedGRN">0</div>
+              </div>
+              <div class="bg-white border border-[#6da84c] rounded-xl shadow-sm stat-card">
+                <div class="stat-label">Awaiting Bill</div>
+                <div class="stat-value text-amber-600" id="awaitingBillGRN">0</div>
+              </div>
+            </div>
+
+            <div id="grnPanel"></div>
+          </section>
+
+          <!-- =========================================================
+               MODULE: PURCHASE BILLS
+               ========================================================= -->
+          <section class="module-tab-panel hidden" data-module="pb">
+            <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+              <div>
+                <h2 class="module-title">Purchase Bills</h2>
+                <!-- <p class="module-subtitle">Record vendor bills against a PO/GRN and track payments through to Accounts Payable.</p> -->
+              </div>
+              <div class="flex gap-2 flex-wrap items-center">
+                <div class="relative flex-1 min-w-[180px] max-w-[260px]">
+                  <input type="text" id="search-pb" placeholder="Search bills by number, vendor…" onkeyup="renderPB()"
+                    class="w-full border border-gray-200 bg-white rounded-lg pl-3 pr-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition placeholder:text-gray-400">
+                </div>
+                <select id="filterStatus-pb" onchange="filterPB()" class="inline-filter-select">
+                  <option value="all">All Status</option>
+                  <option value="draft">Draft</option>
+                  <option value="received">Received</option>
+                  <option value="partial">Partially Paid</option>
+                  <option value="paid">Paid</option>
+                  <option value="overdue">Overdue</option>
+                </select>
+                <button onclick="clearFiltersPB()" class="inline-filter-reset" title="Reset filters">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 019-9 9 9 0 016.36 2.64L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-9 9 9 9 0 01-6.36-2.64L3 16"/><path d="M3 21v-5h5"/></svg>
+                  Reset
+                </button>
+                <button onclick="openAddPB()" class="inline-flex items-center gap-1.5 bg-primary hover:bg-primary-dark text-white text-[11px] font-semibold px-3 py-2 rounded-lg transition shadow-sm">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                  New Purchase Bill
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-2.5 mb-4">
+              <div class="bg-white border border-[#6da84c] rounded-xl shadow-sm stat-card">
+                <div class="stat-label">Total</div>
+                <div class="stat-value" id="totalPB">0</div>
+              </div>
+              <div class="bg-white border border-[#6da84c] rounded-xl shadow-sm stat-card">
+                <div class="stat-label">Unpaid</div>
+                <div class="stat-value text-amber-600" id="unpaidPB">0</div>
+              </div>
+              <div class="bg-white border border-[#6da84c] rounded-xl shadow-sm stat-card">
+                <div class="stat-label">Overdue</div>
+                <div class="stat-value text-red-600" id="overduePB">0</div>
+              </div>
+              <div class="bg-white border border-[#6da84c] rounded-xl shadow-sm stat-card">
+                <div class="stat-label">Paid</div>
+                <div class="stat-value text-green-600" id="paidPB">0</div>
+              </div>
+              <div class="bg-white border border-[#6da84c] rounded-xl shadow-sm stat-card">
+                <div class="stat-label">Total Payable</div>
+                <div class="stat-value text-primary" id="totalPayable">₹0</div>
+              </div>
+            </div>
+
+            <div id="pbPanel"></div>
+          </section>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ========================================================== -->
+  <!-- SCRIPTS -->
+  <!-- ========================================================== -->
+  <script src="/assets/js/shared-data.js"></script>
+  <script src="/assets/js/nav-sidebar.js"></script>
+  <script>
+    NavSidebar.init({
+      basePath: "",
+      activePage: "purchaseManagement",
+      pageTitle: "Purchase Management",
+      user: { name: "Admin", role: "Super Admin", avatarUrl: "" },
+    });
+  </script>
+  <script src="/purchase-orders/purchase.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+<link rel="manifest" href="/favicon_io/site.webmanifest">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Documents — Aquilon ERP</title>
+
+<script>
+  (function () {
+    try {
+      var collapsed = localStorage.getItem("sidebarCollapsed") === "true";
+      document.documentElement.classList.add(collapsed ? "sidebar-collapsed" : "sidebar-expanded");
+    } catch (e) {
+      document.documentElement.classList.add("sidebar-expanded");
+    }
+  })();
+</script>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: { DEFAULT: "#6da84c", dark: "#5c9140", soft: "#eef5e8" },
+          secondary: { DEFAULT: "#1985bf", soft: "#e7f3fa" },
+        },
+      },
+    },
+  };
+</script>
+
+<link rel="stylesheet" href="/assets/css/nav-sidebar.css" />
+
+<style>
+  body { font-size: 12px; background: #f3f4f6; }
+
+  .form-input {
+    width: 100%; border: 1px solid #e5e7eb; border-radius: 6px;
+    padding: 5px 10px; font-size: 11px; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fafafa; color: #1a1a2e;
+  }
+  .form-input:focus {
+    border-color: #6da84c;
+    box-shadow: 0 0 0 3px rgba(109, 168, 76, 0.12);
+    background: #ffffff;
+  }
+  .form-input:disabled { background: #f3f4f6; cursor: not-allowed; }
+
+  .form-label {
+    font-size: 10px; font-weight: 600; color: #374151;
+    display: block; margin-bottom: 3px;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .form-label .required { color: #ef4444; margin-left: 2px; }
+  .form-hint { font-size: 9.5px; color: #9ca3af; margin-top: 2px; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; font-weight: 600;
+    padding: 2px 8px; border-radius: 12px;
+  }
+  .badge-green { background: #dcfce7; color: #166534; }
+  .badge-amber { background: #fef3c7; color: #92400e; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  .badge-gray { background: #f1f5f9; color: #475569; }
+  .badge-blue { background: #dbeafe; color: #1e40af; }
+  .badge-purple { background: #ede9fe; color: #5b21b6; }
+  .badge-dot { width: 5px; height: 5px; border-radius: 50%; display: inline-block; }
+  .badge-dot-green { background: #22c55e; }
+  .badge-dot-amber { background: #f59e0b; }
+  .badge-dot-red { background: #ef4444; }
+  .badge-dot-gray { background: #94a3b8; }
+  .badge-dot-blue { background: #3b82f6; }
+  .badge-dot-purple { background: #8b5cf6; }
+
+  .stat-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    padding: 10px 14px !important;
+  }
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  }
+  .stat-card .stat-label {
+    font-size: 9px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.06em; color: #6b7280;
+  }
+  .stat-card .stat-value {
+    font-size: 17px; font-weight: 700;
+    color: #1a1a2e; margin-top: 2px;
+  }
+
+  .btn-icon-action {
+    transition: all 0.15s ease; width: 28px; height: 28px;
+    border-radius: 6px; display: inline-flex; align-items: center;
+    justify-content: center; color: #94a3b8;
+    background: transparent; border: none; cursor: pointer;
+  }
+  .btn-icon-action:hover { background: #f1f5f9; color: #6da84c; }
+  .btn-icon-action.danger:hover { background: #fee2e2; color: #ef4444; }
+  .btn-icon-action.primary:hover { background: #eef5e8; color: #6da84c; }
+
+  .toast { animation: fadeIn 0.2s ease; font-size: 12px; }
+  .toast-success { background: #16a34a; }
+  .toast-error { background: #dc2626; }
+  .toast-warning { background: #f59e0b; }
+  .toast-info { background: #6da84c; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.96) translateY(6px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .animate-modal { animation: modalIn 0.18s ease; }
+
+  .modal-scroll { max-height: 55vh; overflow-y: auto; }
+  .modal-scroll::-webkit-scrollbar { width: 4px; }
+  .modal-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+
+  .empty-icon-svg { opacity: 0.2; width: 40px; height: 40px; color: #94a3b8; }
+
+  .page-title { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+  .page-subtitle { font-size: 12px; color: #6b7280; }
+  .page-breadcrumb {
+    font-size: 10px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.08em; color: #6da84c;
+  }
+
+  .filter-btn { font-size: 11px; padding: 5px 12px; }
+  .filter-btn svg { width: 14px; height: 14px; }
+
+  .modal-title { font-size: 16px; font-weight: 700; }
+  .modal-subtitle { font-size: 11px; color: #6b7280; }
+
+  /* Document grid card */
+  .doc-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 14px 16px;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    cursor: pointer;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .doc-card:hover {
+    border-color: #6da84c;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+  }
+  .doc-card .doc-icon-box {
+    width: 42px; height: 42px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .doc-icon-invoice { background: #dcfce7; color: #166534; }
+  .doc-icon-po { background: #dbeafe; color: #1e40af; }
+  .doc-icon-bill { background: #fef3c7; color: #92400e; }
+  .doc-icon-dc { background: #ede9fe; color: #5b21b6; }
+  .doc-icon-pl { background: #fef3c7; color: #92400e; }
+  .doc-icon-contract { background: #f1f5f9; color: #475569; }
+  .doc-icon-image { background: #fee2e2; color: #991b1b; }
+  .doc-icon-payment { background: #dcfce7; color: #166534; }
+  .doc-icon-other { background: #f1f5f9; color: #475569; }
+
+  .doc-card .doc-name {
+    font-size: 12.5px; font-weight: 700; color: #1a1a2e;
+    word-break: break-word;
+  }
+  .doc-card .doc-meta {
+    font-size: 10.5px; color: #6b7280; margin-top: 3px;
+    line-height: 1.5;
+  }
+  .doc-card .doc-tag {
+    display: inline-block;
+    font-size: 9.5px; font-weight: 600;
+    padding: 2px 7px; border-radius: 8px;
+    background: #f1f5f9; color: #475569;
+    margin-right: 4px; margin-top: 4px;
+  }
+
+  /* Folder card */
+  .folder-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 14px 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .folder-card:hover {
+    border-color: #6da84c;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+  .folder-card.active {
+    border-color: #6da84c;
+    background: #eef5e8;
+  }
+  .folder-card .folder-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: #eef5e8; color: #6da84c;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .folder-card .folder-name {
+    font-size: 12.5px; font-weight: 700; color: #1a1a2e;
+  }
+  .folder-card .folder-meta {
+    font-size: 10.5px; color: #6b7280; margin-top: 2px;
+  }
+
+  /* Preview area */
+  .preview-area {
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+    padding: 40px 20px;
+    text-align: center;
+    color: #64748b;
+    font-size: 12px;
+  }
+</style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 antialiased text-sm">
+
+  <div class="flex min-h-screen">
+    <div id="sidebar-root"></div>
+
+    <div class="app-main flex-1 flex flex-col min-w-0">
+      <div id="topbar-root"></div>
+
+      <main class="p-3 sm:p-4 lg:p-5">
+
+        <div id="toastWrap" class="fixed bottom-5 right-5 z-[200] flex flex-col gap-2 items-end"></div>
+        <div id="modalRoot"></div>
+
+        <div class="max-w-7xl mx-auto">
+
+          <!-- ===== PAGE HEADER ===== -->
+          <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+            <div>
+              <div class="page-breadcrumb">Finance</div>
+              <h1 class="page-title text-gray-900">Documents</h1>
+              <p class="page-subtitle mt-0.5">Central repository of all documents — invoices, POs, bills, DCs, packing lists, contracts and more.</p>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <button onclick="openUploadDoc()" class="inline-flex items-center gap-1.5 bg-primary hover:bg-primary-dark text-white text-[11px] font-semibold px-3 py-2 rounded-lg transition shadow-sm">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+                Upload Document
+              </button>
+              <button onclick="exportDocuments()" class="inline-flex items-center gap-1.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-[11px] font-semibold px-3 py-2 rounded-lg transition">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                  <path d="M7 10l5 5 5-5"/>
+                  <path d="M12 15V3"/>
+                </svg>
+                Export
+              </button>
+            </div>
+          </div>
+
+          <!-- ===== STATS CARDS ===== -->
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-2.5 mb-4">
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Total Documents</div>
+              <div class="stat-value" id="totalDocs">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Auto-Linked</div>
+              <div class="stat-value text-primary" id="autoLinked">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Manual Uploads</div>
+              <div class="stat-value text-blue-600" id="manualUploads">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Total Storage</div>
+              <div class="stat-value text-amber-600" id="totalStorage">0 MB</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Projects Tagged</div>
+              <div class="stat-value text-gray-700" id="projectsTagged">0</div>
+            </div>
+          </div>
+
+          <!-- ===== FOLDERS + CONTENT LAYOUT ===== -->
+          <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+
+            <!-- Left: Folders / Categories -->
+            <div class="lg:col-span-1">
+              <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="flex items-center justify-between gap-3 px-4 py-2.5 border-b border-gray-100">
+                  <div class="font-semibold text-sm text-gray-800">Folders</div>
+                </div>
+                <div class="p-3 space-y-2" id="foldersList"></div>
+              </div>
+            </div>
+
+            <!-- Right: Documents Grid -->
+            <div class="lg:col-span-3">
+              <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="flex items-center justify-between gap-3 flex-wrap px-4 py-2.5 border-b border-gray-100">
+                  <div class="flex items-center gap-3 flex-wrap">
+                    <div class="font-semibold text-sm text-gray-800" id="currentFolderTitle">All Documents</div>
+                    <span class="text-[10px] font-bold bg-primary-soft text-primary-dark px-2 py-0.5 rounded-full" id="docCount">0</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <div class="relative">
+                      <select id="sortBy" onchange="renderDocuments()" class="text-[10px] border border-gray-200 rounded-lg px-2 py-1 bg-white outline-none">
+                        <option value="date-desc">Sort: Newest First</option>
+                        <option value="date-asc">Sort: Oldest First</option>
+                        <option value="name-asc">Sort: Name A-Z</option>
+                        <option value="name-desc">Sort: Name Z-A</option>
+                      </select>
+                    </div>
+                    <div class="relative inline-block" data-dd-trigger>
+                      <button onclick="toggleFilterDD()" class="filter-btn inline-flex items-center gap-1.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold rounded-lg transition">
+                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M3 6h18M7 12h10M11 18h2"/>
+                        </svg>
+                        Filter
+                      </button>
+                      <div id="filterDD" data-dd-menu class="hidden absolute top-full right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg p-3 z-50">
+                        <div class="mb-2">
+                          <label class="text-[9px] font-semibold text-gray-500 uppercase tracking-wide">Project</label>
+                          <select id="filterProject" onchange="renderDocuments()" class="form-input text-[10px]">
+                            <option value="all">All Projects</option>
+                          </select>
+                        </div>
+                        <div class="mb-2">
+                          <label class="text-[9px] font-semibold text-gray-500 uppercase tracking-wide">Source</label>
+                          <select id="filterSource" onchange="renderDocuments()" class="form-input text-[10px]">
+                            <option value="all">All Sources</option>
+                            <option value="auto">Auto-Linked</option>
+                            <option value="manual">Manual Upload</option>
+                          </select>
+                        </div>
+                        <button onclick="clearFilters()" class="text-[10px] text-primary font-semibold hover:underline">Clear Filters</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-4">
+                  <div id="documentsGrid"></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ========================================================== -->
+  <!-- SCRIPTS -->
+  <!-- ========================================================== -->
+
+  <script src="/assets/js/nav-sidebar.js"></script>
+  <script>
+    // =============================================================
+    // NAV-SIDEBAR INIT
+    // =============================================================
+    NavSidebar.init({
+      basePath: "",
+      activePage: "documents",
+      pageTitle: "Documents",
+      user: {
+        name: "Admin",
+        role: "Super Admin",
+        avatarUrl: "",
+      },
+    });
+
+    // =============================================================
+    // SVG ICONS
+    // =============================================================
+    function iconPlus() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>`; }
+    function iconEdit() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`; }
+    function iconTrash() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>`; }
+    function iconEye() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`; }
+    function iconX() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg>`; }
+    function iconSearch() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>`; }
+    function iconSave() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>`; }
+    function iconDownload() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M15 3H9v7h6V3z"/></svg>`; }
+    function iconFolder() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>`; }
+    function iconDoc() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><path d="M14 2v6h6"/></svg>`; }
+    function iconInvoice() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2h16v20l-3-2-3 2-3-2-3 2-3-2-1 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="12" y2="15"/></svg>`; }
+    function iconCart() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>`; }
+    function iconCartBig() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16l-1.5 9a2 2 0 0 1-2 1.7H7.5a2 2 0 0 1-2-1.7L4 7z"></path><path d="M8 7V5a4 4 0 0 1 8 0v2"></path></svg>`; }
+    function iconTruck() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1.5"></rect><path d="M16 8h4l3 3v5h-7V8z"></path><circle cx="5.5" cy="18" r="2.5"></circle><circle cx="18.5" cy="18" r="2.5"></circle></svg>`; }
+    function iconBox() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>`; }
+    function iconFile() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><path d="M14 2v6h6"/></svg>`; }
+    function iconImage() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`; }
+    function iconMoney() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V10M10 21V10M14 21V10M19 21V10"/><path d="M2 10l10-6 10 6"/></svg>`; }
+    function iconInfo() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>`; }
+
+    // =============================================================
+    // TOAST
+    // =============================================================
+    function showToast(message, kind) {
+      kind = kind || 'success';
+      var wrap = document.getElementById('toastWrap');
+      var colors = { success: 'bg-green-600', info: 'bg-primary', warning: 'bg-amber-600', error: 'bg-red-600' };
+      var el = document.createElement('div');
+      el.className = 'toast ' + colors[kind] + ' text-white font-semibold px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 max-w-xs';
+      el.innerHTML = '<span>' + message + '</span>';
+      wrap.appendChild(el);
+      setTimeout(function() {
+        el.style.transition = 'opacity .3s';
+        el.style.opacity = '0';
+        setTimeout(function() { el.remove(); }, 300);
+      }, 2600);
+    }
+
+    // =============================================================
+    // MODAL
+    // =============================================================
+    function openModal(innerHtml, opts) {
+      opts = opts || {};
+      var root = document.getElementById('modalRoot');
+      root.innerHTML = `
+        <div class="fixed inset-0 z-[100] flex items-center justify-center p-3" id="modalOverlay">
+          <div class="absolute inset-0 bg-black/40 backdrop-blur-[1px]" id="modalBackdrop"></div>
+          <div class="relative bg-white rounded-xl shadow-2xl w-full ${opts.width || 'max-w-4xl'} max-h-[92vh] overflow-hidden animate-modal">
+            ${innerHtml}
+          </div>
+        </div>`;
+      document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      var root = document.getElementById('modalRoot');
+      root.innerHTML = '';
+      document.body.style.overflow = '';
+    }
+
+    function modalHeader(title, subtitle) {
+      return `
+        <div class="flex items-start justify-between px-5 py-3.5 border-b border-gray-100 sticky top-0 bg-white z-10">
+          <div>
+            <h3 class="modal-title text-gray-900">${title}</h3>
+            ${subtitle ? '<p class="modal-subtitle mt-0.5">' + subtitle + '</p>' : ''}
+          </div>
+          <button onclick="closeModal()" class="w-7 h-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 transition">${iconX()}</button>
+        </div>`;
+    }
+
+    function modalFooter(saveLabel, onSaveAttr, extraBtns) {
+      return `
+        <div class="flex items-center justify-between gap-2 px-5 py-3 border-t border-gray-100 bg-gray-50 rounded-b-xl sticky bottom-0">
+          <div>${extraBtns || ''}</div>
+          <div class="flex gap-2">
+            <button onclick="closeModal()" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-600 border border-gray-200 hover:bg-white transition">Cancel</button>
+            <button ${onSaveAttr} class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-primary hover:bg-primary-dark transition shadow-sm flex items-center gap-1.5">
+              ${iconSave()} ${saveLabel}
+            </button>
+          </div>
+        </div>`;
+    }
+
+    function fld(label, inputHtml, hint) {
+      return `<div class="mb-2"><label class="form-label">${label}</label>${inputHtml}${hint ? '<div class="form-hint">' + hint + '</div>' : ''}</div>`;
+    }
+
+    function inputBase() { return "form-input"; }
+
+    // =============================================================
+    // DROPDOWN
+    // =============================================================
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('[data-dd-trigger]')) {
+        document.querySelectorAll('[data-dd-menu]').forEach(function(m) { m.classList.add('hidden'); });
+      }
+    });
+
+    function toggleFilterDD() {
+      var menu = document.getElementById('filterDD');
+      var isHidden = menu.classList.contains('hidden');
+      document.querySelectorAll('[data-dd-menu]').forEach(function(m) { m.classList.add('hidden'); });
+      if (isHidden) menu.classList.remove('hidden');
+    }
+
+    // =============================================================
+    // HELPERS
+    // =============================================================
+    function formatDate(d) {
+      var date = new Date(d);
+      var options = { day: '2-digit', month: 'short', year: 'numeric' };
+      return date.toLocaleDateString('en-IN', options);
+    }
+
+    function formatSize(kb) {
+      if (kb < 1024) return kb + ' KB';
+      return (kb / 1024).toFixed(1) + ' MB';
+    }
+
+    // =============================================================
+    // DATA
+    // =============================================================
+
+    var projects = [
+      { id: 'all', name: 'All Documents' },
+      { id: 'PRJ-001', name: 'Operation & Supervision — WHE' },
+      { id: 'PRJ-002', name: 'Odor Control Unit — Retrofit' },
+      { id: 'PRJ-003', name: 'Dual Media Filter — Phase II' },
+      { id: 'PRJ-004', name: 'Site Survey & Consulting' },
+    ];
+
+    var folders = [
+      { id: 'all', name: 'All Documents', count: 0, color: '#6da84c' },
+      { id: 'PRJ-001', name: 'WHE Project', count: 0, color: '#1985bf' },
+      { id: 'PRJ-002', name: 'Odor Control', count: 0, color: '#d97706' },
+      { id: 'PRJ-003', name: 'Dual Media Filter', count: 0, color: '#7c3aed' },
+      { id: 'PRJ-004', name: 'Site Survey', count: 0, color: '#dc2626' },
+    ];
+
+    var documents = [{
+      id: 'DOC-001',
+      name: 'INV/25-26/001.pdf',
+      type: 'Invoice',
+      projectId: 'PRJ-001',
+      projectName: 'Operation & Supervision — WHE',
+      date: '2026-01-15',
+      size: 245,
+      source: 'auto',
+      uploadedBy: 'System',
+      description: 'Tax invoice to Sustro'
+    }, {
+      id: 'DOC-002',
+      name: 'PO/25-26/001.pdf',
+      type: 'Purchase Order',
+      projectId: 'PRJ-001',
+      projectName: 'Operation & Supervision — WHE',
+      date: '2026-01-10',
+      size: 180,
+      source: 'auto',
+      uploadedBy: 'System',
+      description: 'PO to Global Imports'
+    }, {
+      id: 'DOC-003',
+      name: 'PUR/25-26/001.pdf',
+      type: 'Purchase Bill',
+      projectId: 'PRJ-001',
+      projectName: 'Operation & Supervision — WHE',
+      date: '2026-01-20',
+      size: 210,
+      source: 'auto',
+      uploadedBy: 'System',
+      description: 'Bill from Global Imports'
+    }, {
+      id: 'DOC-004',
+      name: 'DC/25-26/001.pdf',
+      type: 'Delivery Challan',
+      projectId: 'PRJ-001',
+      projectName: 'Operation & Supervision — WHE',
+      date: '2026-01-22',
+      size: 150,
+      source: 'auto',
+      uploadedBy: 'System',
+      description: 'DC to Sustro'
+    }, {
+      id: 'DOC-005',
+      name: 'PL/25-26/001.pdf',
+      type: 'Packing List',
+      projectId: 'PRJ-001',
+      projectName: 'Operation & Supervision — WHE',
+      date: '2026-01-22',
+      size: 120,
+      source: 'auto',
+      uploadedBy: 'System',
+      description: 'Packing list for DC-001'
+    }, {
+      id: 'DOC-006',
+      name: 'Contract_Sustro_2025.pdf',
+      type: 'Contract',
+      projectId: 'PRJ-001',
+      projectName: 'Operation & Supervision — WHE',
+      date: '2025-11-01',
+      size: 1229,
+      source: 'manual',
+      uploadedBy: 'Rajesh Sharma',
+      description: 'Signed contract document'
+    }, {
+      id: 'DOC-007',
+      name: 'site_photo_01.jpg',
+      type: 'Site Photo',
+      projectId: 'PRJ-001',
+      projectName: 'Operation & Supervision — WHE',
+      date: '2025-11-15',
+      size: 3482,
+      source: 'manual',
+      uploadedBy: 'Amit Kumar',
+      description: 'Site photos from initial survey'
+    }, {
+      id: 'DOC-008',
+      name: 'INV/25-26/003.pdf',
+      type: 'Invoice',
+      projectId: 'PRJ-002',
+      projectName: 'Odor Control Unit — Retrofit',
+      date: '2026-02-10',
+      size: 250,
+      source: 'auto',
+      uploadedBy: 'System',
+      description: 'Invoice to XYZ Technologies'
+    }, {
+      id: 'DOC-009',
+      name: 'Contract_XYZ_2025.pdf',
+      type: 'Contract',
+      projectId: 'PRJ-002',
+      projectName: 'Odor Control Unit — Retrofit',
+      date: '2025-12-15',
+      size: 950,
+      source: 'manual',
+      uploadedBy: 'Priya Patel',
+      description: 'Signed contract with XYZ'
+    }, {
+      id: 'DOC-010',
+      name: 'PUR/25-26/005.pdf',
+      type: 'Purchase Bill',
+      projectId: 'PRJ-002',
+      projectName: 'Odor Control Unit — Retrofit',
+      date: '2026-02-05',
+      size: 195,
+      source: 'auto',
+      uploadedBy: 'System',
+      description: 'Bill from Premium Raw Materials'
+    }, {
+      id: 'DOC-011',
+      name: 'INV/25-26/004.pdf',
+      type: 'Invoice',
+      projectId: 'PRJ-003',
+      projectName: 'Dual Media Filter — Phase II',
+      date: '2026-02-15',
+      size: 260,
+      source: 'auto',
+      uploadedBy: 'System',
+      description: 'Final invoice to ABC Distributor'
+    }, {
+      id: 'DOC-012',
+      name: 'GRN/25-26/001.pdf',
+      type: 'Goods Receipt',
+      projectId: 'PRJ-001',
+      projectName: 'Operation & Supervision — WHE',
+      date: '2026-01-15',
+      size: 175,
+      source: 'auto',
+      uploadedBy: 'System',
+      description: 'Goods receipt for PO-001'
+    }, {
+      id: 'DOC-013',
+      name: 'VP-RCPT-001.pdf',
+      type: 'Vendor Payment',
+      projectId: 'PRJ-001',
+      projectName: 'Operation & Supervision — WHE',
+      date: '2026-01-25',
+      size: 130,
+      source: 'auto',
+      uploadedBy: 'System',
+      description: 'Payment receipt to Global Imports'
+    }, {
+      id: 'DOC-014',
+      name: 'CP-RCPT-001.pdf',
+      type: 'Customer Payment',
+      projectId: 'PRJ-001',
+      projectName: 'Operation & Supervision — WHE',
+      date: '2026-01-25',
+      size: 125,
+      source: 'auto',
+      uploadedBy: 'System',
+      description: 'Payment receipt from XYZ Retail'
+    }, {
+      id: 'DOC-015',
+      name: 'site_photo_02.jpg',
+      type: 'Site Photo',
+      projectId: 'PRJ-004',
+      projectName: 'Site Survey & Consulting',
+      date: '2026-01-20',
+      size: 2870,
+      source: 'manual',
+      uploadedBy: 'Vikram Singh',
+      description: 'Site survey photos'
+    }];
+
+    var activeFolder = 'all';
+    var nextDocNo = 16;
+
+    // =============================================================
+    // FOLDER ICON & CLASS HELPERS
+    // =============================================================
+
+    function getDocIcon(type) {
+      switch(type) {
+        case 'Invoice': return iconInvoice();
+        case 'Purchase Order': return iconCart();
+        case 'Purchase Bill': return iconCartBig();
+        case 'Delivery Challan': return iconTruck();
+        case 'Packing List': return iconBox();
+        case 'Goods Receipt': return iconDoc();
+        case 'Contract': return iconFile();
+        case 'Site Photo': return iconImage();
+        case 'Vendor Payment': return iconMoney();
+        case 'Customer Payment': return iconMoney();
+        default: return iconDoc();
+      }
+    }
+
+    function getDocIconClass(type) {
+      switch(type) {
+        case 'Invoice': return 'doc-icon-invoice';
+        case 'Purchase Order': return 'doc-icon-po';
+        case 'Purchase Bill': return 'doc-icon-bill';
+        case 'Delivery Challan': return 'doc-icon-dc';
+        case 'Packing List': return 'doc-icon-pl';
+        case 'Contract': return 'doc-icon-contract';
+        case 'Site Photo': return 'doc-icon-image';
+        case 'Goods Receipt': return 'doc-icon-other';
+        case 'Vendor Payment': return 'doc-icon-payment';
+        case 'Customer Payment': return 'doc-icon-payment';
+        default: return 'doc-icon-other';
+      }
+    }
+
+    // =============================================================
+    // RENDER STATS
+    // =============================================================
+
+    function renderStats() {
+      var total = documents.length;
+      var auto = documents.filter(function(d) { return d.source === 'auto'; }).length;
+      var manual = documents.filter(function(d) { return d.source === 'manual'; }).length;
+      var storage = documents.reduce(function(s, d) { return s + d.size; }, 0);
+      var projTagged = new Set(documents.map(function(d) { return d.projectId; })).size;
+
+      document.getElementById('totalDocs').textContent = total;
+      document.getElementById('autoLinked').textContent = auto;
+      document.getElementById('manualUploads').textContent = manual;
+      document.getElementById('totalStorage').textContent = formatSize(storage);
+      document.getElementById('projectsTagged').textContent = projTagged;
+    }
+
+    // =============================================================
+    // RENDER FOLDERS
+    // =============================================================
+
+    function renderFolders() {
+      folders.forEach(function(f) {
+        if (f.id === 'all') {
+          f.count = documents.length;
+        } else {
+          f.count = documents.filter(function(d) { return d.projectId === f.id; }).length;
+        }
+      });
+
+      var html = folders.map(function(f) {
+        return `
+          <div class="folder-card ${f.id === activeFolder ? 'active' : ''}" onclick="selectFolder('${f.id}')">
+            <div class="folder-icon" style="background:${f.id === 'all' ? '#eef5e8' : f.color + '15'}; color:${f.id === 'all' ? '#6da84c' : f.color};">
+              ${iconFolder()}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="folder-name truncate">${f.name}</div>
+              <div class="folder-meta">${f.count} document${f.count !== 1 ? 's' : ''}</div>
+            </div>
+          </div>`;
+      }).join('');
+
+      document.getElementById('foldersList').innerHTML = html;
+
+      var filterProject = document.getElementById('filterProject');
+      var currentVal = filterProject.value;
+      filterProject.innerHTML = '<option value="all">All Projects</option>';
+      projects.forEach(function(p) {
+        if (p.id !== 'all') filterProject.innerHTML += '<option value="' + p.id + '">' + p.name + '</option>';
+      });
+      filterProject.value = currentVal;
+    }
+
+    function selectFolder(id) {
+      activeFolder = id;
+      var f = folders.find(function(x) { return x.id === id; });
+      document.getElementById('currentFolderTitle').textContent = f ? f.name : 'All Documents';
+      renderFolders();
+      renderDocuments();
+    }
+
+    // =============================================================
+    // RENDER DOCUMENTS GRID
+    // =============================================================
+
+    function getFilteredDocuments() {
+      var searchInput = document.getElementById('searchInput');
+      var q = searchInput ? searchInput.value.toLowerCase() : '';
+      var projectFilter = document.getElementById('filterProject').value || 'all';
+      var sourceFilter = document.getElementById('filterSource').value || 'all';
+      var sortBy = document.getElementById('sortBy').value || 'date-desc';
+
+      var filtered = documents.filter(function(d) {
+        var matchFolder = activeFolder === 'all' || d.projectId === activeFolder;
+        var matchSearch = d.name.toLowerCase().indexOf(q) !== -1 ||
+          d.description.toLowerCase().indexOf(q) !== -1 ||
+          d.type.toLowerCase().indexOf(q) !== -1;
+        var matchProject = projectFilter === 'all' || d.projectId === projectFilter;
+        var matchSource = sourceFilter === 'all' || d.source === sourceFilter;
+        return matchFolder && matchSearch && matchProject && matchSource;
+      });
+
+      // Sort
+      filtered.sort(function(a, b) {
+        if (sortBy === 'date-desc') return b.date.localeCompare(a.date);
+        if (sortBy === 'date-asc') return a.date.localeCompare(b.date);
+        if (sortBy === 'name-asc') return a.name.localeCompare(b.name);
+        if (sortBy === 'name-desc') return b.name.localeCompare(a.name);
+        return 0;
+      });
+
+      return filtered;
+    }
+
+    function renderDocuments() {
+      var filtered = getFilteredDocuments();
+
+      document.getElementById('docCount').textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        document.getElementById('documentsGrid').innerHTML = `
+          <div class="preview-area">
+            <div class="flex justify-center mb-2 empty-icon-svg">${iconFolder()}</div>
+            <div class="font-semibold mb-1">No documents found</div>
+            <div class="text-[11px]">Try changing filters or upload a new document.</div>
+          </div>`;
+        return;
+      }
+
+      var html = '<div class="grid grid-cols-1 md:grid-cols-2 gap-3">';
+      filtered.forEach(function(d) {
+        html += `
+          <div class="doc-card" onclick="viewDocument('${d.id}')">
+            <div class="doc-icon-box ${getDocIconClass(d.type)}">
+              ${getDocIcon(d.type)}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="doc-name truncate">${d.name}</div>
+              <div class="doc-meta">
+                <div>${d.description}</div>
+                <div class="mt-1">${formatDate(d.date)} · ${formatSize(d.size)} · ${d.uploadedBy}</div>
+                <div class="mt-1">
+                  <span class="doc-tag">${d.type}</span>
+                  <span class="doc-tag" style="background:${d.source === 'auto' ? '#dcfce7' : '#dbeafe'}; color:${d.source === 'auto' ? '#166534' : '#1e40af'};">${d.source === 'auto' ? 'Auto-Linked' : 'Manual'}</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-col gap-1">
+              <button onclick="event.stopPropagation(); downloadDocument('${d.id}')" class="btn-icon-action primary" title="Download">${iconDownload()}</button>
+              <button onclick="event.stopPropagation(); deleteDocument('${d.id}')" class="btn-icon-action danger" title="Delete">${iconTrash()}</button>
+            </div>
+          </div>`;
+      });
+      html += '</div>';
+
+      document.getElementById('documentsGrid').innerHTML = html;
+
+      renderStats();
+      renderFolders();
+    }
+
+    // =============================================================
+    // VIEW / DOWNLOAD / DELETE
+    // =============================================================
+
+    function viewDocument(id) {
+      var d = documents.find(function(x) { return x.id === id; });
+      if (!d) return;
+
+      var modalContent = `
+        ${modalHeader(d.name, d.type + ' · ' + d.projectName)}
+        <div class="px-5 py-4">
+          <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+            <div><span class="text-gray-500">Type</span><br><span class="font-semibold">${d.type}</span></div>
+            <div><span class="text-gray-500">Project</span><br><span class="font-semibold">${d.projectName}</span></div>
+            <div><span class="text-gray-500">Date</span><br><span class="font-semibold">${formatDate(d.date)}</span></div>
+            <div><span class="text-gray-500">Size</span><br><span class="font-semibold">${formatSize(d.size)}</span></div>
+            <div><span class="text-gray-500">Source</span><br><span class="font-semibold">${d.source === 'auto' ? 'Auto-Linked' : 'Manual Upload'}</span></div>
+            <div><span class="text-gray-500">Uploaded By</span><br><span class="font-semibold">${d.uploadedBy}</span></div>
+            <div class="col-span-2"><span class="text-gray-500">Description</span><br><span class="font-semibold">${d.description}</span></div>
+          </div>
+
+          <div class="preview-area">
+            <div class="flex justify-center mb-2 empty-icon-svg">${getDocIcon(d.type)}</div>
+            <div class="font-semibold mb-1">Document Preview</div>
+            <div class="text-[11px]">Preview not available in this demo. Use download to view.</div>
+          </div>
+        </div>
+        ${modalFooter('Close', 'onclick="closeModal()"', `
+          <button onclick="downloadDocument('${d.id}')" class="text-xs font-semibold text-primary hover:underline flex items-center gap-1 px-2 py-1 rounded border border-primary/20 hover:bg-primary-light transition">
+            ${iconDownload()} Download
+          </button>
+        `)}
+      `;
+      openModal(modalContent, { width: 'max-w-2xl' });
+    }
+
+    function downloadDocument(id) {
+      var d = documents.find(function(x) { return x.id === id; });
+      if (!d) return;
+      showToast('Downloading ' + d.name + '...', 'info');
+      setTimeout(function() { showToast('Downloaded successfully!', 'success'); }, 800);
+    }
+
+    function deleteDocument(id) {
+      var d = documents.find(function(x) { return x.id === id; });
+      if (!d) return;
+
+      var modalContent = `
+        ${modalHeader('Delete Document', d.name)}
+        <div class="px-5 py-4 text-sm text-gray-600">
+          <p>Delete <b>${d.name}</b>?</p>
+          <p class="text-gray-400 text-[11px] mt-1">This action cannot be undone.</p>
+        </div>
+        ${modalFooter('Delete', 'onclick="confirmDeleteDocument(\'' + id + '\')"', '')}
+      `;
+      openModal(modalContent, { width: 'max-w-md' });
+    }
+
+    function confirmDeleteDocument(id) {
+      documents = documents.filter(function(x) { return x.id !== id; });
+      closeModal();
+      renderDocuments();
+      showToast('Document deleted', 'warning');
+    }
+
+    // =============================================================
+    // UPLOAD DOCUMENT
+    // =============================================================
+
+    function openUploadDoc() {
+      var projectOptions = projects.filter(function(p) { return p.id !== 'all'; }).map(function(p) {
+        return '<option value="' + p.id + '">' + p.name + '</option>';
+      }).join('');
+
+      var modalContent = `
+        ${modalHeader('Upload Document', 'Add a manual document to the repository')}
+        <div class="px-5 py-4">
+          <div class="grid grid-cols-2 gap-3">
+            ${fld('Document Type *', '<select class="form-input" id="u_type"><option>Contract</option><option>Site Photo</option><option>Other</option><option>Legal</option><option>Proposal</option><option>Compliance</option></select>')}
+            ${fld('Project *', '<select class="form-input" id="u_project">' + projectOptions + '</select>')}
+          </div>
+          ${fld('Document Name *', '<input type="text" class="form-input" id="u_name" placeholder="e.g. Contract_2026.pdf">')}
+          ${fld('Description', '<textarea rows="2" class="form-input" id="u_desc" placeholder="Short description"></textarea>')}
+          ${fld('File *', '<input type="file" class="form-input" id="u_file" accept="*/*">', 'Max file size: 10 MB')}
+        </div>
+        ${modalFooter('Upload', 'onclick="saveUploadedDocument()"')}
+      `;
+      openModal(modalContent, { width: 'max-w-lg' });
+    }
+
+    function saveUploadedDocument() {
+      var type = document.getElementById('u_type').value;
+      var projectId = document.getElementById('u_project').value;
+      var name = document.getElementById('u_name').value.trim();
+      var desc = document.getElementById('u_desc').value.trim();
+      var fileInput = document.getElementById('u_file');
+
+      if (!name) { showToast('Document name is required', 'error'); return; }
+
+      var proj = projects.find(function(p) { return p.id === projectId; });
+      var fileSize = 200;
+      if (fileInput.files && fileInput.files[0]) {
+        fileSize = Math.round(fileInput.files[0].size / 1024);
+      }
+
+      var newDoc = {
+        id: 'DOC-' + String(nextDocNo++).padStart(3, '0'),
+        name: name,
+        type: type,
+        projectId: projectId,
+        projectName: proj ? proj.name : '',
+        date: new Date().toISOString().split('T')[0],
+        size: fileSize,
+        source: 'manual',
+        uploadedBy: 'Admin',
+        description: desc || type + ' document'
+      };
+      documents.unshift(newDoc);
+      closeModal();
+      renderDocuments();
+      showToast('Document uploaded successfully', 'success');
+    }
+
+    // =============================================================
+    // ACTIONS
+    // =============================================================
+
+    function exportDocuments() {
+      showToast('Exporting document list...', 'info');
+      setTimeout(function() { showToast('Exported successfully!', 'success'); }, 1000);
+    }
+
+    function clearFilters() {
+      document.getElementById('filterProject').value = 'all';
+      document.getElementById('filterSource').value = 'all';
+      var searchInput = document.getElementById('searchInput');
+      if (searchInput) searchInput.value = '';
+      renderDocuments();
+      toggleFilterDD();
+    }
+
+    // =============================================================
+    // SEARCH BAR INJECTION
+    // =============================================================
+
+    (function addSearchToTopbar() {
+      var searchContainer = document.querySelector('.app-main header');
+      if (searchContainer) {
+        var searchHtml = `
+          <div class="hidden sm:flex flex-1 max-w-[420px] relative ml-4">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">${iconSearch()}</span>
+            <input type="text" id="searchInput" placeholder="Search documents by name, type, project…"
+              onkeyup="renderDocuments()"
+              class="w-full border border-gray-200 bg-gray-50 focus:bg-white rounded-lg pl-9 pr-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition placeholder:text-gray-400">
+          </div>
+        `;
+        var headerContent = searchContainer.innerHTML;
+        var hamburgerIndex = headerContent.indexOf('lg:hidden');
+        if (hamburgerIndex !== -1) {
+          var firstDivEnd = headerContent.indexOf('</div>', hamburgerIndex) + 6;
+          var before = headerContent.substring(0, firstDivEnd);
+          var after = headerContent.substring(firstDivEnd);
+          searchContainer.innerHTML = before + searchHtml + after;
+        }
+      }
+    })();
+
+    // =============================================================
+    // INIT
+    // =============================================================
+
+    renderFolders();
+    renderDocuments();
+
+    console.log('📁 Documents Module Loaded Successfully');
+    console.log('📊 Total Documents:', documents.length);
+    console.log('🔗 Auto-Linked:', documents.filter(function(d) { return d.source === 'auto'; }).length);
+    console.log('📤 Manual Uploads:', documents.filter(function(d) { return d.source === 'manual'; }).length);
+    console.log('🎯 Enhancement #5 — Project-Wise Document Management (Standalone View)');
+
+  </script>
+
+</body>
+</html>

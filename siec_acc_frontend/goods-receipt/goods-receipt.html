@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+<link rel="manifest" href="/favicon_io/site.webmanifest">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<title>Goods Receipt — Aquilon ERP</title>
+
+<script>
+  (function () {
+    try {
+      var collapsed = localStorage.getItem("sidebarCollapsed") === "true";
+      document.documentElement.classList.add(collapsed ? "sidebar-collapsed" : "sidebar-expanded");
+    } catch (e) {
+      document.documentElement.classList.add("sidebar-expanded");
+    }
+  })();
+</script>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: { DEFAULT: "#6da84c", dark: "#5c9140", soft: "#eef5e8" },
+          secondary: { DEFAULT: "#1985bf", soft: "#e7f3fa" },
+        },
+      },
+    },
+  };
+</script>
+
+<link rel="stylesheet" href="/assets/css/nav-sidebar.css" />
+
+<style>
+  body {
+    font-size: 12px;
+    background: #f3f4f6;
+  }
+
+  .form-input {
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fafafa;
+    color: #1a1a2e;
+  }
+  .form-input:focus {
+    border-color: #6da84c;
+    box-shadow: 0 0 0 3px rgba(109, 168, 76, 0.12);
+    background: #ffffff;
+  }
+  .form-input:disabled {
+    background: #f3f4f6;
+    cursor: not-allowed;
+  }
+
+  .form-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #374151;
+    display: block;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .form-label .required { color: #ef4444; margin-left: 2px; }
+  .form-hint { font-size: 9.5px; color: #9ca3af; margin-top: 2px; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+  }
+  .badge-green { background: #dcfce7; color: #166534; }
+  .badge-amber { background: #fef3c7; color: #92400e; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  .badge-gray { background: #f1f5f9; color: #475569; }
+  .badge-blue { background: #dbeafe; color: #1e40af; }
+  .badge-purple { background: #ede9fe; color: #5b21b6; }
+  .badge-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .badge-dot-green { background: #22c55e; }
+  .badge-dot-amber { background: #f59e0b; }
+  .badge-dot-red { background: #ef4444; }
+  .badge-dot-gray { background: #94a3b8; }
+  .badge-dot-blue { background: #3b82f6; }
+  .badge-dot-purple { background: #8b5cf6; }
+
+  .stat-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    padding: 10px 14px !important;
+  }
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  }
+  .stat-card .stat-label {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+  }
+  .stat-card .stat-value {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-top: 2px;
+  }
+
+  .table-row-hover:hover {
+    background: #f8fafc;
+  }
+
+  .btn-icon-action {
+    transition: all 0.15s ease;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-icon-action:hover {
+    background: #f1f5f9;
+    color: #6da84c;
+  }
+  .btn-icon-action.danger:hover {
+    background: #fee2e2;
+    color: #ef4444;
+  }
+  .btn-icon-action.primary:hover {
+    background: #eef5e8;
+    color: #6da84c;
+  }
+
+  .toast {
+    animation: fadeIn 0.2s ease;
+    font-size: 12px;
+  }
+  .toast-success { background: #16a34a; }
+  .toast-error { background: #dc2626; }
+  .toast-warning { background: #f59e0b; }
+  .toast-info { background: #6da84c; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.96) translateY(6px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .animate-modal { animation: modalIn 0.18s ease; }
+
+  .modal-scroll {
+    max-height: 55vh;
+    overflow-y: auto;
+  }
+  .modal-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+  .modal-scroll::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+  }
+
+  .empty-icon-svg {
+    opacity: 0.2;
+    width: 40px;
+    height: 40px;
+    color: #94a3b8;
+  }
+
+  .page-title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .page-subtitle {
+    font-size: 12px;
+    color: #6b7280;
+  }
+  .page-breadcrumb {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6da84c;
+  }
+
+  table th {
+    font-size: 9.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+    padding: 8px 12px;
+  }
+  table td {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+  table td .font-mono {
+    font-size: 11px;
+  }
+
+  .modal-title {
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .modal-subtitle {
+    font-size: 11px;
+    color: #6b7280;
+  }
+
+  .filter-btn {
+    font-size: 11px;
+    padding: 5px 12px;
+  }
+  .filter-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* GRN Preview */
+  .grn-preview {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 24px 28px;
+    max-width: 820px;
+    margin: 0 auto;
+  }
+  .grn-preview .grn-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 2px solid #6da84c;
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+  }
+  .grn-preview .grn-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #6da84c;
+    letter-spacing: 0.04em;
+  }
+  .grn-preview .grn-company-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+  .grn-preview .grn-company-details {
+    font-size: 10.5px;
+    color: #6b7280;
+    line-height: 1.5;
+    margin-top: 2px;
+  }
+  .grn-preview .grn-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+    font-size: 12px;
+  }
+  .grn-preview .meta-label {
+    font-weight: 600;
+    color: #6b7280;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .grn-preview .meta-value {
+    font-weight: 600;
+    color: #1a1a2e;
+  }
+  .grn-preview .grn-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 12px;
+  }
+  .grn-preview .grn-table th {
+    background: #f8fafc;
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #6b7280;
+    border-bottom: 2px solid #e5e7eb;
+  }
+  .grn-preview .grn-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .grn-preview .grn-footer {
+    margin-top: 16px;
+    font-size: 10.5px;
+    color: #6b7280;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 10px;
+    text-align: center;
+  }
+</style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 antialiased text-sm">
+
+  <div class="flex min-h-screen">
+    <div id="sidebar-root"></div>
+
+    <div class="app-main flex-1 flex flex-col min-w-0">
+      <div id="topbar-root"></div>
+
+      <main class="p-3 sm:p-4 lg:p-5">
+
+        <div id="toastWrap" class="fixed bottom-5 right-5 z-[200] flex flex-col gap-2 items-end"></div>
+        <div id="modalRoot"></div>
+
+        <div class="max-w-7xl mx-auto">
+
+          <!-- ===== PAGE HEADER ===== -->
+          <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+            <div>
+              <div class="page-breadcrumb">Purchase</div>
+              <h1 class="page-title text-gray-900">Goods Receipt</h1>
+              <p class="page-subtitle mt-0.5">Record goods received from vendors, verify quantities, capture serial/batch, update inventory.</p>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <div class="relative inline-block" data-dd-trigger>
+                <button onclick="toggleFilterDD()" class="filter-btn inline-flex items-center gap-1.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold rounded-lg transition">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 6h18M7 12h10M11 18h2"/>
+                  </svg>
+                  Filter
+                  <span id="filterBadge" class="hidden text-[9px] bg-primary text-white px-1.5 py-0.5 rounded-full">0</span>
+                </button>
+                <div id="filterDD" data-dd-menu class="hidden absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg p-3 z-50">
+                  <div class="mb-2">
+                    <label class="text-[9px] font-semibold text-gray-500 uppercase tracking-wide">Status</label>
+                    <select id="filterStatus" onchange="filterGRN()" class="form-input text-[10px]">
+                      <option value="all">All Status</option>
+                      <option value="pending">Pending</option>
+                      <option value="partial">Partial</option>
+                      <option value="received">Fully Received</option>
+                      <option value="rejected">Rejected</option>
+                    </select>
+                  </div>
+                  <div class="mb-2">
+                    <label class="text-[9px] font-semibold text-gray-500 uppercase tracking-wide">Vendor</label>
+                    <select id="filterVendor" onchange="filterGRN()" class="form-input text-[10px]">
+                      <option value="all">All Vendors</option>
+                    </select>
+                  </div>
+                  <button onclick="clearFilters()" class="text-[10px] text-primary font-semibold hover:underline">Clear Filters</button>
+                </div>
+              </div>
+
+              <button onclick="openAddGRN()" class="inline-flex items-center gap-1.5 bg-primary hover:bg-primary-dark text-white text-[11px] font-semibold px-3 py-2 rounded-lg transition shadow-sm">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+                New Goods Receipt
+              </button>
+            </div>
+          </div>
+
+          <!-- ===== STATS CARDS ===== -->
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-2.5 mb-4">
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Total GRN</div>
+              <div class="stat-value" id="totalGRN">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Pending</div>
+              <div class="stat-value text-amber-600" id="pendingGRN">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Partial</div>
+              <div class="stat-value text-purple-600" id="partialGRN">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Received</div>
+              <div class="stat-value text-green-600" id="receivedGRN">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Damaged Qty</div>
+              <div class="stat-value text-red-600" id="damagedQty">0</div>
+            </div>
+          </div>
+
+          <!-- ===== GRN TABLE ===== -->
+          <div id="grnPanel"></div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ========================================================== -->
+  <!-- SCRIPTS -->
+  <!-- ========================================================== -->
+
+  <script src="/assets/js/nav-sidebar.js"></script>
+  <script>
+    // =============================================================
+    // NAV-SIDEBAR INIT
+    // =============================================================
+    NavSidebar.init({
+      basePath: "",
+      activePage: "goods-receipt",
+      pageTitle: "Goods Receipt",
+      user: {
+        name: "Admin",
+        role: "Super Admin",
+        avatarUrl: "",
+      },
+    });
+
+    // =============================================================
+    // SVG ICONS
+    // =============================================================
+    function iconPlus() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>`; }
+    function iconEdit() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`; }
+    function iconTrash() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>`; }
+    function iconEye() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`; }
+    function iconX() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg>`; }
+    function iconSearch() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>`; }
+    function iconSave() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>`; }
+    function iconCheck() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>`; }
+    function iconPrint() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>`; }
+    function iconInfo() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>`; }
+    function iconTruck() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1.5"></rect><path d="M16 8h4l3 3v5h-7V8z"></path><circle cx="5.5" cy="18" r="2.5"></circle><circle cx="18.5" cy="18" r="2.5"></circle></svg>`; }
+    function iconClipboard() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M9 12l2 2 4-4"></path></svg>`; }
+
+    // =============================================================
+    // TOAST
+    // =============================================================
+    function showToast(message, kind) {
+      kind = kind || 'success';
+      var wrap = document.getElementById('toastWrap');
+      var colors = { success: 'bg-green-600', info: 'bg-primary', warning: 'bg-amber-600', error: 'bg-red-600' };
+      var el = document.createElement('div');
+      el.className = 'toast ' + colors[kind] + ' text-white font-semibold px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 max-w-xs';
+      el.innerHTML = '<span>' + message + '</span>';
+      wrap.appendChild(el);
+      setTimeout(function() {
+        el.style.transition = 'opacity .3s';
+        el.style.opacity = '0';
+        setTimeout(function() { el.remove(); }, 300);
+      }, 2600);
+    }
+
+    // =============================================================
+    // MODAL
+    // =============================================================
+    function openModal(innerHtml, opts) {
+      opts = opts || {};
+      var root = document.getElementById('modalRoot');
+      root.innerHTML = `
+        <div class="fixed inset-0 z-[100] flex items-center justify-center p-3" id="modalOverlay">
+          <div class="absolute inset-0 bg-black/40 backdrop-blur-[1px]" id="modalBackdrop"></div>
+          <div class="relative bg-white rounded-xl shadow-2xl w-full ${opts.width || 'max-w-4xl'} max-h-[92vh] overflow-hidden animate-modal">
+            ${innerHtml}
+          </div>
+        </div>`;
+      document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      var root = document.getElementById('modalRoot');
+      root.innerHTML = '';
+      document.body.style.overflow = '';
+    }
+
+    function modalHeader(title, subtitle) {
+      return `
+        <div class="flex items-start justify-between px-5 py-3.5 border-b border-gray-100 sticky top-0 bg-white z-10">
+          <div>
+            <h3 class="modal-title text-gray-900">${title}</h3>
+            ${subtitle ? '<p class="modal-subtitle mt-0.5">' + subtitle + '</p>' : ''}
+          </div>
+          <button onclick="closeModal()" class="w-7 h-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 transition">${iconX()}</button>
+        </div>`;
+    }
+
+    function modalFooter(saveLabel, onSaveAttr, extraBtns) {
+      return `
+        <div class="flex items-center justify-between gap-2 px-5 py-3 border-t border-gray-100 bg-gray-50 rounded-b-xl sticky bottom-0">
+          <div>${extraBtns || ''}</div>
+          <div class="flex gap-2">
+            <button onclick="closeModal()" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-600 border border-gray-200 hover:bg-white transition">Cancel</button>
+            <button ${onSaveAttr} class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-primary hover:bg-primary-dark transition shadow-sm flex items-center gap-1.5">
+              ${iconSave()} ${saveLabel}
+            </button>
+          </div>
+        </div>`;
+    }
+
+    function fld(label, inputHtml, hint) {
+      return `<div class="mb-2"><label class="form-label">${label}</label>${inputHtml}${hint ? '<div class="form-hint">' + hint + '</div>' : ''}</div>`;
+    }
+
+    function inputBase() { return "form-input"; }
+
+    // =============================================================
+    // DROPDOWN
+    // =============================================================
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('[data-dd-trigger]')) {
+        document.querySelectorAll('[data-dd-menu]').forEach(function(m) { m.classList.add('hidden'); });
+      }
+    });
+
+    function toggleFilterDD() {
+      var menu = document.getElementById('filterDD');
+      var isHidden = menu.classList.contains('hidden');
+      document.querySelectorAll('[data-dd-menu]').forEach(function(m) { m.classList.add('hidden'); });
+      if (isHidden) menu.classList.remove('hidden');
+    }
+
+    // =============================================================
+    // HELPERS
+    // =============================================================
+    function money(n) { return '₹' + Number(n).toLocaleString('en-IN'); }
+
+    function statusBadge(status) {
+      var map = { pending: 'badge-amber', partial: 'badge-purple', received: 'badge-green', rejected: 'badge-red' };
+      var dot = { pending: 'badge-dot-amber', partial: 'badge-dot-purple', received: 'badge-dot-green', rejected: 'badge-dot-red' };
+      var label = status === 'received' ? 'Fully Received' : status.charAt(0).toUpperCase() + status.slice(1);
+      return '<span class="badge ' + map[status] + '"><span class="badge-dot ' + dot[status] + '"></span>' + label + '</span>';
+    }
+
+    function rowActionsHtml(editFn, delFn, viewFn, receiveFn) {
+      var html = '<div class="flex gap-1">';
+      if (viewFn) html += '<button onclick="' + viewFn + '" class="btn-icon-action" title="View">' + iconEye() + '</button>';
+      if (receiveFn) html += '<button onclick="' + receiveFn + '" class="btn-icon-action primary" title="Mark Received">' + iconCheck() + '</button>';
+      html += '<button onclick="' + editFn + '" class="btn-icon-action" title="Edit">' + iconEdit() + '</button>';
+      html += '<button onclick="' + delFn + '" class="btn-icon-action danger" title="Delete">' + iconTrash() + '</button>';
+      html += '</div>';
+      return html;
+    }
+
+    function panelWrap(titleHtml, bodyHtml, extraHead) {
+      return `
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+          <div class="flex items-center justify-between gap-3 flex-wrap px-4 py-2.5 border-b border-gray-100">
+            <div class="font-semibold text-sm text-gray-800 flex items-center gap-2">${titleHtml}</div>
+            ${extraHead || ''}
+          </div>
+          <div>${bodyHtml}</div>
+        </div>`;
+    }
+
+    function tableHtml(cols, rowsHtml) {
+      var colHeaders = cols.map(function(c) {
+        return '<th class="text-left font-semibold whitespace-nowrap">' + c + '</th>';
+      }).join('');
+      return `
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead><tr class="bg-gray-50 border-b border-gray-200">${colHeaders}</tr></thead>
+            <tbody id="tbody-anchor">${rowsHtml}</tbody>
+          </table>
+        </div>`;
+    }
+
+    // =============================================================
+    // DATA
+    // =============================================================
+
+    var vendors = [
+      { id: 'VEN-001', name: 'Global Imports Inc.' },
+      { id: 'VEN-002', name: 'Local Supplier Co.' },
+      { id: 'VEN-003', name: 'ABC Distributors' },
+      { id: 'VEN-004', name: 'Tech Components Ltd.' },
+      { id: 'VEN-005', name: 'Premium Raw Materials' },
+    ];
+
+    var purchaseOrders = [
+      { id: 'PO-001', number: 'PO/25-26/001', vendor: 'Global Imports Inc.' },
+      { id: 'PO-002', number: 'PO/25-26/002', vendor: 'Local Supplier Co.' },
+      { id: 'PO-003', number: 'PO/25-26/003', vendor: 'ABC Distributors' },
+      { id: 'PO-004', number: 'PO/25-26/004', vendor: 'Tech Components Ltd.' },
+      { id: 'PO-005', number: 'PO/25-26/005', vendor: 'Premium Raw Materials' },
+    ];
+
+    var warehouses = [
+      { id: 'WH-001', name: 'Main Warehouse - Mumbai' },
+      { id: 'WH-002', name: 'Branch Warehouse - Pune' },
+      { id: 'WH-003', name: 'Storage - Bhiwandi' },
+    ];
+
+    var goodsReceipts = [{
+      id: 'GRN-001',
+      number: 'GRN/25-26/001',
+      date: '2026-01-15',
+      poReference: 'PO/25-26/001',
+      vendorId: 'VEN-001',
+      vendorName: 'Global Imports Inc.',
+      warehouseId: 'WH-001',
+      warehouseName: 'Main Warehouse - Mumbai',
+      invoiceReference: 'INV-V-12345',
+      receivedBy: 'Amit Kumar',
+      status: 'received',
+      items: [
+        { itemId: 'ITM-1001', name: 'Centrifugal Blower — 5HP', orderedQty: 50, receivedQty: 50, damagedQty: 0, unit: 'Pcs', serial: 'BLW-001 to BLW-050' },
+        { itemId: 'ITM-1003', name: 'Activated Carbon Media', orderedQty: 25, receivedQty: 25, damagedQty: 0, unit: 'Kg', serial: '' }
+      ],
+      notes: 'Complete order received in good condition',
+      createdAt: '2026-01-15'
+    }, {
+      id: 'GRN-002',
+      number: 'GRN/25-26/002',
+      date: '2026-01-22',
+      poReference: 'PO/25-26/003',
+      vendorId: 'VEN-003',
+      vendorName: 'ABC Distributors',
+      warehouseId: 'WH-003',
+      warehouseName: 'Storage - Bhiwandi',
+      invoiceReference: 'INV-V-11122',
+      receivedBy: 'Amit Kumar',
+      status: 'received',
+      items: [
+        { itemId: 'ITM-1005', name: 'Chemical Dosing Pump — 50LPH', orderedQty: 5, receivedQty: 5, damagedQty: 0, unit: 'Pcs', serial: 'DOSE-001 to DOSE-005' }
+      ],
+      notes: 'Sealed packaging received',
+      createdAt: '2026-01-22'
+    }, {
+      id: 'GRN-003',
+      number: 'GRN/25-26/003',
+      date: '2026-02-01',
+      poReference: 'PO/25-26/005',
+      vendorId: 'VEN-005',
+      vendorName: 'Premium Raw Materials',
+      warehouseId: 'WH-001',
+      warehouseName: 'Main Warehouse - Mumbai',
+      invoiceReference: '',
+      receivedBy: 'Amit Kumar',
+      status: 'partial',
+      items: [
+        { itemId: 'ITM-1002', name: 'Dual Media Filter Vessel — 500L', orderedQty: 2, receivedQty: 1, damagedQty: 0, unit: 'Pcs', serial: 'FIL-001' },
+        { itemId: 'ITM-1005', name: 'Chemical Dosing Pump — 50LPH', orderedQty: 3, receivedQty: 0, damagedQty: 0, unit: 'Pcs', serial: '' }
+      ],
+      notes: 'Partial shipment — remaining items expected next week',
+      createdAt: '2026-02-01'
+    }, {
+      id: 'GRN-004',
+      number: 'GRN/25-26/004',
+      date: '2026-02-08',
+      poReference: 'PO/25-26/002',
+      vendorId: 'VEN-002',
+      vendorName: 'Local Supplier Co.',
+      warehouseId: 'WH-002',
+      warehouseName: 'Branch Warehouse - Pune',
+      invoiceReference: '',
+      receivedBy: 'Amit Kumar',
+      status: 'pending',
+      items: [
+        { itemId: 'ITM-1004', name: 'PVC Pressure Pipe — 6"', orderedQty: 100, receivedQty: 0, damagedQty: 0, unit: 'Mtr', serial: '' }
+      ],
+      notes: 'Awaiting delivery',
+      createdAt: '2026-02-08'
+    }, {
+      id: 'GRN-005',
+      number: 'GRN/25-26/005',
+      date: '2026-02-10',
+      poReference: 'PO/25-26/004',
+      vendorId: 'VEN-004',
+      vendorName: 'Tech Components Ltd.',
+      warehouseId: 'WH-001',
+      warehouseName: 'Main Warehouse - Mumbai',
+      invoiceReference: '',
+      receivedBy: 'Amit Kumar',
+      status: 'partial',
+      items: [
+        { itemId: 'ITM-1001', name: 'Centrifugal Blower — 5HP', orderedQty: 10, receivedQty: 8, damagedQty: 2, unit: 'Pcs', serial: 'BLW-051 to BLW-058 (8 received, 2 damaged)' }
+      ],
+      notes: '2 units received damaged — to be replaced',
+      createdAt: '2026-02-10'
+    }];
+
+    var nextGRNNo = 6;
+
+    // =============================================================
+    // FUNCTIONS
+    // =============================================================
+
+    function renderStats() {
+      var total = goodsReceipts.length;
+      var pending = goodsReceipts.filter(function(g) { return g.status === 'pending'; }).length;
+      var partial = goodsReceipts.filter(function(g) { return g.status === 'partial'; }).length;
+      var received = goodsReceipts.filter(function(g) { return g.status === 'received'; }).length;
+      var damaged = goodsReceipts.reduce(function(sum, g) { return sum + g.items.reduce(function(s, i) { return s + (i.damagedQty || 0); }, 0); }, 0);
+
+      document.getElementById('totalGRN').textContent = total;
+      document.getElementById('pendingGRN').textContent = pending;
+      document.getElementById('partialGRN').textContent = partial;
+      document.getElementById('receivedGRN').textContent = received;
+      document.getElementById('damagedQty').textContent = damaged;
+
+      var filterVendor = document.getElementById('filterVendor');
+      var currentVal = filterVendor.value;
+      filterVendor.innerHTML = '<option value="all">All Vendors</option>';
+      vendors.forEach(function(v) {
+        filterVendor.innerHTML += '<option value="' + v.id + '">' + v.name + '</option>';
+      });
+      filterVendor.value = currentVal;
+    }
+
+    function getFilteredGRN() {
+      var searchInput = document.getElementById('searchInput');
+      var q = searchInput ? searchInput.value.toLowerCase() : '';
+      var status = document.getElementById('filterStatus').value || 'all';
+      var vendor = document.getElementById('filterVendor').value || 'all';
+
+      return goodsReceipts.filter(function(g) {
+        var matchSearch = g.number.toLowerCase().indexOf(q) !== -1 ||
+          g.vendorName.toLowerCase().indexOf(q) !== -1 ||
+          (g.poReference || '').toLowerCase().indexOf(q) !== -1;
+        var matchStatus = status === 'all' || g.status === status;
+        var matchVendor = vendor === 'all' || g.vendorId === vendor;
+        return matchSearch && matchStatus && matchVendor;
+      });
+    }
+
+    function renderGRN() {
+      var filtered = getFilteredGRN();
+
+      var rowsHtml = '';
+      if (filtered.length === 0) {
+        rowsHtml = `
+          <tr>
+            <td colspan="9" class="text-center py-10 text-gray-400 text-sm">
+              <div class="flex justify-center mb-2 empty-icon-svg">${iconClipboard()}</div>
+              No goods receipts found. Click "New Goods Receipt" to add one.
+            </td>
+          </tr>`;
+      } else {
+        rowsHtml = filtered.map(function(g) {
+          var totalOrdered = g.items.reduce(function(s, i) { return s + i.orderedQty; }, 0);
+          var totalReceived = g.items.reduce(function(s, i) { return s + i.receivedQty; }, 0);
+          var canReceive = g.status === 'pending' || g.status === 'partial';
+
+          return `
+            <tr class="border-b border-gray-100 table-row-hover">
+              <td class="px-3 py-2.5">
+                <div class="font-semibold text-gray-800 text-sm">${g.number}</div>
+                <div class="text-[10px] text-gray-400">${g.date}</div>
+              </td>
+              <td class="px-3 py-2.5 text-xs text-gray-600 font-mono">${g.poReference || '—'}</td>
+              <td class="px-3 py-2.5 text-sm text-gray-700">${g.vendorName}</td>
+              <td class="px-3 py-2.5 text-xs text-gray-500">${g.warehouseName}</td>
+              <td class="px-3 py-2.5 text-center font-mono text-sm">${totalReceived} / ${totalOrdered}</td>
+              <td class="px-3 py-2.5 text-[10.5px] text-gray-500">${g.receivedBy}</td>
+              <td class="px-3 py-2.5">${statusBadge(g.status)}</td>
+              <td class="px-3 py-2.5 text-center text-[10px]">
+                ${g.items.reduce(function(s, i) { return s + (i.damagedQty || 0); }, 0) > 0 ? '<span class="text-red-600 font-semibold">' + g.items.reduce(function(s, i) { return s + (i.damagedQty || 0); }, 0) + '</span>' : '—'}
+              </td>
+              <td class="px-3 py-2.5">${rowActionsHtml(
+                "editGRN('"+g.id+"')",
+                "delGRN('"+g.id+"')",
+                "viewGRN('"+g.id+"')",
+                canReceive ? "receiveGRN('"+g.id+"')" : null
+              )}</td>
+            </tr>`;
+        }).join('');
+      }
+
+      var panelHtml = panelWrap(
+        'All Goods Receipts <span class="text-[10px] font-bold bg-primary-soft text-primary-dark px-2 py-0.5 rounded-full ml-1">' + filtered.length + '</span>',
+        tableHtml(['GRN #', 'PO Ref', 'Vendor', 'Warehouse', 'Received/Ordered', 'Received By', 'Status', 'Damaged', 'Actions'], rowsHtml),
+        '<div class="flex items-center gap-2"><span class="text-[10px] text-gray-400">Show:</span><select id="pageSizeSelect" onchange="renderGRN()" class="text-[10px] border border-gray-200 rounded-lg px-2 py-1 bg-white outline-none"><option value="10">10</option><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option></select></div>'
+      );
+
+      document.getElementById('grnPanel').innerHTML = panelHtml;
+      renderStats();
+    }
+
+    function filterGRN() { renderGRN(); }
+
+    function clearFilters() {
+      document.getElementById('filterStatus').value = 'all';
+      document.getElementById('filterVendor').value = 'all';
+      var searchInput = document.getElementById('searchInput');
+      if (searchInput) searchInput.value = '';
+      renderGRN();
+      toggleFilterDD();
+    }
+
+    // =============================================================
+    // VIEW GRN
+    // =============================================================
+
+    function viewGRN(id) {
+      var g = goodsReceipts.find(function(x) { return x.id === id; });
+      if (!g) return;
+
+      var itemsHtml = g.items.map(function(i) {
+        return `
+          <tr>
+            <td class="px-2 py-1.5 text-xs">${i.name}</td>
+            <td class="px-2 py-1.5 text-xs text-center font-mono">${i.orderedQty}</td>
+            <td class="px-2 py-1.5 text-xs text-center font-mono font-semibold text-green-600">${i.receivedQty}</td>
+            <td class="px-2 py-1.5 text-xs text-center font-mono ${i.damagedQty > 0 ? 'text-red-600 font-semibold' : ''}">${i.damagedQty || 0}</td>
+            <td class="px-2 py-1.5 text-xs text-center">${i.unit}</td>
+            <td class="px-2 py-1.5 text-xs text-gray-500">${i.serial || '—'}</td>
+          </tr>`;
+      }).join('');
+
+      var modalContent = `
+        ${modalHeader('Goods Receipt — ' + g.number, g.vendorName)}
+        <div class="px-5 py-4 modal-scroll">
+
+          <div class="grn-preview">
+            <div class="grn-header">
+              <div>
+                <div class="grn-company-name">Kunash Media Pvt. Ltd.</div>
+                <div class="grn-company-details">
+                  401, Creative Hub, BKC, Mumbai - 400051<br>
+                  GSTIN: 27AABCU1234D1ZP | Phone: +91-9876543210
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div class="grn-title">GOODS RECEIPT</div>
+              </div>
+            </div>
+
+            <div class="grn-meta">
+              <div>
+                <div class="meta-label">Vendor</div>
+                <div class="meta-value">${g.vendorName}</div>
+              </div>
+              <div style="text-align:right;">
+                <div><span class="meta-label">GRN #</span> <span class="meta-value">${g.number}</span></div>
+                <div><span class="meta-label">Date</span> <span class="meta-value">${g.date}</span></div>
+                <div><span class="meta-label">PO Ref</span> <span class="meta-value">${g.poReference || '—'}</span></div>
+                <div><span class="meta-label">Status</span> ${statusBadge(g.status)}</div>
+              </div>
+            </div>
+
+            <div style="margin-bottom:8px;font-size:12px;">
+              <div><span class="meta-label">Warehouse:</span> <b>${g.warehouseName}</b></div>
+              <div><span class="meta-label">Received By:</span> <b>${g.receivedBy}</b></div>
+              ${g.invoiceReference ? '<div><span class="meta-label">Vendor Invoice Ref:</span> <b>' + g.invoiceReference + '</b></div>' : ''}
+            </div>
+
+            <table class="grn-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th class="text-center">Ordered</th>
+                  <th class="text-center">Received</th>
+                  <th class="text-center">Damaged</th>
+                  <th class="text-center">Unit</th>
+                  <th>Serial / Batch</th>
+                </tr>
+              </thead>
+              <tbody>${itemsHtml}</tbody>
+            </table>
+
+            ${g.notes ? '<div class="mt-2 p-2 bg-gray-50 rounded text-xs text-gray-600"><b>Notes:</b> ' + g.notes + '</div>' : ''}
+
+            <div class="grn-footer">
+              <p>This is a system generated goods receipt. | Please verify quantities and condition upon receipt.</p>
+            </div>
+          </div>
+
+        </div>
+        ${modalFooter('Close', 'onclick="closeModal()"', `
+          <button onclick="printGRN('${g.id}')" class="text-xs font-semibold text-gray-600 hover:underline flex items-center gap-1 px-2 py-1 rounded border border-gray-200 hover:bg-gray-50 transition">
+            ${iconPrint()} Print GRN
+          </button>
+        `)}
+      `;
+
+      openModal(modalContent, { width: 'max-w-3xl' });
+    }
+
+    function printGRN(id) {
+      showToast('Opening print dialog for GRN...', 'info');
+      setTimeout(function() { window.print(); }, 500);
+    }
+
+    // =============================================================
+    // ADD / EDIT GRN
+    // =============================================================
+
+    function openAddGRN() { openGRNModal(null); }
+
+    function editGRN(id) {
+      var g = goodsReceipts.find(function(x) { return x.id === id; });
+      if (g) openGRNModal(g);
+    }
+
+    function openGRNModal(existing) {
+      var e = existing || {
+        number: 'GRN/25-26/' + String(goodsReceipts.length + 1).padStart(3, '0'),
+        date: new Date().toISOString().split('T')[0],
+        poReference: '',
+        vendorId: vendors[0].id,
+        warehouseId: warehouses[0].id,
+        invoiceReference: '',
+        receivedBy: 'Amit Kumar',
+        status: 'pending',
+        items: [],
+        notes: ''
+      };
+      var isEdit = !!existing;
+
+      var vendorOptions = vendors.map(function(v) {
+        return '<option ' + (v.id === e.vendorId ? 'selected' : '') + ' value="' + v.id + '">' + v.name + '</option>';
+      }).join('');
+
+      var poOptions = '<option value="">— Select PO —</option>' + purchaseOrders.map(function(po) {
+        return '<option ' + (po.number === e.poReference ? 'selected' : '') + ' value="' + po.number + '">' + po.number + ' (' + po.vendor + ')</option>';
+      }).join('');
+
+      var warehouseOptions = warehouses.map(function(w) {
+        return '<option ' + (w.id === e.warehouseId ? 'selected' : '') + ' value="' + w.id + '">' + w.name + '</option>';
+      }).join('');
+
+      // Line items
+      var itemsHtml = '';
+      if (e.items && e.items.length > 0) {
+        itemsHtml = e.items.map(function(i, idx) {
+          return `
+            <tr class="border-b border-gray-100 line-item-row">
+              <td class="px-2 py-1">
+                <input type="text" class="form-input text-[10px] item-name" value="${i.name}" data-idx="${idx}" placeholder="Item name">
+              </td>
+              <td class="px-2 py-1">
+                <input type="number" class="form-input text-[10px] item-ordered" value="${i.orderedQty}" data-idx="${idx}" placeholder="Ordered" onchange="calcGRNTotal()">
+              </td>
+              <td class="px-2 py-1">
+                <input type="number" class="form-input text-[10px] item-received" value="${i.receivedQty}" data-idx="${idx}" placeholder="Received" onchange="calcGRNTotal()">
+              </td>
+              <td class="px-2 py-1">
+                <input type="number" class="form-input text-[10px] item-damaged" value="${i.damagedQty || 0}" data-idx="${idx}" placeholder="Damaged">
+              </td>
+              <td class="px-2 py-1">
+                <input type="text" class="form-input text-[10px] item-serial" value="${i.serial || ''}" data-idx="${idx}" placeholder="Serial/Batch">
+              </td>
+              <td class="px-2 py-1 text-center">
+                <button onclick="removeGRNItem(this)" class="text-red-500 hover:text-red-700 transition">${iconX()}</button>
+              </td>
+            </tr>`;
+        }).join('');
+      }
+
+      var modalContent = `
+        ${modalHeader(isEdit ? 'Edit Goods Receipt' : 'New Goods Receipt', isEdit ? e.number : 'Record goods received from vendor')}
+        <div class="px-5 py-4 modal-scroll">
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            ${fld('GRN #', '<input type="text" class="form-input" id="g_number" value="' + e.number + '" disabled>')}
+            ${fld('Date *', '<input type="date" class="form-input" id="g_date" value="' + e.date + '">')}
+            ${fld('PO Reference', '<select class="form-input" id="g_poReference">' + poOptions + '</select>')}
+            ${fld('Vendor *', '<select class="form-input" id="g_vendor">' + vendorOptions + '</select>')}
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
+            ${fld('Warehouse *', '<select class="form-input" id="g_warehouse">' + warehouseOptions + '</select>')}
+            ${fld('Vendor Invoice Ref', '<input type="text" class="form-input" id="g_invoiceRef" value="' + (e.invoiceReference || '') + '" placeholder="Vendor bill number">')}
+            ${fld('Received By', '<input type="text" class="form-input" id="g_receivedBy" value="' + e.receivedBy + '" placeholder="Name">')}
+            ${fld('Status', '<select class="form-input" id="g_status"><option ' + (e.status === 'pending' ? 'selected' : '') + ' value="pending">Pending</option><option ' + (e.status === 'partial' ? 'selected' : '') + ' value="partial">Partial</option><option ' + (e.status === 'received' ? 'selected' : '') + ' value="received">Fully Received</option><option ' + (e.status === 'rejected' ? 'selected' : '') + ' value="rejected">Rejected</option></select>')}
+          </div>
+
+          <!-- Line Items -->
+          <div class="mt-3">
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="form-label mb-0">Items Received</label>
+              <button onclick="addGRNItem()" class="text-[10px] font-semibold text-primary hover:underline flex items-center gap-1">
+                ${iconPlus()} Add Item
+              </button>
+            </div>
+            <div class="border border-gray-200 rounded-lg overflow-hidden">
+              <table class="w-full text-xs" id="grnItemsTable">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-2 py-1.5 text-left font-semibold text-gray-600">Item</th>
+                    <th class="px-2 py-1.5 text-center font-semibold text-gray-600" style="width:80px;">Ordered</th>
+                    <th class="px-2 py-1.5 text-center font-semibold text-gray-600" style="width:80px;">Received</th>
+                    <th class="px-2 py-1.5 text-center font-semibold text-gray-600" style="width:80px;">Damaged</th>
+                    <th class="px-2 py-1.5 text-left font-semibold text-gray-600">Serial / Batch</th>
+                    <th class="px-2 py-1.5 text-center font-semibold text-gray-600" style="width:36px;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="grnItemsBody">
+                  ${itemsHtml || '<tr><td colspan="6" class="text-center py-3 text-gray-400 text-xs">No items added. Click "Add Item" to add received items.</td></tr>'}
+                </tbody>
+              </table>
+            </div>
+            <div class="mt-2 flex justify-end text-[11px]">
+              <span class="text-gray-500">Total Ordered: <b id="grnTotalOrdered" class="text-gray-700">0</b></span>
+              <span class="text-gray-500 ml-4">Total Received: <b id="grnTotalReceived" class="text-green-600">0</b></span>
+              <span class="text-gray-500 ml-4">Total Damaged: <b id="grnTotalDamaged" class="text-red-600">0</b></span>
+            </div>
+          </div>
+
+          ${fld('Notes', '<textarea rows="2" class="form-input" id="g_notes" placeholder="Any observations, remarks">' + (e.notes || '') + '</textarea>')}
+        </div>
+        ${modalFooter(isEdit ? 'Update GRN' : 'Save GRN', 'onclick="saveGRN(\'' + (isEdit ? e.id : '') + '\')"')}
+      `;
+
+      openModal(modalContent, { width: 'max-w-3xl' });
+      setTimeout(function() { calcGRNTotal(); }, 100);
+    }
+
+    function addGRNItem() {
+      var tbody = document.getElementById('grnItemsBody');
+      if (!tbody) return;
+      var emptyRow = tbody.querySelector('tr td[colspan]');
+      if (emptyRow) tbody.innerHTML = '';
+
+      var idx = tbody.children.length;
+      var row = document.createElement('tr');
+      row.className = 'border-b border-gray-100 line-item-row';
+      row.innerHTML = `
+        <td class="px-2 py-1"><input type="text" class="form-input text-[10px] item-name" placeholder="Item name"></td>
+        <td class="px-2 py-1"><input type="number" class="form-input text-[10px] item-ordered" value="0" onchange="calcGRNTotal()"></td>
+        <td class="px-2 py-1"><input type="number" class="form-input text-[10px] item-received" value="0" onchange="calcGRNTotal()"></td>
+        <td class="px-2 py-1"><input type="number" class="form-input text-[10px] item-damaged" value="0" onchange="calcGRNTotal()"></td>
+        <td class="px-2 py-1"><input type="text" class="form-input text-[10px] item-serial" placeholder="Serial/Batch"></td>
+        <td class="px-2 py-1 text-center"><button onclick="removeGRNItem(this)" class="text-red-500 hover:text-red-700 transition">${iconX()}</button></td>
+      `;
+      tbody.appendChild(row);
+    }
+
+    function removeGRNItem(btn) {
+      var row = btn.closest('tr');
+      if (row) row.remove();
+      calcGRNTotal();
+    }
+
+    function calcGRNTotal() {
+      var ordered = 0, received = 0, damaged = 0;
+      document.querySelectorAll('#grnItemsBody .line-item-row').forEach(function(row) {
+        ordered += parseInt(row.querySelector('.item-ordered').value) || 0;
+        received += parseInt(row.querySelector('.item-received').value) || 0;
+        damaged += parseInt(row.querySelector('.item-damaged').value) || 0;
+      });
+      var o = document.getElementById('grnTotalOrdered');
+      var r = document.getElementById('grnTotalReceived');
+      var d = document.getElementById('grnTotalDamaged');
+      if (o) o.textContent = ordered;
+      if (r) r.textContent = received;
+      if (d) d.textContent = damaged;
+    }
+
+    function saveGRN(existingId) {
+      var date = document.getElementById('g_date').value;
+      var poReference = document.getElementById('g_poReference').value;
+      var vendorId = document.getElementById('g_vendor').value;
+      var warehouseId = document.getElementById('g_warehouse').value;
+      var invoiceRef = document.getElementById('g_invoiceRef').value.trim();
+      var receivedBy = document.getElementById('g_receivedBy').value.trim();
+      var status = document.getElementById('g_status').value;
+      var notes = document.getElementById('g_notes').value.trim();
+
+      if (!date || !vendorId || !warehouseId) {
+        showToast('Please fill required fields (Date, Vendor, Warehouse)', 'error');
+        return;
+      }
+
+      var items = [];
+      document.querySelectorAll('#grnItemsBody .line-item-row').forEach(function(row) {
+        var name = row.querySelector('.item-name').value.trim();
+        var ordered = parseInt(row.querySelector('.item-ordered').value) || 0;
+        var received = parseInt(row.querySelector('.item-received').value) || 0;
+        var damaged = parseInt(row.querySelector('.item-damaged').value) || 0;
+        var serial = row.querySelector('.item-serial').value.trim();
+        if (name) {
+          items.push({ name: name, orderedQty: ordered, receivedQty: received, damagedQty: damaged, unit: 'Pcs', serial: serial });
+        }
+      });
+
+      if (items.length === 0) {
+        showToast('Please add at least one item', 'error');
+        return;
+      }
+
+      var vendor = vendors.find(function(v) { return v.id === vendorId; });
+      var warehouse = warehouses.find(function(w) { return w.id === warehouseId; });
+
+      if (existingId) {
+        var g = goodsReceipts.find(function(x) { return x.id === existingId; });
+        if (g) {
+          g.date = date;
+          g.poReference = poReference;
+          g.vendorId = vendorId;
+          g.vendorName = vendor ? vendor.name : '';
+          g.warehouseId = warehouseId;
+          g.warehouseName = warehouse ? warehouse.name : '';
+          g.invoiceReference = invoiceRef;
+          g.receivedBy = receivedBy || 'Amit Kumar';
+          g.status = status;
+          g.items = items;
+          g.notes = notes;
+          showToast('Goods Receipt updated successfully', 'success');
+        }
+      } else {
+        var newGRN = {
+          id: 'GRN-' + String(nextGRNNo++).padStart(3, '0'),
+          number: 'GRN/25-26/' + String(goodsReceipts.length + 1).padStart(3, '0'),
+          date: date,
+          poReference: poReference,
+          vendorId: vendorId,
+          vendorName: vendor ? vendor.name : '',
+          warehouseId: warehouseId,
+          warehouseName: warehouse ? warehouse.name : '',
+          invoiceReference: invoiceRef,
+          receivedBy: receivedBy || 'Amit Kumar',
+          status: status,
+          items: items,
+          notes: notes,
+          createdAt: date
+        };
+        goodsReceipts.unshift(newGRN);
+        showToast('Goods Receipt created successfully', 'success');
+      }
+
+      closeModal();
+      renderGRN();
+    }
+
+    function receiveGRN(id) {
+      var g = goodsReceipts.find(function(x) { return x.id === id; });
+      if (!g) return;
+
+      var modalContent = `
+        ${modalHeader('Mark Items Received', g.number)}
+        <div class="px-5 py-4">
+          <p class="text-[12px] text-gray-600 mb-3">Enter received quantities for each item:</p>
+          <div class="space-y-2">
+            ${g.items.map(function(i, idx) {
+              return `
+                <div class="flex items-center gap-3 p-2 bg-gray-50 rounded">
+                  <div class="flex-1 text-[12px] font-semibold">${i.name}</div>
+                  <div class="text-[10.5px] text-gray-500">Ordered: ${i.orderedQty}</div>
+                  <input type="number" class="form-input text-[11px]" style="width:80px;" id="recv_${idx}" value="${i.receivedQty || 0}" placeholder="Received">
+                </div>`;
+            }).join('')}
+          </div>
+        </div>
+        ${modalFooter('Save Receipt', 'onclick="saveReceiveGRN(\'' + id + '\')"')}
+      `;
+      openModal(modalContent, { width: 'max-w-lg' });
+    }
+
+    function saveReceiveGRN(id) {
+      var g = goodsReceipts.find(function(x) { return x.id === id; });
+      if (!g) return;
+
+      var allReceived = true;
+      g.items.forEach(function(i, idx) {
+        var inp = document.getElementById('recv_' + idx);
+        if (inp) {
+          i.receivedQty = parseInt(inp.value) || 0;
+          if (i.receivedQty < i.orderedQty) allReceived = false;
+        }
+      });
+
+      g.status = allReceived ? 'received' : 'partial';
+
+      closeModal();
+      renderGRN();
+      showToast('Items received. Status: ' + (allReceived ? 'Fully Received' : 'Partial'), 'success');
+    }
+
+    function delGRN(id) {
+      var g = goodsReceipts.find(function(x) { return x.id === id; });
+      if (!g) return;
+
+      var modalContent = `
+        ${modalHeader('Delete Goods Receipt', g.number)}
+        <div class="px-5 py-4 text-sm text-gray-600">
+          <p>Delete <b>${g.number}</b>?</p>
+          <p class="text-gray-400 text-[11px] mt-1">This action cannot be undone.</p>
+        </div>
+        ${modalFooter('Delete', 'onclick="confirmDeleteGRN(\'' + id + '\')"', '')}
+      `;
+      openModal(modalContent, { width: 'max-w-md' });
+    }
+
+    function confirmDeleteGRN(id) {
+      goodsReceipts = goodsReceipts.filter(function(x) { return x.id !== id; });
+      closeModal();
+      renderGRN();
+      showToast('Goods Receipt deleted', 'warning');
+    }
+
+    // =============================================================
+    // SEARCH
+    // =============================================================
+
+    (function addSearchToTopbar() {
+      var searchContainer = document.querySelector('.app-main header');
+      if (searchContainer) {
+        var searchHtml = `
+          <div class="hidden sm:flex flex-1 max-w-[420px] relative ml-4">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">${iconSearch()}</span>
+            <input type="text" id="searchInput" placeholder="Search GRN by number, vendor, PO ref…"
+              onkeyup="filterGRN()"
+              class="w-full border border-gray-200 bg-gray-50 focus:bg-white rounded-lg pl-9 pr-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition placeholder:text-gray-400">
+          </div>
+        `;
+        var headerContent = searchContainer.innerHTML;
+        var hamburgerIndex = headerContent.indexOf('lg:hidden');
+        if (hamburgerIndex !== -1) {
+          var firstDivEnd = headerContent.indexOf('</div>', hamburgerIndex) + 6;
+          var before = headerContent.substring(0, firstDivEnd);
+          var after = headerContent.substring(firstDivEnd);
+          searchContainer.innerHTML = before + searchHtml + after;
+        }
+      }
+    })();
+
+    // =============================================================
+    // INIT
+    // =============================================================
+
+    renderGRN();
+
+    console.log('📋 Goods Receipt Module Loaded Successfully');
+    console.log('📊 Total GRN:', goodsReceipts.length);
+    console.log('📌 Pending:', goodsReceipts.filter(function(g) { return g.status === 'pending'; }).length);
+    console.log('📌 Partial:', goodsReceipts.filter(function(g) { return g.status === 'partial'; }).length);
+    console.log('📌 Received:', goodsReceipts.filter(function(g) { return g.status === 'received'; }).length);
+
+  </script>
+
+</body>
+</html>

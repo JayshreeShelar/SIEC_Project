@@ -1,0 +1,506 @@
+/* ==========================================================================
+   nav-sidebar.css
+   Theme tokens + layout + responsiveness for the shared admin nav-sidebar.
+   Works together with Tailwind (utility classes) for page content;
+   this file owns the shell (sidebar / topbar / overlays) so it behaves
+   identically and flicker-free on every admin page.
+   ========================================================================== */
+
+:root {
+  --color-primary: #6da84c;
+  --color-primary-dark: #5c9140;
+  --color-primary-soft: #eef5e8;
+  --color-secondary: #1985bf;
+  --color-secondary-soft: #e7f3fa;
+
+  --color-bg: #f9fafb;          /* gray-50 */
+  --color-surface: #ffffff;
+  --color-border: #e5e7eb;      /* gray-200 */
+  --color-text: #1f2937;        /* gray-800 */
+  --color-text-muted: #6b7280;  /* gray-500 */
+  --color-danger: #dc2626;
+
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 76px;
+  --topbar-height: 64px;
+
+  /* set synchronously (pre-paint) by the inline anti-flicker script */
+  --sidebar-current-width: var(--sidebar-width);
+
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --shadow-md: 0 4px 16px rgba(16, 24, 40, 0.10);
+  --shadow-lg: 0 12px 32px rgba(16, 24, 40, 0.16);
+
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---- reset-ish base ---- */
+html, body {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* ==========================================================================
+   Anti-flicker / paint control
+   The <html> tag gets class "sidebar-collapsed" or "sidebar-expanded"
+   synchronously via an inline <head> script BEFORE this stylesheet is
+   even requested — so layout is correct on first paint, no jump later.
+   ========================================================================== */
+html.sidebar-collapsed { --sidebar-current-width: var(--sidebar-collapsed-width); }
+html.sidebar-expanded  { --sidebar-current-width: var(--sidebar-width); }
+
+/* Shell placeholders reserve exact space before the partial HTML loads,
+   so injecting the fetched markup never shifts layout ("CLS-safe"). */
+#sidebar-root {
+  width: var(--sidebar-current-width);
+  min-height: 100vh;
+  flex-shrink: 0;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  transition: width var(--transition-base);
+}
+#topbar-root {
+  height: var(--topbar-height);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Content fades in only once the partial is injected — this is the
+   "content painter" step: nothing pops in, it eases in once, ever. */
+#sidebar-root, #topbar-root {
+  opacity: 0;
+  transition: opacity var(--transition-base) ease, width var(--transition-base);
+}
+html.nav-ready #sidebar-root,
+html.nav-ready #topbar-root {
+  opacity: 1;
+}
+
+/* Page main content mirrors the sidebar width via margin, always in sync
+   with the same CSS var so main content never jumps independently. */
+.app-main {
+  margin-left: 0;
+  min-height: 100vh;
+  transition: margin-left var(--transition-base);
+}
+@media (min-width: 1024px) {
+  .app-main { margin-left: var(--sidebar-current-width); }
+}
+
+/* ==========================================================================
+   Sidebar
+   ========================================================================== */
+.app-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-current-width);
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  z-index: 40;
+  transition: width var(--transition-base), transform var(--transition-base);
+  overflow-x: hidden;
+}
+
+.sidebar-brand {
+  height: var(--topbar-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+  width: 100%;
+}
+.sidebar-brand-link { display: flex; align-items: center; min-width: 0; }
+
+.sidebar-logo-full { 
+  height: 43px;
+  width: 100%;
+  object-fit: cover;
+  margin: 10px 50px 0px; 
+}
+
+.sidebar-logo-mark { height: 26px; width: auto; object-fit: contain; display: none; }
+
+html.sidebar-collapsed .sidebar-logo-full { display: none; }
+html.sidebar-collapsed .sidebar-logo-mark { display: block; }
+html.sidebar-collapsed .sidebar-brand { justify-content: center; }
+html.sidebar-collapsed .sidebar-collapse-btn { display: none; }
+
+.sidebar-collapse-btn,
+.sidebar-expand-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.sidebar-collapse-btn:hover,
+.sidebar-expand-btn:hover {
+  background: var(--color-primary-soft);
+  color: var(--color-primary-dark);
+}
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px 10px;
+}
+.sidebar-nav-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+
+.sidebar-nav-divider { height: 1px; background: var(--color-border); margin: 10px 6px; }
+.sidebar-nav-heading { padding: 8px 12px 4px;  }
+.sidebar-nav-heading span {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+   color:#5c9140;
+}
+html.sidebar-collapsed .sidebar-nav-heading { display: none; }
+
+.sidebar-nav-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.sidebar-nav-link:hover { background: var(--color-primary-soft); color: var(--color-primary-dark); }
+.sidebar-nav-icon { display: flex; flex-shrink: 0; }
+.sidebar-nav-label { overflow: hidden; text-overflow: ellipsis; }
+
+.sidebar-nav-link.active {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+.sidebar-nav-link.active:hover { background: var(--color-primary-dark); color: #fff; }
+
+html.sidebar-collapsed .sidebar-nav-label { display: none; }
+html.sidebar-collapsed .sidebar-nav-link { justify-content: center; padding: 10px; }
+
+.sidebar-tooltip {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: #111827;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast);
+  box-shadow: var(--shadow-md);
+  z-index: 50;
+}
+html.sidebar-collapsed .sidebar-nav-link:hover .sidebar-tooltip { opacity: 1; }
+
+.sidebar-foot {
+  border-top: 1px solid var(--color-border);
+  padding: 10px;
+  display: none;
+  justify-content: center;
+  flex-shrink: 0;
+}
+html.sidebar-collapsed .sidebar-foot { display: flex; }
+
+/* Mobile off-canvas behavior */
+@media (max-width: 1023.98px) {
+  .app-sidebar {
+    transform: translateX(-100%);
+    width: var(--sidebar-width) !important;
+    box-shadow: var(--shadow-lg);
+  }
+  html.mobile-sidebar-open .app-sidebar { transform: translateX(0); }
+  html.sidebar-collapsed .sidebar-nav-label,
+  html.sidebar-collapsed .sidebar-nav-heading { display: block; }
+  html.sidebar-collapsed .sidebar-logo-full { display: block; }
+  html.sidebar-collapsed .sidebar-logo-mark { display: none; }
+  .sidebar-foot { display: none !important; }
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.45);
+  z-index: 35;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-base);
+}
+html.mobile-sidebar-open .sidebar-backdrop { opacity: 1; pointer-events: auto; }
+@media (min-width: 1024px) { .sidebar-backdrop { display: none; } }
+
+/* ==========================================================================
+   Top bar
+   ========================================================================== */
+.app-topbar {
+  position: sticky;
+  top: 0;
+  height: var(--topbar-height);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  z-index: 30;
+}
+
+.topbar-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.topbar-page-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.topbar-right { display: flex; align-items: center; gap: 6px; }
+
+.icon-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.icon-btn:hover { background: var(--color-secondary-soft); color: var(--color-secondary); }
+.icon-btn-dot {
+  position: absolute;
+  top: 8px;
+  right: 9px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-secondary);
+  border: 2px solid var(--color-surface);
+}
+
+.mobile-only { display: none; }
+@media (max-width: 1023.98px) { .mobile-only { display: flex; } }
+.desktop-only { display: flex; }
+@media (max-width: 1023.98px) { .desktop-only { display: none !important; } }
+
+/* ---- profile menu ---- */
+.profile-menu { position: relative; }
+.profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px 6px 6px;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+.profile-trigger:hover,
+.profile-trigger[aria-expanded="true"] { background: var(--color-bg); border-color: var(--color-border); }
+
+.profile-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+}
+.profile-avatar-img { width: 100%; height: 100%; object-fit: cover; }
+.profile-avatar-img.hidden { display: none; }
+
+.profile-meta { flex-direction: column; align-items: flex-start; line-height: 1.2; }
+.profile-name { font-size: 13.5px; font-weight: 600; color: var(--color-text); }
+.profile-role { font-size: 11.5px; color: var(--color-text-muted); }
+.profile-caret { color: var(--color-text-muted); transition: transform var(--transition-fast); }
+.profile-trigger[aria-expanded="true"] .profile-caret { transform: rotate(180deg); }
+
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 240px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lg);
+  padding: 8px;
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  pointer-events: none;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+  z-index: 50;
+}
+.profile-menu.open .profile-dropdown {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+/* Hover reveal on devices with a real pointer (desktop) */
+@media (hover: hover) and (pointer: fine) {
+  .profile-menu:hover .profile-dropdown {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+}
+
+.profile-dropdown-header { padding: 8px 10px 10px; }
+.profile-dropdown-name { display: block; font-size: 14px; font-weight: 600; color: var(--color-text); }
+.profile-dropdown-role {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-secondary);
+  background: var(--color-secondary-soft);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.profile-dropdown-divider { height: 1px; background: var(--color-border); margin: 4px 6px; }
+
+.profile-dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 9px;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 13.5px;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+.profile-dropdown-item:hover { background: var(--color-bg); }
+.profile-dropdown-item-danger { color: var(--color-danger); }
+.profile-dropdown-item-danger:hover { background: #fef2f2; }
+
+/* ---- mobile off-canvas nav panel (mirrors sidebar links + logout) ---- */
+.mobile-nav-panel { display: none; }
+
+/* ==========================================================================
+   Logout confirmation overlay (yes / no)
+   ========================================================================== */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity var(--transition-base), visibility var(--transition-base);
+}
+.confirm-overlay.open { visibility: visible; opacity: 1; }
+
+.confirm-overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.confirm-dialog {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  background: var(--color-surface);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  padding: 26px 22px 20px;
+  text-align: center;
+  transform: translateY(14px) scale(0.97);
+  opacity: 0;
+  transition: transform var(--transition-base), opacity var(--transition-base);
+}
+.confirm-overlay.open .confirm-dialog { transform: translateY(0) scale(1); opacity: 1; }
+
+.confirm-dialog-icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: #fef2f2;
+  color: var(--color-danger);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.confirm-dialog-title { font-size: 17px; font-weight: 700; color: var(--color-text); margin: 0 0 6px; }
+.confirm-dialog-text { font-size: 13.5px; color: var(--color-text-muted); margin: 0 0 20px; line-height: 1.5; }
+.confirm-dialog-actions { display: flex; gap: 10px; }
+
+.confirm-btn {
+  flex: 1;
+  padding: 11px 14px;
+  border-radius: 11px;
+  border: none;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter var(--transition-fast), background var(--transition-fast);
+}
+.confirm-btn-secondary { background: var(--color-bg); color: var(--color-text); border: 1px solid var(--color-border); }
+.confirm-btn-secondary:hover { background: #f1f2f4; }
+.confirm-btn-danger { background: var(--color-danger); color: #fff; }
+.confirm-btn-danger:hover { filter: brightness(1.08); }
+
+/* On small screens the dialog docks to the bottom like a native sheet */
+@media (max-width: 480px) {
+  .confirm-overlay { align-items: flex-end; padding: 0; }
+  .confirm-dialog {
+    max-width: none;
+    width: 100%;
+    border-radius: 20px 20px 0 0;
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 1ms !important; animation-duration: 1ms !important; }
+}

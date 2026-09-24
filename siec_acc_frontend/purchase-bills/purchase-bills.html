@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+<link rel="manifest" href="/favicon_io/site.webmanifest">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<title>Purchase Bills — Aquilon ERP</title>
+
+<script>
+  (function () {
+    try {
+      var collapsed = localStorage.getItem("sidebarCollapsed") === "true";
+      document.documentElement.classList.add(collapsed ? "sidebar-collapsed" : "sidebar-expanded");
+    } catch (e) {
+      document.documentElement.classList.add("sidebar-expanded");
+    }
+  })();
+</script>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: { DEFAULT: "#6da84c", dark: "#5c9140", soft: "#eef5e8" },
+          secondary: { DEFAULT: "#1985bf", soft: "#e7f3fa" },
+        },
+      },
+    },
+  };
+</script>
+
+<link rel="stylesheet" href="/assets/css/nav-sidebar.css" />
+
+<style>
+  body {
+    font-size: 12px;
+    background: #f3f4f6;
+  }
+
+  .form-input {
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fafafa;
+    color: #1a1a2e;
+  }
+  .form-input:focus {
+    border-color: #6da84c;
+    box-shadow: 0 0 0 3px rgba(109, 168, 76, 0.12);
+    background: #ffffff;
+  }
+  .form-input:disabled {
+    background: #f3f4f6;
+    cursor: not-allowed;
+  }
+
+  .form-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #374151;
+    display: block;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .form-label .required { color: #ef4444; margin-left: 2px; }
+  .form-hint { font-size: 9.5px; color: #9ca3af; margin-top: 2px; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+  }
+  .badge-green { background: #dcfce7; color: #166534; }
+  .badge-amber { background: #fef3c7; color: #92400e; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  .badge-gray { background: #f1f5f9; color: #475569; }
+  .badge-blue { background: #dbeafe; color: #1e40af; }
+  .badge-purple { background: #ede9fe; color: #5b21b6; }
+  .badge-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .badge-dot-green { background: #22c55e; }
+  .badge-dot-amber { background: #f59e0b; }
+  .badge-dot-red { background: #ef4444; }
+  .badge-dot-gray { background: #94a3b8; }
+  .badge-dot-blue { background: #3b82f6; }
+  .badge-dot-purple { background: #8b5cf6; }
+
+  .stat-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    padding: 10px 14px !important;
+  }
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  }
+  .stat-card .stat-label {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+  }
+  .stat-card .stat-value {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-top: 2px;
+  }
+
+  .table-row-hover:hover {
+    background: #f8fafc;
+  }
+
+  .btn-icon-action {
+    transition: all 0.15s ease;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-icon-action:hover {
+    background: #f1f5f9;
+    color: #6da84c;
+  }
+  .btn-icon-action.danger:hover {
+    background: #fee2e2;
+    color: #ef4444;
+  }
+  .btn-icon-action.primary:hover {
+    background: #eef5e8;
+    color: #6da84c;
+  }
+
+  .toast {
+    animation: fadeIn 0.2s ease;
+    font-size: 12px;
+  }
+  .toast-success { background: #16a34a; }
+  .toast-error { background: #dc2626; }
+  .toast-warning { background: #f59e0b; }
+  .toast-info { background: #6da84c; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.96) translateY(6px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .animate-modal { animation: modalIn 0.18s ease; }
+
+  .modal-scroll {
+    max-height: 55vh;
+    overflow-y: auto;
+  }
+  .modal-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+  .modal-scroll::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+  }
+
+  .empty-icon-svg {
+    opacity: 0.2;
+    width: 40px;
+    height: 40px;
+    color: #94a3b8;
+  }
+
+  .line-item-row:hover {
+    background: #f8fafc;
+  }
+  .line-item-row td {
+    padding: 4px 6px;
+    vertical-align: middle;
+  }
+
+  .page-title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .page-subtitle {
+    font-size: 12px;
+    color: #6b7280;
+  }
+  .page-breadcrumb {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6da84c;
+  }
+
+  table th {
+    font-size: 9.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+    padding: 8px 12px;
+  }
+  table td {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+  table td .font-mono {
+    font-size: 11px;
+  }
+
+  .modal-title {
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .modal-subtitle {
+    font-size: 11px;
+    color: #6b7280;
+  }
+
+  .filter-btn {
+    font-size: 11px;
+    padding: 5px 12px;
+  }
+  .filter-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Bill Preview */
+  .bill-preview {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 24px 28px;
+    max-width: 820px;
+    margin: 0 auto;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .bill-preview .bill-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 2px solid #6da84c;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+  }
+  .bill-preview .bill-company-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+  .bill-preview .bill-company-details {
+    font-size: 11px;
+    color: #6b7280;
+    line-height: 1.5;
+    margin-top: 4px;
+  }
+  .bill-preview .bill-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #6da84c;
+    letter-spacing: 0.04em;
+  }
+  .bill-preview .bill-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-size: 12px;
+  }
+  .bill-preview .bill-meta .meta-label {
+    font-weight: 600;
+    color: #6b7280;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .bill-preview .bill-meta .meta-value {
+    font-weight: 600;
+    color: #1a1a2e;
+  }
+  .bill-preview .bill-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 12px;
+  }
+  .bill-preview .bill-table th {
+    background: #f8fafc;
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6b7280;
+    border-bottom: 2px solid #e5e7eb;
+  }
+  .bill-preview .bill-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .bill-preview .bill-totals {
+    margin-top: 12px;
+    border-top: 2px solid #e5e7eb;
+    padding-top: 12px;
+    text-align: right;
+    font-size: 13px;
+  }
+  .bill-preview .bill-totals .total-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 30px;
+    padding: 3px 0;
+  }
+  .bill-preview .bill-totals .total-row .label {
+    color: #6b7280;
+    font-weight: 500;
+  }
+  .bill-preview .bill-totals .total-row .value {
+    font-weight: 600;
+    min-width: 120px;
+    text-align: right;
+  }
+  .bill-preview .bill-totals .grand-total {
+    font-size: 16px;
+    font-weight: 700;
+    color: #6da84c;
+    border-top: 2px solid #6da84c;
+    padding-top: 8px;
+    margin-top: 4px;
+  }
+  .bill-preview .bill-footer {
+    margin-top: 20px;
+    font-size: 11px;
+    color: #6b7280;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 12px;
+    text-align: center;
+  }
+
+  .payment-history {
+    background: #f8fafc;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-top: 4px;
+  }
+  .payment-history .payment-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 11px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .payment-history .payment-row:last-child {
+    border-bottom: none;
+  }
+</style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 antialiased text-sm">
+
+  <div class="flex min-h-screen">
+    <div id="sidebar-root"></div>
+
+    <div class="app-main flex-1 flex flex-col min-w-0">
+      <div id="topbar-root"></div>
+
+      <main class="p-3 sm:p-4 lg:p-5">
+
+        <div id="toastWrap" class="fixed bottom-5 right-5 z-[200] flex flex-col gap-2 items-end"></div>
+        <div id="modalRoot"></div>
+
+        <div class="max-w-7xl mx-auto">
+
+          <!-- ===== PAGE HEADER ===== -->
+          <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+            <div>
+              <div class="page-breadcrumb">Purchase</div>
+              <h1 class="page-title text-gray-900">Purchase Bills</h1>
+              <p class="page-subtitle mt-0.5">Record vendor invoices, create accounts payable, and process vendor payments with email automation.</p>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <div class="relative inline-block" data-dd-trigger>
+                <button onclick="toggleFilterDD()" class="filter-btn inline-flex items-center gap-1.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold rounded-lg transition">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 6h18M7 12h10M11 18h2"/>
+                  </svg>
+                  Filter
+                  <span id="filterBadge" class="hidden text-[9px] bg-primary text-white px-1.5 py-0.5 rounded-full">0</span>
+                </button>
+                <div id="filterDD" data-dd-menu class="hidden absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg p-3 z-50">
+                  <div class="mb-2">
+                    <label class="text-[9px] font-semibold text-gray-500 uppercase tracking-wide">Status</label>
+                    <select id="filterStatus" onchange="filterBills()" class="form-input text-[10px]">
+                      <option value="all">All Status</option>
+                      <option value="draft">Draft</option>
+                      <option value="received">Received</option>
+                      <option value="partial">Partially Paid</option>
+                      <option value="paid">Paid</option>
+                      <option value="overdue">Overdue</option>
+                    </select>
+                  </div>
+                  <div class="mb-2">
+                    <label class="text-[9px] font-semibold text-gray-500 uppercase tracking-wide">Vendor</label>
+                    <select id="filterVendor" onchange="filterBills()" class="form-input text-[10px]">
+                      <option value="all">All Vendors</option>
+                    </select>
+                  </div>
+                  <button onclick="clearFilters()" class="text-[10px] text-primary font-semibold hover:underline">Clear Filters</button>
+                </div>
+              </div>
+
+              <button onclick="openAddBill()" class="inline-flex items-center gap-1.5 bg-primary hover:bg-primary-dark text-white text-[11px] font-semibold px-3 py-2 rounded-lg transition shadow-sm">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+                New Purchase Bill
+              </button>
+            </div>
+          </div>
+
+          <!-- ===== STATS CARDS ===== -->
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-2.5 mb-4">
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Total</div>
+              <div class="stat-value" id="totalBills">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Due</div>
+              <div class="stat-value text-amber-600" id="dueBills">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Overdue</div>
+              <div class="stat-value text-red-600" id="overdueBills">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Paid</div>
+              <div class="stat-value text-green-600" id="paidBills">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Total Payable</div>
+              <div class="stat-value text-primary" id="totalPayable">₹0</div>
+            </div>
+          </div>
+
+          <!-- ===== PURCHASE BILLS TABLE ===== -->
+          <div id="billsPanel"></div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ========================================================== -->
+  <!-- SCRIPTS -->
+  <!-- ========================================================== -->
+
+  <script src="/assets/js/nav-sidebar.js"></script>
+  <script>
+    // =============================================================
+    // NAV-SIDEBAR INIT
+    // =============================================================
+    NavSidebar.init({
+      basePath: "",
+      activePage: "purchasebills",
+      pageTitle: "Purchase Bills",
+      user: {
+        name: "Admin",
+        role: "Super Admin",
+        avatarUrl: "",
+      },
+    });
+
+    // =============================================================
+    // SVG ICONS
+    // =============================================================
+    function iconPlus() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>`;
+    }
+    function iconEdit() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`;
+    }
+    function iconTrash() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>`;
+    }
+    function iconEye() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    }
+    function iconX() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg>`;
+    }
+    function iconFilter() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M7 12h10M11 18h2"/></svg>`;
+    }
+    function iconSave() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>`;
+    }
+    function iconInfo() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>`;
+    }
+    function iconDocument() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><path d="M14 2v6h6"/></svg>`;
+    }
+    function iconSearch() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>`;
+    }
+    function iconPayment() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V10M10 21V10M14 21V10M19 21V10"/><path d="M2 10l10-6 10 6"/></svg>`;
+    }
+    function iconMail() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>`;
+    }
+    function iconDownload() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>`;
+    }
+
+    // =============================================================
+    // TOAST
+    // =============================================================
+    function showToast(message, kind) {
+      kind = kind || 'success';
+      var wrap = document.getElementById('toastWrap');
+      var colors = {
+        success: 'bg-green-600',
+        info: 'bg-primary',
+        warning: 'bg-amber-600',
+        error: 'bg-red-600'
+      };
+      var el = document.createElement('div');
+      el.className = 'toast ' + colors[kind] + ' text-white font-semibold px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 max-w-xs';
+      el.innerHTML = '<span>' + message + '</span>';
+      wrap.appendChild(el);
+      setTimeout(function() {
+        el.style.transition = 'opacity .3s';
+        el.style.opacity = '0';
+        setTimeout(function() { el.remove(); }, 300);
+      }, 2600);
+    }
+
+    // =============================================================
+    // MODAL
+    // =============================================================
+    function openModal(innerHtml, opts) {
+      opts = opts || {};
+      var root = document.getElementById('modalRoot');
+      root.innerHTML = `
+        <div class="fixed inset-0 z-[100] flex items-center justify-center p-3" id="modalOverlay">
+          <div class="absolute inset-0 bg-black/40 backdrop-blur-[1px]" id="modalBackdrop"></div>
+          <div class="relative bg-white rounded-xl shadow-2xl w-full ${opts.width || 'max-w-4xl'} max-h-[92vh] overflow-hidden animate-modal">
+            ${innerHtml}
+          </div>
+        </div>`;
+      document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      var root = document.getElementById('modalRoot');
+      root.innerHTML = '';
+      document.body.style.overflow = '';
+    }
+
+    function modalHeader(title, subtitle) {
+      return `
+        <div class="flex items-start justify-between px-5 py-3.5 border-b border-gray-100 sticky top-0 bg-white z-10">
+          <div>
+            <h3 class="modal-title text-gray-900">${title}</h3>
+            ${subtitle ? '<p class="modal-subtitle mt-0.5">' + subtitle + '</p>' : ''}
+          </div>
+          <button onclick="closeModal()" class="w-7 h-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 transition">${iconX()}</button>
+        </div>`;
+    }
+
+    function modalFooter(saveLabel, onSaveAttr, extraBtns) {
+      return `
+        <div class="flex items-center justify-between gap-2 px-5 py-3 border-t border-gray-100 bg-gray-50 rounded-b-xl sticky bottom-0">
+          <div>${extraBtns || ''}</div>
+          <div class="flex gap-2">
+            <button onclick="closeModal()" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-600 border border-gray-200 hover:bg-white transition">Cancel</button>
+            <button ${onSaveAttr} class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-primary hover:bg-primary-dark transition shadow-sm flex items-center gap-1.5">
+              ${iconSave()} ${saveLabel}
+            </button>
+          </div>
+        </div>`;
+    }
+
+    function fld(label, inputHtml, hint) {
+      return `
+        <div class="mb-2">
+          <label class="form-label">${label}</label>
+          ${inputHtml}
+          ${hint ? '<div class="form-hint">' + hint + '</div>' : ''}
+        </div>`;
+    }
+
+    function inputBase() { return "form-input"; }
+
+    // =============================================================
+    // DROPDOWN
+    // =============================================================
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('[data-dd-trigger]')) {
+        document.querySelectorAll('[data-dd-menu]').forEach(function(m) { m.classList.add('hidden'); });
+      }
+    });
+
+    function toggleFilterDD() {
+      var menu = document.getElementById('filterDD');
+      var isHidden = menu.classList.contains('hidden');
+      document.querySelectorAll('[data-dd-menu]').forEach(function(m) { m.classList.add('hidden'); });
+      if (isHidden) menu.classList.remove('hidden');
+    }
+
+    // =============================================================
+    // HELPERS
+    // =============================================================
+    function money(n) { return '₹' + Number(n).toLocaleString('en-IN'); }
+
+    function statusBadge(status) {
+      var map = {
+        draft: 'badge-gray',
+        received: 'badge-blue',
+        partial: 'badge-amber',
+        paid: 'badge-green',
+        overdue: 'badge-red'
+      };
+      var dot = {
+        draft: 'badge-dot-gray',
+        received: 'badge-dot-blue',
+        partial: 'badge-dot-amber',
+        paid: 'badge-dot-green',
+        overdue: 'badge-dot-red'
+      };
+      var label = status.charAt(0).toUpperCase() + status.slice(1);
+      if (status === 'partial') label = 'Partially Paid';
+      return '<span class="badge ' + map[status] + '"><span class="badge-dot ' + dot[status] + '"></span>' + label + '</span>';
+    }
+
+    function rowActionsHtml(editFn, delFn, viewFn, paymentFn) {
+      var html = '<div class="flex gap-1">';
+      if (viewFn) {
+        html += '<button onclick="' + viewFn + '" class="btn-icon-action" title="View">' + iconEye() + '</button>';
+      }
+      if (paymentFn) {
+        html += '<button onclick="' + paymentFn + '" class="btn-icon-action primary" title="Record Payment">' + iconPayment() + '</button>';
+      }
+      html += '<button onclick="' + editFn + '" class="btn-icon-action" title="Edit">' + iconEdit() + '</button>';
+      html += '<button onclick="' + delFn + '" class="btn-icon-action danger" title="Delete">' + iconTrash() + '</button>';
+      html += '</div>';
+      return html;
+    }
+
+    function panelWrap(titleHtml, bodyHtml, extraHead) {
+      return `
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+          <div class="flex items-center justify-between gap-3 flex-wrap px-4 py-2.5 border-b border-gray-100">
+            <div class="font-semibold text-sm text-gray-800 flex items-center gap-2">${titleHtml}</div>
+            ${extraHead || ''}
+          </div>
+          <div>${bodyHtml}</div>
+        </div>`;
+    }
+
+    function tableHtml(cols, rowsHtml) {
+      var colHeaders = cols.map(function(c) {
+        return '<th class="text-left font-semibold whitespace-nowrap">' + c + '</th>';
+      }).join('');
+      return `
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gray-50 border-b border-gray-200">${colHeaders}</tr>
+            </thead>
+            <tbody id="tbody-anchor">${rowsHtml}</tbody>
+          </table>
+        </div>`;
+    }
+
+    // =============================================================
+    // DATA
+    // =============================================================
+
+    var vendors = [
+      { id: 'VEN-001', name: 'Global Imports Inc.', email: 'vendor@globalimports.com', gstin: '27AABCU1234D1ZP', state: 'Maharashtra' },
+      { id: 'VEN-002', name: 'Local Supplier Co.', email: 'info@localsupplier.com', gstin: '', state: 'Maharashtra' },
+      { id: 'VEN-003', name: 'ABC Distributors', email: 'info@abcdistributors.com', gstin: '24XYZBC1234E1ZP', state: 'Delhi' },
+      { id: 'VEN-004', name: 'Tech Components Ltd.', email: 'sales@techcomponents.com', gstin: '29TECH1234H1ZP', state: 'Karnataka' },
+      { id: 'VEN-005', name: 'Premium Raw Materials', email: 'info@premiumraw.com', gstin: '19PRM1234J1ZP', state: 'Kerala' },
+    ];
+
+    var items = [
+      { id: 'ITM-1001', name: 'Centrifugal Blower — 5HP', price: 35000, gst: 18, unit: 'Pcs' },
+      { id: 'ITM-1002', name: 'Dual Media Filter Vessel — 500L', price: 95000, gst: 18, unit: 'Pcs' },
+      { id: 'ITM-1003', name: 'Activated Carbon Media', price: 4800, gst: 18, unit: 'Kg' },
+      { id: 'ITM-1004', name: 'PVC Pressure Pipe — 6"', price: 620, gst: 18, unit: 'Mtr' },
+      { id: 'ITM-1005', name: 'Chemical Dosing Pump — 50LPH', price: 21000, gst: 18, unit: 'Pcs' },
+    ];
+
+    var purchaseBills = [{
+      id: 'PB-001',
+      number: 'PUR/25-26/001',
+      vendorBillNumber: 'V-12345',
+      date: '2026-01-15',
+      dueDate: '2026-02-14',
+      vendorId: 'VEN-001',
+      vendorName: 'Global Imports Inc.',
+      vendorGST: '27AABCU1234D1ZP',
+      vendorEmail: 'vendor@globalimports.com',
+      poReference: 'PO/25-26/001',
+      items: [
+        { itemId: 'ITM-1001', name: 'Centrifugal Blower — 5HP', qty: 2, rate: 35000, gst: 18, unit: 'Pcs' },
+        { itemId: 'ITM-1003', name: 'Activated Carbon Media', qty: 10, rate: 4800, gst: 18, unit: 'Kg' }
+      ],
+      discount: 5,
+      tax: 18,
+      total: 0,
+      paid: 0,
+      status: 'partial',
+      notes: 'Received with PO',
+      paymentHistory: [
+        { date: '2026-01-25', amount: 50000, mode: 'Bank Transfer', reference: 'TX-001' }
+      ],
+      createdAt: '2026-01-15'
+    }, {
+      id: 'PB-002',
+      number: 'PUR/25-26/002',
+      vendorBillNumber: 'V-67890',
+      date: '2026-01-20',
+      dueDate: '2026-02-19',
+      vendorId: 'VEN-002',
+      vendorName: 'Local Supplier Co.',
+      vendorGST: '',
+      vendorEmail: 'info@localsupplier.com',
+      poReference: 'PO/25-26/002',
+      items: [
+        { itemId: 'ITM-1002', name: 'Dual Media Filter Vessel — 500L', qty: 1, rate: 95000, gst: 18, unit: 'Pcs' },
+        { itemId: 'ITM-1004', name: 'PVC Pressure Pipe — 6"', qty: 20, rate: 620, gst: 18, unit: 'Mtr' }
+      ],
+      discount: 10,
+      tax: 18,
+      total: 0,
+      paid: 0,
+      status: 'received',
+      notes: 'Awaiting payment',
+      paymentHistory: [],
+      createdAt: '2026-01-20'
+    }, {
+      id: 'PB-003',
+      number: 'PUR/25-26/003',
+      vendorBillNumber: 'V-11122',
+      date: '2026-01-25',
+      dueDate: '2026-02-24',
+      vendorId: 'VEN-003',
+      vendorName: 'ABC Distributors',
+      vendorGST: '24XYZBC1234E1ZP',
+      vendorEmail: 'info@abcdistributors.com',
+      poReference: 'PO/25-26/003',
+      items: [
+        { itemId: 'ITM-1005', name: 'Chemical Dosing Pump — 50LPH', qty: 2, rate: 21000, gst: 18, unit: 'Pcs' }
+      ],
+      discount: 0,
+      tax: 18,
+      total: 0,
+      paid: 0,
+      status: 'paid',
+      notes: 'Paid via NEFT',
+      paymentHistory: [
+        { date: '2026-02-01', amount: 49560, mode: 'Bank Transfer', reference: 'TX-002' }
+      ],
+      createdAt: '2026-01-25'
+    }, {
+      id: 'PB-004',
+      number: 'PUR/25-26/004',
+      vendorBillNumber: 'V-33344',
+      date: '2026-02-01',
+      dueDate: '2026-03-03',
+      vendorId: 'VEN-004',
+      vendorName: 'Tech Components Ltd.',
+      vendorGST: '29TECH1234H1ZP',
+      vendorEmail: 'sales@techcomponents.com',
+      poReference: 'PO/25-26/004',
+      items: [
+        { itemId: 'ITM-1001', name: 'Centrifugal Blower — 5HP', qty: 3, rate: 35000, gst: 18, unit: 'Pcs' }
+      ],
+      discount: 8,
+      tax: 18,
+      total: 0,
+      paid: 0,
+      status: 'overdue',
+      notes: 'Payment pending - overdue',
+      paymentHistory: [],
+      createdAt: '2026-02-01'
+    }, {
+      id: 'PB-005',
+      number: 'PUR/25-26/005',
+      vendorBillNumber: 'V-55566',
+      date: '2026-02-08',
+      dueDate: '2026-03-10',
+      vendorId: 'VEN-005',
+      vendorName: 'Premium Raw Materials',
+      vendorGST: '19PRM1234J1ZP',
+      vendorEmail: 'info@premiumraw.com',
+      poReference: 'PO/25-26/005',
+      items: [
+        { itemId: 'ITM-1002', name: 'Dual Media Filter Vessel — 500L', qty: 2, rate: 95000, gst: 18, unit: 'Pcs' },
+        { itemId: 'ITM-1005', name: 'Chemical Dosing Pump — 50LPH', qty: 3, rate: 21000, gst: 18, unit: 'Pcs' }
+      ],
+      discount: 5,
+      tax: 18,
+      total: 0,
+      paid: 0,
+      status: 'draft',
+      notes: 'Draft bill - pending review',
+      paymentHistory: [],
+      createdAt: '2026-02-08'
+    }];
+
+    var nextBillNo = 6;
+
+    // Calculate totals
+    purchaseBills.forEach(function(bill) {
+      var subtotal = bill.items.reduce(function(sum, item) { return sum + (item.qty * item.rate); }, 0);
+      var discountAmt = subtotal * (bill.discount / 100);
+      var afterDiscount = subtotal - discountAmt;
+      var taxAmt = afterDiscount * (bill.tax / 100);
+      bill.total = afterDiscount + taxAmt;
+    });
+
+    // =============================================================
+    // FUNCTIONS
+    // =============================================================
+
+    function getVendorName(id) {
+      var v = vendors.find(function(x) { return x.id === id; });
+      return v ? v.name : id;
+    }
+
+    function getVendorEmail(id) {
+      var v = vendors.find(function(x) { return x.id === id; });
+      return v ? v.email : '';
+    }
+
+    function renderStats() {
+      var total = purchaseBills.length;
+      var due = purchaseBills.filter(function(b) { return b.status === 'received' || b.status === 'partial'; }).length;
+      var overdue = purchaseBills.filter(function(b) { return b.status === 'overdue'; }).length;
+      var paid = purchaseBills.filter(function(b) { return b.status === 'paid'; }).length;
+      var totalPayable = purchaseBills.reduce(function(sum, b) {
+        if (b.status !== 'paid') {
+          return sum + (b.total - b.paid);
+        }
+        return sum;
+      }, 0);
+
+      document.getElementById('totalBills').textContent = total;
+      document.getElementById('dueBills').textContent = due;
+      document.getElementById('overdueBills').textContent = overdue;
+      document.getElementById('paidBills').textContent = paid;
+      document.getElementById('totalPayable').textContent = money(totalPayable);
+
+      var filterVendor = document.getElementById('filterVendor');
+      var currentVal = filterVendor.value;
+      filterVendor.innerHTML = '<option value="all">All Vendors</option>';
+      vendors.forEach(function(v) {
+        filterVendor.innerHTML += '<option value="' + v.id + '">' + v.name + '</option>';
+      });
+      filterVendor.value = currentVal;
+    }
+
+    function getFilteredBills() {
+      var searchInput = document.getElementById('searchInput');
+      var q = searchInput ? searchInput.value.toLowerCase() : '';
+      var status = document.getElementById('filterStatus').value || 'all';
+      var vendor = document.getElementById('filterVendor').value || 'all';
+
+      return purchaseBills.filter(function(bill) {
+        var matchSearch = bill.number.toLowerCase().indexOf(q) !== -1 ||
+          bill.vendorName.toLowerCase().indexOf(q) !== -1 ||
+          bill.id.toLowerCase().indexOf(q) !== -1 ||
+          bill.vendorBillNumber.toLowerCase().indexOf(q) !== -1;
+        var matchStatus = status === 'all' || bill.status === status;
+        var matchVendor = vendor === 'all' || bill.vendorId === vendor;
+        return matchSearch && matchStatus && matchVendor;
+      });
+    }
+
+    function renderBills() {
+      var filtered = getFilteredBills();
+
+      var rowsHtml = '';
+      if (filtered.length === 0) {
+        rowsHtml = `
+          <tr>
+            <td colspan="9" class="text-center py-10 text-gray-400 text-sm">
+              <div class="flex justify-center mb-2 empty-icon-svg">${iconDocument()}</div>
+              No purchase bills found. Try adjusting your filters or
+              <button onclick="openAddBill()" class="text-primary font-semibold hover:underline">create a new purchase bill</button>.
+            </td>
+          </tr>`;
+      } else {
+        rowsHtml = filtered.map(function(bill) {
+          var canPayment = bill.status === 'received' || bill.status === 'partial' || bill.status === 'overdue';
+          return `
+            <tr class="border-b border-gray-100 table-row-hover">
+              <td class="px-3 py-2.5">
+                <div class="font-semibold text-gray-800 text-sm">${bill.number}</div>
+                <div class="text-[10px] text-gray-400 font-mono">${bill.id}</div>
+              </td>
+              <td class="px-3 py-2.5 text-xs">${bill.vendorBillNumber}</td>
+              <td class="px-3 py-2.5 text-sm text-gray-700">${bill.vendorName}</td>
+              <td class="px-3 py-2.5 text-xs">${bill.date}</td>
+              <td class="px-3 py-2.5 text-xs">${bill.dueDate}</td>
+              <td class="px-3 py-2.5 font-mono font-semibold text-sm">${money(bill.total)}</td>
+              <td class="px-3 py-2.5 font-mono text-[11px] ${bill.paid > 0 ? 'text-green-600' : 'text-gray-500'}">${bill.paid > 0 ? money(bill.paid) : '—'}</td>
+              <td class="px-3 py-2.5">${statusBadge(bill.status)}</td>
+              <td class="px-3 py-2.5">${rowActionsHtml(
+                "editBill('"+bill.id+"')",
+                "delBill('"+bill.id+"')",
+                "viewBill('"+bill.id+"')",
+                canPayment ? "recordPayment('"+bill.id+"')" : null
+              )}</td>
+            </tr>`;
+        }).join('');
+      }
+
+      var panelHtml = panelWrap(
+        'Purchase Bills <span class="text-[10px] font-bold bg-primary-soft text-primary-dark px-2 py-0.5 rounded-full ml-1">' + filtered.length + '</span>',
+        tableHtml(['Bill #', 'Vendor Bill #', 'Vendor', 'Date', 'Due Date', 'Total', 'Paid', 'Status', 'Actions'], rowsHtml),
+        '<div class="flex items-center gap-2"><span class="text-[10px] text-gray-400">Show:</span><select id="pageSizeSelect" onchange="renderBills()" class="text-[10px] border border-gray-200 rounded-lg px-2 py-1 bg-white outline-none"><option value="10">10</option><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option></select></div>'
+      );
+
+      document.getElementById('billsPanel').innerHTML = panelHtml;
+      renderStats();
+    }
+
+    function filterBills() { renderBills(); }
+
+    function clearFilters() {
+      document.getElementById('filterStatus').value = 'all';
+      document.getElementById('filterVendor').value = 'all';
+      var searchInput = document.getElementById('searchInput');
+      if (searchInput) searchInput.value = '';
+      renderBills();
+      toggleFilterDD();
+    }
+
+    // =============================================================
+    // VIEW BILL
+    // =============================================================
+
+    function viewBill(id) {
+      var bill = purchaseBills.find(function(x) { return x.id === id; });
+      if (!bill) return;
+
+      var itemsHtml = bill.items.map(function(item) {
+        var amount = item.qty * item.rate;
+        return `
+          <tr>
+            <td class="px-2 py-1.5 text-xs">${item.name}</td>
+            <td class="px-2 py-1.5 text-xs text-center">${item.qty}</td>
+            <td class="px-2 py-1.5 text-xs text-center">${item.unit || 'Pcs'}</td>
+            <td class="px-2 py-1.5 text-xs font-mono text-right">${money(item.rate)}</td>
+            <td class="px-2 py-1.5 text-xs font-mono text-right">${money(amount)}</td>
+          </tr>`;
+      }).join('');
+
+      var subtotal = bill.items.reduce(function(sum, item) { return sum + (item.qty * item.rate); }, 0);
+      var discountAmt = subtotal * (bill.discount / 100);
+      var afterDiscount = subtotal - discountAmt;
+      var taxAmt = afterDiscount * (bill.tax / 100);
+
+      // Payment history
+      var paymentHtml = '';
+      if (bill.paymentHistory && bill.paymentHistory.length > 0) {
+        paymentHtml = bill.paymentHistory.map(function(p) {
+          return `
+            <div class="payment-row">
+              <span>${p.date}</span>
+              <span>${money(p.amount)}</span>
+              <span>${p.mode}</span>
+              <span class="text-gray-400">${p.reference || ''}</span>
+            </div>`;
+        }).join('');
+      } else {
+        paymentHtml = '<div class="text-gray-400 text-xs py-2">No payments recorded yet</div>';
+      }
+
+      var modalContent = `
+        ${modalHeader('Purchase Bill Details — ' + bill.number, bill.id)}
+        <div class="px-5 py-4 modal-scroll">
+
+          <div class="bill-preview">
+            <div class="bill-header">
+              <div>
+                <div class="bill-company-name">${company.name || 'Kunash Media Pvt. Ltd.'}</div>
+                <div class="bill-company-details">
+                  ${company.address || '401, Creative Hub, BKC, Mumbai - 400051'}<br>
+                  GSTIN: ${company.gstin || '27AABCU1234D1ZP'} | Phone: ${company.phone || '+91-9876543210'}
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div class="bill-title">PURCHASE BILL</div>
+              </div>
+            </div>
+
+            <div class="bill-meta">
+              <div>
+                <div class="meta-label">Vendor</div>
+                <div class="meta-value">${bill.vendorName}</div>
+                <div class="text-xs text-gray-500">GSTIN: ${bill.vendorGST || '—'}</div>
+                <div class="text-xs text-gray-500">Email: ${bill.vendorEmail || '—'}</div>
+              </div>
+              <div style="text-align:right;">
+                <div><span class="meta-label">Bill #</span> <span class="meta-value">${bill.number}</span></div>
+                <div><span class="meta-label">Vendor Bill #</span> <span class="meta-value">${bill.vendorBillNumber}</span></div>
+                <div><span class="meta-label">Date</span> <span class="meta-value">${bill.date}</span></div>
+                <div><span class="meta-label">Due Date</span> <span class="meta-value">${bill.dueDate}</span></div>
+                <div><span class="meta-label">PO Reference</span> <span class="meta-value">${bill.poReference || '—'}</span></div>
+                <div><span class="meta-label">Status</span> ${statusBadge(bill.status)}</div>
+              </div>
+            </div>
+
+            <table class="bill-table">
+              <thead>
+                <tr>
+                  <th>Description</th>
+                  <th class="text-center">Qty</th>
+                  <th class="text-center">Unit</th>
+                  <th class="text-right">Rate</th>
+                  <th class="text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody>${itemsHtml}</tbody>
+            </table>
+
+            <div class="bill-totals">
+              <div class="total-row"><span class="label">Subtotal</span><span class="value">${money(subtotal)}</span></div>
+              ${bill.discount > 0 ? `<div class="total-row"><span class="label">Discount (${bill.discount}%)</span><span class="value" style="color:#dc2626;">-${money(discountAmt)}</span></div>` : ''}
+              <div class="total-row"><span class="label">Tax (${bill.tax}%)</span><span class="value">${money(taxAmt)}</span></div>
+              <div class="grand-total total-row"><span class="label">Grand Total</span><span class="value">${money(bill.total)}</span></div>
+              ${bill.paid > 0 ? `
+              <div class="total-row"><span class="label" style="color:#16a34a;">Amount Paid</span><span class="value" style="color:#16a34a;">${money(bill.paid)}</span></div>
+              <div class="total-row" style="font-weight:700;border-top:1px solid #e5e7eb;padding-top:4px;">
+                <span class="label">Balance Due</span>
+                <span class="value" style="color:#d97706;">${money(bill.total - bill.paid)}</span>
+              </div>` : ''}
+            </div>
+
+            ${bill.notes ? `<div class="text-xs text-gray-500 mt-2"><strong>Notes:</strong> ${bill.notes}</div>` : ''}
+
+            <!-- Payment History -->
+            <div class="mt-3 pt-3 border-t border-gray-100">
+              <h4 class="text-[11px] font-semibold text-gray-700 mb-1">Payment History</h4>
+              <div class="payment-history">${paymentHtml}</div>
+            </div>
+
+            <div class="bill-footer">
+              <p>This is a system generated purchase bill. | ${company.name}</p>
+            </div>
+          </div>
+
+        </div>
+        ${modalFooter('Close', 'onclick="closeModal()"', `
+          <div class="flex gap-1.5">
+            ${bill.status !== 'paid' ? `<button onclick="recordPayment('${bill.id}')" class="text-xs font-semibold text-primary hover:underline flex items-center gap-1 px-2 py-1 rounded border border-primary/20 hover:bg-primary-light transition">
+              ${iconPayment()} Record Payment
+            </button>` : ''}
+            <button onclick="sendPaymentEmail('${bill.id}')" class="text-xs font-semibold text-primary hover:underline flex items-center gap-1 px-2 py-1 rounded border border-primary/20 hover:bg-primary-light transition">
+              ${iconMail()} Send Email
+            </button>
+          </div>
+        `)}
+      `;
+
+      openModal(modalContent, { width: 'max-w-4xl' });
+    }
+
+    // =============================================================
+    // ADD / EDIT BILL
+    // =============================================================
+
+    function openAddBill() { openBillModal(null); }
+
+    function editBill(id) {
+      var bill = purchaseBills.find(function(x) { return x.id === id; });
+      if (bill) openBillModal(bill);
+    }
+
+    function openBillModal(existing) {
+      var e = existing || {
+        number: 'PUR/25-26/' + String(purchaseBills.length + 1).padStart(3, '0'),
+        vendorBillNumber: '',
+        date: new Date().toISOString().split('T')[0],
+        dueDate: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString().split('T')[0],
+        vendorId: vendors[0].id,
+        poReference: '',
+        items: [],
+        discount: 0,
+        tax: 18,
+        total: 0,
+        status: 'draft',
+        notes: '',
+        paymentHistory: []
+      };
+      var isEdit = !!existing;
+
+      // Line items
+      var lineItemsHtml = '';
+      if (e.items && e.items.length > 0) {
+        lineItemsHtml = e.items.map(function(item, idx) {
+          return `
+            <tr class="border-b border-gray-100 line-item-row">
+              <td class="px-2 py-1">
+                <select class="form-input text-[10px] item-select" data-idx="${idx}">
+                  ${items.map(function(it) { return '<option ' + (it.id === item.itemId ? 'selected' : '') + ' value="' + it.id + '">' + it.name + '</option>'; }).join('')}
+                </select>
+              </td>
+              <td class="px-2 py-1">
+                <input type="number" class="form-input text-[10px] item-qty" value="${item.qty}" data-idx="${idx}" placeholder="Qty" onchange="calcBillTotal()">
+              </td>
+              <td class="px-2 py-1">
+                <input type="number" class="form-input text-[10px] item-rate" value="${item.rate}" data-idx="${idx}" placeholder="Rate" onchange="calcBillTotal()">
+              </td>
+              <td class="px-2 py-1 text-center">
+                <button onclick="removeLineItem(this)" class="text-red-500 hover:text-red-700 transition">${iconX()}</button>
+              </td>
+            </tr>`;
+        }).join('');
+      }
+
+      var modalContent = `
+        ${modalHeader(isEdit ? 'Edit Purchase Bill' : 'New Purchase Bill', isEdit ? e.number : 'Record vendor invoice')}
+
+        <div class="px-5 py-4 modal-scroll">
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            ${fld('Bill #', '<input type="text" class="form-input" id="f_number" value="' + e.number + '" disabled>')}
+            ${fld('Vendor Bill # *', '<input type="text" class="form-input" id="f_vendorBill" value="' + (e.vendorBillNumber || '') + '" placeholder="Vendor invoice number">')}
+            ${fld('Vendor *', '<select id="f_vendor" class="form-input" onchange="updateVendorDetails()">' + vendors.map(function(v) { return '<option ' + (v.id === e.vendorId ? 'selected' : '') + ' value="' + v.id + '">' + v.name + '</option>'; }).join('') + '</select>')}
+            ${fld('PO Reference', '<select class="form-input" id="f_poReference"><option value="">None</option><option ' + (e.poReference === 'PO/25-26/001' ? 'selected' : '') + '>PO/25-26/001</option><option ' + (e.poReference === 'PO/25-26/002' ? 'selected' : '') + '>PO/25-26/002</option><option ' + (e.poReference === 'PO/25-26/003' ? 'selected' : '') + '>PO/25-26/003</option><option ' + (e.poReference === 'PO/25-26/004' ? 'selected' : '') + '>PO/25-26/004</option><option ' + (e.poReference === 'PO/25-26/005' ? 'selected' : '') + '>PO/25-26/005</option></select>')}
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2">
+            ${fld('Date *', '<input type="date" class="form-input" id="f_date" value="' + e.date + '">')}
+            ${fld('Due Date *', '<input type="date" class="form-input" id="f_dueDate" value="' + e.dueDate + '">')}
+            ${fld('Status', '<select class="form-input" id="f_status"><option ' + (e.status === 'draft' ? 'selected' : '') + ' value="draft">Draft</option><option ' + (e.status === 'received' ? 'selected' : '') + ' value="received">Received</option><option ' + (e.status === 'partial' ? 'selected' : '') + ' value="partial">Partially Paid</option><option ' + (e.status === 'paid' ? 'selected' : '') + ' value="paid">Paid</option><option ' + (e.status === 'overdue' ? 'selected' : '') + ' value="overdue">Overdue</option></select>')}
+          </div>
+
+          <!-- Line Items -->
+          <div class="mt-3">
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="form-label mb-0">Line Items</label>
+              <button onclick="addLineItem()" class="text-[10px] font-semibold text-primary hover:underline flex items-center gap-1">
+                ${iconPlus()} Add Item
+              </button>
+            </div>
+            <div class="border border-gray-200 rounded-lg overflow-hidden">
+              <table class="w-full text-xs" id="lineItemsTable">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-2 py-1.5 text-left font-semibold text-gray-600">Item</th>
+                    <th class="px-2 py-1.5 text-center font-semibold text-gray-600">Qty</th>
+                    <th class="px-2 py-1.5 text-center font-semibold text-gray-600">Rate</th>
+                    <th class="px-2 py-1.5 text-center font-semibold text-gray-600" style="width:36px;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="lineItemsBody">
+                  ${lineItemsHtml || '<tr><td colspan="4" class="text-center py-3 text-gray-400 text-xs">No items added. Click "Add Item" to add products/services.</td></tr>'}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Footer Fields -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+            ${fld('Discount (%)', '<input type="number" class="form-input" id="f_discount" value="' + e.discount + '" placeholder="0" onchange="calcBillTotal()">')}
+            ${fld('Tax Rate (%)', '<select class="form-input" id="f_tax" onchange="calcBillTotal()"><option ' + (e.tax == 0 ? 'selected' : '') + '>0</option><option ' + (e.tax == 5 ? 'selected' : '') + '>5</option><option ' + (e.tax == 12 ? 'selected' : '') + '>12</option><option ' + (e.tax == 18 ? 'selected' : '') + '>18</option><option ' + (e.tax == 28 ? 'selected' : '') + '>28</option></select>')}
+            ${fld('Total Amount', '<input type="text" class="form-input" id="f_total" value="' + (e.total ? money(e.total) : '₹0') + '" disabled style="font-weight:bold;color:#6da84c;">')}
+          </div>
+
+          ${fld('Notes', '<textarea rows="2" class="form-input" id="f_notes" placeholder="Additional notes">' + (e.notes || '') + '</textarea>')}
+        </div>
+        ${modalFooter(isEdit ? 'Update Bill' : 'Save Bill', 'onclick="saveBill(\'' + (isEdit ? e.id : '') + '\')"')}
+      `;
+
+      openModal(modalContent, { width: 'max-w-4xl' });
+      setTimeout(function() { calcBillTotal(); }, 100);
+    }
+
+    // =============================================================
+    // LINE ITEM FUNCTIONS
+    // =============================================================
+
+    function addLineItem() {
+      var tbody = document.getElementById('lineItemsBody');
+      if (!tbody) return;
+      var emptyRow = tbody.querySelector('tr td[colspan]');
+      if (emptyRow) tbody.innerHTML = '';
+
+      var idx = tbody.children.length;
+      var row = document.createElement('tr');
+      row.className = 'border-b border-gray-100 line-item-row';
+      row.innerHTML = `
+        <td class="px-2 py-1">
+          <select class="form-input text-[10px] item-select" data-idx="${idx}">
+            ${items.map(function(it) { return '<option value="' + it.id + '">' + it.name + '</option>'; }).join('')}
+          </select>
+        </td>
+        <td class="px-2 py-1">
+          <input type="number" class="form-input text-[10px] item-qty" value="1" data-idx="${idx}" placeholder="Qty" onchange="calcBillTotal()">
+        </td>
+        <td class="px-2 py-1">
+          <input type="number" class="form-input text-[10px] item-rate" value="0" data-idx="${idx}" placeholder="Rate" onchange="calcBillTotal()">
+        </td>
+        <td class="px-2 py-1 text-center">
+          <button onclick="removeLineItem(this)" class="text-red-500 hover:text-red-700 transition">${iconX()}</button>
+        </td>
+      `;
+      tbody.appendChild(row);
+
+      var select = row.querySelector('.item-select');
+      select.addEventListener('change', function() {
+        var selectedItem = items.find(function(it) { return it.id === this.value; });
+        var rateInput = this.closest('tr').querySelector('.item-rate');
+        if (selectedItem && rateInput) {
+          rateInput.value = selectedItem.price;
+          calcBillTotal();
+        }
+      });
+      select.dispatchEvent(new Event('change'));
+    }
+
+    function removeLineItem(btn) {
+      var row = btn.closest('tr');
+      if (row) row.remove();
+      var tbody = document.getElementById('lineItemsBody');
+      if (tbody && tbody.children.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center py-3 text-gray-400 text-xs">No items added. Click "Add Item" to add products/services.</td></tr>';
+      }
+      calcBillTotal();
+    }
+
+    function updateVendorDetails() {
+      var vendorId = document.getElementById('f_vendor').value;
+      var vendor = vendors.find(function(v) { return v.id === vendorId; });
+      if (vendor) {
+        // Could auto-fill email for payment automation
+      }
+    }
+
+    function calcBillTotal() {
+      var rows = document.querySelectorAll('#lineItemsBody .line-item-row');
+      var subtotal = 0;
+      rows.forEach(function(row) {
+        var qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+        var rate = parseFloat(row.querySelector('.item-rate').value) || 0;
+        subtotal += qty * rate;
+      });
+
+      var discount = parseFloat(document.getElementById('f_discount').value) || 0;
+      var tax = parseFloat(document.getElementById('f_tax').value) || 0;
+
+      var discountAmt = subtotal * (discount / 100);
+      var afterDiscount = subtotal - discountAmt;
+      var taxAmt = afterDiscount * (tax / 100);
+      var total = afterDiscount + taxAmt;
+
+      document.getElementById('f_total').value = money(total);
+      return total;
+    }
+
+    // =============================================================
+    // SAVE / DELETE BILL
+    // =============================================================
+
+    function saveBill(existingId) {
+      var number = document.getElementById('f_number').value;
+      var vendorBillNumber = document.getElementById('f_vendorBill').value.trim();
+      var date = document.getElementById('f_date').value;
+      var dueDate = document.getElementById('f_dueDate').value;
+      var vendorId = document.getElementById('f_vendor').value;
+      var poReference = document.getElementById('f_poReference').value || '';
+      var status = document.getElementById('f_status').value;
+      var discount = parseFloat(document.getElementById('f_discount').value) || 0;
+      var tax = parseFloat(document.getElementById('f_tax').value) || 0;
+      var notes = document.getElementById('f_notes').value || '';
+
+      if (!date || !vendorId || !dueDate || !vendorBillNumber) {
+        showToast('Please fill all required fields (Date, Vendor, Due Date, Vendor Bill #)', 'error');
+        return;
+      }
+
+      var itemsData = [];
+      var rows = document.querySelectorAll('#lineItemsBody .line-item-row');
+      rows.forEach(function(row) {
+        var itemId = row.querySelector('.item-select').value;
+        var qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+        var rate = parseFloat(row.querySelector('.item-rate').value) || 0;
+        if (qty > 0 && rate > 0) {
+          var item = items.find(function(it) { return it.id === itemId; });
+          itemsData.push({
+            itemId: itemId,
+            name: item ? item.name : '',
+            qty: qty,
+            rate: rate,
+            gst: item ? item.gst : 18,
+            unit: item ? item.unit : 'Pcs'
+          });
+        }
+      });
+
+      if (itemsData.length === 0) {
+        showToast('Please add at least one item to the bill', 'error');
+        return;
+      }
+
+      var subtotal = itemsData.reduce(function(sum, item) { return sum + (item.qty * item.rate); }, 0);
+      var discountAmt = subtotal * (discount / 100);
+      var afterDiscount = subtotal - discountAmt;
+      var taxAmt = afterDiscount * (tax / 100);
+      var total = afterDiscount + taxAmt;
+
+      var vendor = vendors.find(function(v) { return v.id === vendorId; });
+      var vendorName = vendor ? vendor.name : '';
+      var vendorEmail = vendor ? vendor.email : '';
+      var vendorGST = vendor ? vendor.gstin : '';
+
+      if (existingId) {
+        var bill = purchaseBills.find(function(x) { return x.id === existingId; });
+        if (bill) {
+          bill.number = number;
+          bill.vendorBillNumber = vendorBillNumber;
+          bill.date = date;
+          bill.dueDate = dueDate;
+          bill.vendorId = vendorId;
+          bill.vendorName = vendorName;
+          bill.vendorEmail = vendorEmail;
+          bill.vendorGST = vendorGST;
+          bill.poReference = poReference;
+          bill.items = itemsData;
+          bill.discount = discount;
+          bill.tax = tax;
+          bill.total = total;
+          bill.status = status;
+          bill.notes = notes;
+          showToast('Purchase Bill updated successfully', 'success');
+        }
+      } else {
+        var newBill = {
+          id: 'PB-' + String(nextBillNo++).padStart(3, '0'),
+          number: number || 'PUR/25-26/' + String(purchaseBills.length + 1).padStart(3, '0'),
+          vendorBillNumber: vendorBillNumber,
+          date: date,
+          dueDate: dueDate,
+          vendorId: vendorId,
+          vendorName: vendorName,
+          vendorEmail: vendorEmail,
+          vendorGST: vendorGST,
+          poReference: poReference,
+          items: itemsData,
+          discount: discount,
+          tax: tax,
+          total: total,
+          paid: 0,
+          status: status,
+          notes: notes,
+          paymentHistory: [],
+          createdAt: date
+        };
+        purchaseBills.unshift(newBill);
+        showToast('Purchase Bill created successfully', 'success');
+      }
+
+      closeModal();
+      renderBills();
+    }
+
+    function delBill(id) {
+      var bill = purchaseBills.find(function(x) { return x.id === id; });
+      if (!bill) return;
+
+      var modalContent = `
+        ${modalHeader('Delete Purchase Bill', bill.number)}
+        <div class="px-5 py-4 text-sm text-gray-600">
+          <p>Are you sure you want to permanently delete <b class="text-gray-800">${bill.number}</b>?</p>
+          <p class="text-gray-400 text-[11px] mt-1">This action cannot be undone. All associated data will be removed.</p>
+          <p class="text-amber-600 text-[11px] mt-2">Total Value: ${money(bill.total)}</p>
+        </div>
+        ${modalFooter('Delete', 'onclick="confirmDeleteBill(\'' + id + '\')"', '')}
+      `;
+      openModal(modalContent, { width: 'max-w-md' });
+    }
+
+    function confirmDeleteBill(id) {
+      purchaseBills = purchaseBills.filter(function(x) { return x.id !== id; });
+      closeModal();
+      renderBills();
+      showToast('Purchase Bill deleted successfully', 'warning');
+    }
+
+    // =============================================================
+    // PAYMENT FUNCTIONS (Enhancement #1 — Payment Email Automation)
+    // =============================================================
+
+    function recordPayment(id) {
+      var bill = purchaseBills.find(function(x) { return x.id === id; });
+      if (!bill) return;
+
+      var balance = bill.total - bill.paid;
+      var modalContent = `
+        ${modalHeader('Record Payment', bill.number + ' — Balance: ' + money(balance))}
+        <div class="px-5 py-4">
+          <div class="grid grid-cols-2 gap-3">
+            ${fld('Amount *', '<input type="number" class="form-input" id="p_amount" value="' + balance + '" step="0.01" placeholder="Payment amount">')}
+            ${fld('Payment Date *', '<input type="date" class="form-input" id="p_date" value="' + new Date().toISOString().split('T')[0] + '">')}
+            ${fld('Payment Mode *', '<select class="form-input" id="p_mode"><option>Bank Transfer</option><option>UPI</option><option>Cheque</option><option>Cash</option><option>NEFT</option><option>RTGS</option><option>Credit Card</option><option>Debit Card</option></select>')}
+            ${fld('Reference Number', '<input type="text" class="form-input" id="p_reference" placeholder="Transaction/Cheque reference">')}
+          </div>
+
+          <div class="mt-3 p-3 bg-primary-soft rounded-lg border border-primary/20">
+            <div class="flex items-start gap-2">
+              ${iconMail()}
+              <div>
+                <p class="text-[11px] font-semibold text-primary">📧 Payment Email Automation (Enhancement #1)</p>
+                <p class="text-[10px] text-gray-500">An email will be automatically sent to <b>${bill.vendorEmail || bill.vendorName}</b> with payment details and receipt.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        ${modalFooter('Record Payment & Send Email', 'onclick="savePayment(\'' + id + '\')"')}
+      `;
+
+      openModal(modalContent, { width: 'max-w-lg' });
+    }
+
+    function savePayment(id) {
+      var bill = purchaseBills.find(function(x) { return x.id === id; });
+      if (!bill) return;
+
+      var amount = parseFloat(document.getElementById('p_amount').value);
+      var date = document.getElementById('p_date').value;
+      var mode = document.getElementById('p_mode').value;
+      var reference = document.getElementById('p_reference').value || '';
+
+      if (!amount || amount <= 0) {
+        showToast('Please enter a valid payment amount', 'error');
+        return;
+      }
+
+      var balance = bill.total - bill.paid;
+      if (amount > balance) {
+        showToast('Payment amount exceeds balance due: ' + money(balance), 'error');
+        return;
+      }
+
+      // Record payment
+      bill.paid = (bill.paid || 0) + amount;
+      bill.paymentHistory.push({
+        date: date,
+        amount: amount,
+        mode: mode,
+        reference: reference
+      });
+
+      // Update status
+      if (bill.paid >= bill.total) {
+        bill.status = 'paid';
+      } else if (bill.paid > 0) {
+        bill.status = 'partial';
+      }
+
+      closeModal();
+      renderBills();
+
+      // =============================================================
+      // ENHANCEMENT #1 — Payment Email Automation
+      // =============================================================
+      // Email is automatically triggered when payment is saved
+      var vendorEmail = bill.vendorEmail || '';
+      if (vendorEmail) {
+        // In a real implementation, this would send an actual email via SMTP
+        // For demo, we show a toast notification
+        showToast('📧 Payment email automation triggered! Email sent to ' + vendorEmail, 'success');
+
+        // Log the email details
+        console.log('========================================');
+        console.log('📧 PAYMENT EMAIL AUTOMATION (Enhancement #1)');
+        console.log('========================================');
+        console.log('To:', vendorEmail);
+        console.log('Subject: Payment Confirmation - ' + bill.number);
+        console.log('Message:');
+        console.log('Dear Vendor,');
+        console.log('');
+        console.log('This is to confirm that we have processed your payment.');
+        console.log('');
+        console.log('Payment Details:');
+        console.log('- Amount: ' + money(amount));
+        console.log('- Date: ' + date);
+        console.log('- Bill/Reference: ' + bill.number);
+        console.log('- Mode of Payment: ' + mode);
+        console.log('- Reference: ' + reference);
+        console.log('');
+        console.log('Please find the payment receipt attached.');
+        console.log('');
+        console.log('Regards,');
+        console.log('Kunash Media Team');
+        console.log('========================================');
+
+        // Show email preview in a separate toast
+        setTimeout(function() {
+          showToast('📧 Email sent to ' + vendorEmail + ' — Payment confirmation', 'info');
+        }, 500);
+      } else {
+        showToast('⚠️ No email address found for vendor. Please add email to send payment confirmation.', 'warning');
+      }
+    }
+
+    // Manual email send (for existing payments)
+    function sendPaymentEmail(id) {
+      var bill = purchaseBills.find(function(x) { return x.id === id; });
+      if (!bill) return;
+
+      var vendorEmail = bill.vendorEmail || '';
+      if (vendorEmail) {
+        showToast('📧 Sending payment confirmation email to ' + vendorEmail + '...', 'info');
+        setTimeout(function() {
+          showToast('✅ Payment email sent to ' + vendorEmail, 'success');
+        }, 1000);
+      } else {
+        showToast('⚠️ No email address found for vendor. Please add email in vendor master.', 'warning');
+      }
+    }
+
+    // =============================================================
+    // SEARCH
+    // =============================================================
+
+    (function addSearchToTopbar() {
+      var searchContainer = document.querySelector('.app-main header');
+      if (searchContainer) {
+        var searchHtml = `
+          <div class="hidden sm:flex flex-1 max-w-[420px] relative ml-4">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">${iconSearch()}</span>
+            <input type="text" id="searchInput" placeholder="Search bills by number, vendor, vendor bill #…"
+              onkeyup="filterBills()"
+              class="w-full border border-gray-200 bg-gray-50 focus:bg-white rounded-lg pl-9 pr-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition placeholder:text-gray-400">
+          </div>
+        `;
+        var headerContent = searchContainer.innerHTML;
+        var hamburgerIndex = headerContent.indexOf('lg:hidden');
+        if (hamburgerIndex !== -1) {
+          var firstDivEnd = headerContent.indexOf('</div>', hamburgerIndex) + 6;
+          var before = headerContent.substring(0, firstDivEnd);
+          var after = headerContent.substring(firstDivEnd);
+          searchContainer.innerHTML = before + searchHtml + after;
+        }
+      }
+    })();
+
+    // =============================================================
+    // INIT
+    // =============================================================
+
+    var company = {
+      name: 'Kunash Media Pvt. Ltd.',
+      address: '401, Creative Hub, BKC, Bandra East, Mumbai - 400051',
+      gstin: '27AABCU1234D1ZP',
+      phone: '+91-9876543210'
+    };
+
+    renderBills();
+
+    console.log('📄 Purchase Bills Module Loaded Successfully');
+    console.log('📊 Total Bills:', purchaseBills.length);
+    console.log('📌 Status: Draft(' + purchaseBills.filter(function(b) { return b.status === 'draft'; }).length +
+      '), Received(' + purchaseBills.filter(function(b) { return b.status === 'received'; }).length +
+      '), Paid(' + purchaseBills.filter(function(b) { return b.status === 'paid'; }).length + ')');
+    console.log('📧 Enhancement #1 — Payment Email Automation enabled');
+
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Redirecting…</title>
+
+    <!-- Primary redirect: JavaScript executes immediately in the head,
+        before any body content is parsed or painted — preventing flicker.  -->
+    <script>
+        window.location.replace("/dashboard/dashboard.html");
+    </script>
+
+    <!--
+        Fallback for browsers with JavaScript disabled or if JS fails.
+        The "0" second refresh is instant and acts as a safety net.
+    -->
+    <noscript>
+        <meta http-equiv="refresh" content="0; url=/dashboard/dashboard.html">
+    </noscript>
+
+    <!--
+        Extra fallback for very old / quirky browsers.
+        Also instant, but less reliable than the meta refresh.
+    -->
+    <meta http-equiv="refresh" content="0; url=/dashboard/dashboard.html">
+</head>
+
+<body style="display:none;">
+    <!--
+        Hidden content — never rendered because the redirect happens
+        in the head before the body is painted.
+    -->
+    <p>Redirecting to dashboard…</p>
+</body>
+</html>

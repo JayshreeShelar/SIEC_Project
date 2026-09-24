@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Dashboard</title>
+
+<!--
+  ANTI-FLICKER SCRIPT — must be the first thing in <head>, before any
+  stylesheet. It reads the saved collapse state synchronously and sets
+  it on <html> so the sidebar is the correct width on the very first
+  paint. Copy this exact block, unchanged, to the top of every admin page.
+-->
+<script>
+  (function () {
+    try {
+      var collapsed = localStorage.getItem("sidebarCollapsed") === "true";
+      document.documentElement.classList.add(collapsed ? "sidebar-collapsed" : "sidebar-expanded");
+    } catch (e) {
+      document.documentElement.classList.add("sidebar-expanded");
+    }
+  })();
+</script>
+
+<!-- Tailwind (utility classes for page content) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: { DEFAULT: "#6da84c", dark: "#5c9140", soft: "#eef5e8" },
+          secondary: { DEFAULT: "#1985bf", soft: "#e7f3fa" },
+        },
+      },
+    },
+  };
+</script>
+
+<!-- Shell styling (sidebar / topbar / overlays) — source of truth, loads after Tailwind -->
+<link rel="stylesheet" href="/assets/css/nav-sidebar.css" />
+</head>
+
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+  <div class="flex min-h-screen">
+    <!-- Sidebar gets injected here by nav-sidebar.js -->
+    <div id="sidebar-root"></div>
+
+    <div class="app-main flex-1 flex flex-col min-w-0">
+      <!-- Top bar gets injected here -->
+      <div id="topbar-root"></div>
+
+      <!-- ============= PAGE CONTENT STARTS HERE ============= -->
+      <main class="p-4 sm:p-6 lg:p-8">
+        <div class="max-w-6xl mx-auto">
+          <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <h2 class="text-base font-semibold text-gray-800 mb-1">Page content</h2>
+            <p class="text-sm text-gray-500">
+              Replace this block with the real page — the sidebar and top
+              nav above are shared, shipped from
+              <code class="px-1 py-0.5 bg-gray-100 rounded text-xs">partials/nav-sidebar.html</code>.
+            </p>
+          </div>
+        </div>
+      </main>
+      <!-- ============= PAGE CONTENT ENDS HERE ============= -->
+    </div>
+  </div>
+
+  <script src="/assets/js/nav-sidebar.js"></script>
+  <script>
+    NavSidebar.init({
+      basePath: "",
+      activePage: "dashboard",
+      pageTitle: "Dashboard",
+      user: {
+        name: "Aarav Shah",
+        role: "Administrator",
+        avatarUrl: "", // leave empty to show initials fallback
+      },
+    });
+
+    // Once auth.js exists, override the default redirect, e.g.:
+    // NavSidebar.onLogoutConfirmed = function () { Auth.logout(); };
+  </script>
+</body>
+</html>

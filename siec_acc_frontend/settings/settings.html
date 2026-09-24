@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+<link rel="manifest" href="/favicon_io/site.webmanifest">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<title>Organization Setup — Aquilon ERP</title>
+
+<!-- ANTI-FLICKER SCRIPT -->
+<script>
+  (function () {
+    try {
+      var collapsed = localStorage.getItem("sidebarCollapsed") === "true";
+      document.documentElement.classList.add(collapsed ? "sidebar-collapsed" : "sidebar-expanded");
+    } catch (e) {
+      document.documentElement.classList.add("sidebar-expanded");
+    }
+  })();
+</script>
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: { DEFAULT: "#6da84c", dark: "#5c9140", soft: "#eef5e8" },
+          secondary: { DEFAULT: "#1985bf", soft: "#e7f3fa" },
+        },
+      },
+    },
+  };
+</script>
+
+<!-- Shell styling -->
+<link rel="stylesheet" href="/assets/css/nav-sidebar.css" />
+
+<!-- Page-specific styles (EXACTLY same as Products page) -->
+<style>
+  /* Form styles */
+  .form-input {
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fafafa;
+    color: #1a1a2e;
+  }
+  .form-input:focus {
+    border-color: #6da84c;
+    box-shadow: 0 0 0 3px rgba(109, 168, 76, 0.15);
+    background: #ffffff;
+  }
+  .form-input:disabled {
+    background: #f3f4f6;
+    cursor: not-allowed;
+  }
+  .form-label {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #374151;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .form-label .required { color: #ef4444; margin-left: 2px; }
+  .form-hint { font-size: 10.5px; color: #9ca3af; margin-top: 3px; }
+
+  /* Badge */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+  .badge-green { background: #dcfce7; color: #166534; }
+  .badge-amber { background: #fef3c7; color: #92400e; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  .badge-gray { background: #f1f5f9; color: #475569; }
+  .badge-blue { background: #dbeafe; color: #1e40af; }
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .badge-dot-green { background: #22c55e; }
+  .badge-dot-amber { background: #f59e0b; }
+  .badge-dot-red { background: #ef4444; }
+  .badge-dot-gray { background: #94a3b8; }
+  .badge-dot-blue { background: #3b82f6; }
+
+  /* Table row hover */
+  .table-row-hover:hover {
+    background: #f8fafc;
+  }
+
+  /* Modal tabs */
+  .modal-tab-btn {
+    transition: all 0.2s ease;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    color: #6b7280;
+    cursor: pointer;
+    background: transparent;
+    display: flex;
+    gap: 6px;
+  }
+  .modal-tab-btn.active {
+    color: #6da84c;
+    border-bottom-color: #6da84c;
+  }
+  .modal-tab-btn:hover:not(.active) {
+    color: #1f2937;
+    border-bottom-color: #d1d5db;
+  }
+  .modal-tab-panel { display: none; }
+  .modal-tab-panel.active { display: block; animation: fadeIn 0.25s ease; }
+
+  /* Page tabs */
+  .page-tab-btn {
+    transition: all 0.2s ease;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    color: #6b7280;
+    cursor: pointer;
+    background: transparent;
+  }
+  .page-tab-btn.active {
+    color: #6da84c;
+    border-bottom-color: #6da84c;
+    font-weight: 600;
+  }
+  .page-tab-btn:hover:not(.active) {
+    color: #1f2937;
+    border-bottom-color: #d1d5db;
+  }
+  .page-tab-panel { display: none; }
+  .page-tab-panel.active { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.96) translateY(6px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .animate-modal { animation: modalIn 0.18s ease; }
+
+  /* Action buttons */
+  .btn-icon-action {
+    transition: all 0.15s ease;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-icon-action:hover {
+    background: #f1f5f9;
+    color: #6da84c;
+  }
+  .btn-icon-action.danger:hover {
+    background: #fee2e2;
+    color: #ef4444;
+  }
+
+  /* Toast */
+  .toast {
+    animation: fadeIn 0.2s ease;
+  }
+  .toast-success { background: #16a34a; }
+  .toast-error { background: #dc2626; }
+  .toast-warning { background: #f59e0b; }
+  .toast-info { background: #6da84c; }
+
+  /* Scrollbar for modal */
+  .modal-scroll {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+  .modal-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+  .modal-scroll::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+  }
+
+  /* Empty state */
+  .empty-icon-svg {
+    opacity: 0.2;
+    width: 48px;
+    height: 48px;
+    color: #94a3b8;
+  }
+
+  /* Logo upload (settings-specific) */
+  .logo-upload-area {
+    border: 2px dashed #d1d5db;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    transition: border-color 0.2s, background 0.2s;
+    cursor: pointer;
+  }
+  .logo-upload-area:hover {
+    border-color: #6da84c;
+    background: #f8fafc;
+  }
+  .logo-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 12px;
+    object-fit: cover;
+    margin: 0 auto;
+    display: block;
+    background: #f1f5f9;
+  }
+
+  /* Inline form card (for Units — replaces modal) */
+  .inline-form-card {
+    border: 1px solid #6da84c;
+    border-radius: 12px;
+    background: #f8fdf5;
+    padding: 16px;
+    margin-bottom: 16px;
+    animation: fadeIn 0.25s ease;
+  }
+</style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+  <div class="flex min-h-screen">
+    <!-- Sidebar gets injected here by nav-sidebar.js -->
+    <div id="sidebar-root"></div>
+
+    <div class="app-main flex-1 flex flex-col min-w-0">
+      <!-- Top bar gets injected here -->
+      <div id="topbar-root"></div>
+
+      <!-- ========================================================== -->
+      <!-- ============= PAGE CONTENT STARTS HERE ==================== -->
+      <!-- ========================================================== -->
+      <main class="p-4 sm:p-6 lg:p-8">
+
+        <!-- Toast Container -->
+        <div id="toastWrap" class="fixed bottom-5 right-5 z-[200] flex flex-col gap-2 items-end"></div>
+
+        <!-- Modal Root -->
+        <div id="modalRoot"></div>
+
+        <div class="max-w-7xl mx-auto">
+
+          <!-- Page Header (Reset button REMOVED) -->
+          <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+            <div>
+              <div class="text-[11px] font-semibold tracking-wide uppercase text-primary">System</div>
+              <h1 class="text-[24px] sm:text-[28px] font-bold tracking-tight text-gray-900">Organization Setup</h1>
+              <p class="text-[13px] text-gray-500 mt-1">Configure your company profile, GST and units.</p>
+            </div>
+            <div class="flex gap-2.5 flex-wrap">
+              <button onclick="saveCompany()" class="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg transition shadow-sm">
+                <i class="fa-solid fa-floppy-disk"></i>
+                Save Settings
+              </button>
+            </div>
+          </div>
+
+          <!-- ========================================================== -->
+          <!-- PAGE TABS CARD (same green border as products panel) -->
+          <!-- ========================================================== -->
+          <div class="bg-white border border-[#6da84c] rounded-xl shadow-sm overflow-hidden">
+
+            <!-- Tab Headers -->
+            <div class="flex overflow-x-auto border-b border-gray-200 px-4 pt-2 gap-1" id="pageTabs">
+              <button class="page-tab-btn active" data-tab="tab-general">
+                <i class="fa-solid fa-user-tie mr-1.5"></i>
+                General
+              </button>
+              <button class="page-tab-btn" data-tab="tab-tax">
+                <i class="fa-solid fa-shield-halved mr-1.5"></i>
+                Tax &amp; GST
+              </button>
+              <button class="page-tab-btn" data-tab="tab-units">
+                <i class="fa-solid fa-layer-group mr-1.5"></i>
+                Units
+                <span class="ml-1.5 text-[10px] bg-primary text-white px-1.5 py-0.5 rounded-full" id="unitsCountBadge">3</span>
+              </button>
+            </div>
+
+            <!-- ========================================================== -->
+            <!-- TAB PANELS -->
+            <!-- ========================================================== -->
+            <div class="p-5">
+
+              <!-- ========================================================== -->
+              <!-- TAB 1: GENERAL -->
+              <!-- ========================================================== -->
+              <div id="tab-general" class="page-tab-panel active">
+
+                <div class="grid md:grid-cols-3 gap-6">
+
+                  <!-- Logo Upload -->
+                  <div class="md:col-span-1">
+                    <label class="form-label">Company Logo</label>
+                    <div class="logo-upload-area" onclick="document.getElementById('logoInput').click()">
+                      <div class="w-28 h-28 mx-auto rounded-lg bg-gray-100 flex items-center justify-center text-4xl font-bold text-primary/40" id="logoPreview">
+                        KM
+                      </div>
+                      <input type="file" id="logoInput" accept="image/*" class="hidden" onchange="previewLogo(event)">
+                      <p class="text-[11px] text-gray-400 mt-2">PNG, JPG or SVG • Max 2MB</p>
+                      <button type="button" class="mt-2 text-[12px] font-semibold text-primary hover:underline">Choose File</button>
+                    </div>
+                  </div>
+
+                  <!-- Company Details -->
+                  <div class="md:col-span-2 space-y-4">
+                    <div class="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <label class="form-label">Legal Company Name <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="compLegalName" value="Kunash Media Pvt. Ltd." placeholder="Enter legal name">
+                        <div id="err_compLegalName" class="hidden text-[10.5px] text-red-500 mt-1">This field is required</div>
+                      </div>
+                      <div>
+                        <label class="form-label">Display Name <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="compDisplayName" value="Kunash Media" placeholder="Display name">
+                      </div>
+                    </div>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <label class="form-label">Company Type</label>
+                        <select class="form-input" id="compType">
+                          <option>Proprietorship</option>
+                          <option>Partnership</option>
+                          <option selected>Pvt Ltd</option>
+                          <option>LLP</option>
+                          <option>Public Ltd</option>
+                          <option>NGO / Trust</option>
+                          <option>Freelancer</option>
+                          <option>Others</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label class="form-label">Registration Number (CIN/LLPIN)</label>
+                        <input type="text" class="form-input" id="compRegNo" value="U72200MH2020PTC123456" placeholder="e.g., U12345MH2020PTC123456">
+                      </div>
+                    </div>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <label class="form-label">Company Email <span class="required">*</span></label>
+                        <input type="email" class="form-input" id="compEmail" value="info@kunashmedia.com" placeholder="company@domain.com">
+                      </div>
+                      <div>
+                        <label class="form-label">Contact Number <span class="required">*</span></label>
+                        <input type="tel" class="form-input" id="compPhone" value="+91-9876543210" placeholder="+91-XXXXXXXXXX">
+                      </div>
+                    </div>
+                    <div>
+                      <label class="form-label">Website</label>
+                      <input type="url" class="form-input" id="compWebsite" value="https://www.kunashmedia.com" placeholder="https://example.com">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Address Section -->
+                <div class="mt-6 pt-6 border-t border-gray-100">
+                  <h4 class="text-[14px] font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-location-dot text-primary"></i>
+                    Registered Address
+                  </h4>
+                  <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="sm:col-span-2">
+                      <label class="form-label">Address Line 1 <span class="required">*</span></label>
+                      <input type="text" class="form-input" id="compAddr1" value="401, Creative Hub, BKC" placeholder="Building, Street">
+                    </div>
+                    <div>
+                      <label class="form-label">Address Line 2</label>
+                      <input type="text" class="form-input" id="compAddr2" value="Bandra East" placeholder="Locality, Area">
+                    </div>
+                    <div>
+                      <label class="form-label">City <span class="required">*</span></label>
+                      <input type="text" class="form-input" id="compCity" value="Mumbai" placeholder="City name">
+                    </div>
+                    <div>
+                      <label class="form-label">State <span class="required">*</span></label>
+                      <select class="form-input" id="compState" onchange="updateStateCode()">
+                        <option value="Maharashtra" selected>Maharashtra</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Karnataka">Karnataka</option>
+                        <option value="Tamil Nadu">Tamil Nadu</option>
+                        <option value="Gujarat">Gujarat</option>
+                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                        <option value="Rajasthan">Rajasthan</option>
+                        <option value="Kerala">Kerala</option>
+                        <option value="Telangana">Telangana</option>
+                        <option value="West Bengal">West Bengal</option>
+                        <option value="Andhra Pradesh">Andhra Pradesh</option>
+                        <option value="Bihar">Bihar</option>
+                        <option value="Chhattisgarh">Chhattisgarh</option>
+                        <option value="Goa">Goa</option>
+                        <option value="Haryana">Haryana</option>
+                        <option value="Himachal Pradesh">Himachal Pradesh</option>
+                        <option value="Jharkhand">Jharkhand</option>
+                        <option value="Madhya Pradesh">Madhya Pradesh</option>
+                        <option value="Odisha">Odisha</option>
+                        <option value="Punjab">Punjab</option>
+                        <option value="Uttarakhand">Uttarakhand</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="form-label">State Code <span class="required">*</span></label>
+                      <input type="text" class="form-input" id="compStateCode" value="27" disabled>
+                      <div class="form-hint">Auto-filled from state selection</div>
+                    </div>
+                    <div>
+                      <label class="form-label">Pincode <span class="required">*</span></label>
+                      <input type="number" class="form-input" id="compPincode" value="400051" placeholder="6-digit PIN">
+                    </div>
+                    <div>
+                      <label class="form-label">Country</label>
+                      <select class="form-input" id="compCountry">
+                        <option selected>India</option>
+                        <option>United States</option>
+                        <option>United Kingdom</option>
+                        <option>UAE</option>
+                        <option>Singapore</option>
+                        <option>Australia</option>
+                        <option>Canada</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Date of Incorporation -->
+                <div class="mt-4 grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="form-label">Date of Incorporation</label>
+                    <input type="date" class="form-input" id="compIncDate" value="2020-08-15">
+                  </div>
+                  <div>
+                    <label class="form-label">Time Zone</label>
+                    <select class="form-input" id="compTimezone">
+                      <option selected>IST (GMT+5:30)</option>
+                      <option>UTC (GMT+0:00)</option>
+                      <option>EST (GMT-5:00)</option>
+                      <option>PST (GMT-8:00)</option>
+                      <option>GMT (GMT+0:00)</option>
+                      <option>CST (GMT-6:00)</option>
+                    </select>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- ========================================================== -->
+              <!-- TAB 2: TAX & GST -->
+              <!-- ========================================================== -->
+              <div id="tab-tax" class="page-tab-panel">
+                <div class="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="form-label">GSTIN (GST Number)</label>
+                    <input type="text" class="form-input" id="gstGstin" value="27AABCU1234D1ZP" placeholder="15-digit GSTIN">
+                    <div class="form-hint">Format: 2-digit state code + 10-digit PAN + 3-digit entity code</div>
+                  </div>
+                  <div>
+                    <label class="form-label">PAN Number <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="gstPan" value="AABCU1234D" placeholder="10-digit PAN">
+                  </div>
+                  <div>
+                    <label class="form-label">GST Registration Type</label>
+                    <select class="form-input" id="gstRegType">
+                      <option selected>Regular</option>
+                      <option>Composition</option>
+                      <option>Unregistered</option>
+                      <option>Export-Oriented</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="form-label">Tax Payment Method</label>
+                    <select class="form-input" id="gstPayMethod">
+                      <option selected>Both (Cash & Credit)</option>
+                      <option>Cash Only</option>
+                      <option>Credit Only</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="form-label">Default Place of Supply</label>
+                    <select class="form-input" id="gstPlaceSupply">
+                      <option selected>Maharashtra</option>
+                      <option>Delhi</option>
+                      <option>Karnataka</option>
+                      <option>Tamil Nadu</option>
+                      <option>Gujarat</option>
+                      <option>Uttar Pradesh</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="form-label">Tax Calculation Method</label>
+                    <select class="form-input" id="gstCalcMethod">
+                      <option selected>Exclusive (Tax added to price)</option>
+                      <option>Inclusive (Tax included in price)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Tax Rates Configuration -->
+                <div class="mt-6 pt-6 border-t border-gray-100">
+                  <h4 class="text-[14px] font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-percent text-primary"></i>
+                    Tax Rate Configuration
+                  </h4>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div>
+                      <label class="form-label">GST Rate 1 (%)</label>
+                      <input type="number" class="form-input" id="gstRate1" value="5" placeholder="e.g. 5" min="0" max="100" step="0.01">
+                    </div>
+                    <div>
+                      <label class="form-label">GST Rate 2 (%)</label>
+                      <input type="number" class="form-input" id="gstRate2" value="12" placeholder="e.g. 12" min="0" max="100" step="0.01">
+                    </div>
+                    <div>
+                      <label class="form-label">GST Rate 3 (%)</label>
+                      <input type="number" class="form-input" id="gstRate3" value="18" placeholder="e.g. 18" min="0" max="100" step="0.01">
+                    </div>
+                    <div>
+                      <label class="form-label">GST Rate 4 (%)</label>
+                      <input type="number" class="form-input" id="gstRate4" value="28" placeholder="e.g. 28" min="0" max="100" step="0.01">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ========================================================== -->
+              <!-- TAB 3: UNITS OF MEASUREMENT — INLINE FORM (No modal) -->
+              <!-- ========================================================== -->
+              <div id="tab-units" class="page-tab-panel">
+
+                <!-- Inline Add/Edit Form (hidden by default) -->
+                <div id="unitFormWrap" class="hidden inline-form-card">
+                  <div class="flex items-center justify-between mb-3">
+                    <h4 class="text-[13.5px] font-semibold text-gray-800 flex items-center gap-2">
+                      <i class="fa-solid fa-layer-group text-primary"></i>
+                      <span id="unitFormTitle">Add New Unit</span>
+                    </h4>
+                    <button onclick="cancelUnitForm()" class="w-7 h-7 rounded-lg hover:bg-white flex items-center justify-center text-gray-400 hover:text-gray-700 transition">
+                      <i class="fa-solid fa-xmark"></i>
+                    </button>
+                  </div>
+
+                  <div class="grid sm:grid-cols-2 gap-3">
+                    <div>
+                      <label class="form-label">Unit Name <span class="required">*</span></label>
+                      <input type="text" id="u_name" class="form-input" placeholder="e.g. Kilogram">
+                      <div id="err_u_name" class="hidden text-[10.5px] text-red-500 mt-1">This field is required</div>
+                    </div>
+                    <div>
+                      <label class="form-label">Unit Code (GST UQC) <span class="required">*</span></label>
+                      <select id="u_code" class="form-input">
+                        <option value="NOS">NOS — Numbers</option>
+                        <option value="KGS">KGS — Kilograms</option>
+                        <option value="LTR">LTR — Litre</option>
+                        <option value="MTR">MTR — Meter</option>
+                        <option value="MLT">MLT — Millilitre</option>
+                        <option value="GRM">GRM — Gram</option>
+                        <option value="TON">TON — Tonne</option>
+                        <option value="BOX">BOX — Box</option>
+                        <option value="BAG">BAG — Bag</option>
+                        <option value="SET">SET — Set</option>
+                        <option value="PCS">PCS — Pieces</option>
+                        <option value="DRM">DRM — Drum</option>
+                        <option value="ROL">ROL — Roll</option>
+                        <option value="PAC">PAC — Package</option>
+                        <option value="SQM">SQM — Square Meter</option>
+                        <option value="CBM">CBM — Cubic Meter</option>
+                        <option value="HRS">HRS — Hours</option>
+                        <option value="DAY">DAY — Day</option>
+                        <option value="OTH">OTH — Others</option>
+                      </select>
+                      <div id="err_u_code" class="hidden text-[10.5px] text-red-500 mt-1">Please select a unit code</div>
+                    </div>
+                  </div>
+
+                  <div class="grid sm:grid-cols-2 gap-3 mt-1">
+                    <div>
+                      <label class="form-label">Decimal Places Allowed</label>
+                      <select id="u_decimals" class="form-input">
+                        <option value="0" selected>0 (e.g. 48 Nos)</option>
+                        <option value="1">1 (e.g. 4.5 Kgs)</option>
+                        <option value="2">2 (e.g. 4.55 Ltr)</option>
+                        <option value="3">3 (e.g. 4.550 Mtr)</option>
+                      </select>
+                      <div class="form-hint">Controls how the quantity is rounded on invoices & stock</div>
+                    </div>
+                    <div>
+                      <label class="form-label">Applicable Item Category</label>
+                      <input type="text" id="u_category" class="form-input" placeholder="e.g. Chemicals, Equipment">
+                    </div>
+                  </div>
+
+                  <div class="mt-3">
+                    <label class="form-label">Description / Usage Note</label>
+                    <textarea id="u_description" rows="2" class="form-input" placeholder="Where this unit is typically used"></textarea>
+                  </div>
+
+                  <div class="flex justify-end gap-2 mt-4">
+                    <button onclick="cancelUnitForm()" class="px-4 py-2 rounded-lg text-[12.5px] font-semibold text-gray-600 border border-gray-200 hover:bg-white transition">Cancel</button>
+                    <button onclick="saveUnit()" class="px-4 py-2 rounded-lg text-[12.5px] font-semibold text-white bg-primary hover:bg-primary-dark transition shadow-sm flex items-center gap-1.5">
+                      <i class="fa-solid fa-floppy-disk"></i>
+                      <span id="unitSaveLabel">Save Unit</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Header + Add button -->
+                <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                  <div>
+                    <h4 class="text-[14px] font-semibold text-gray-800">Units of Measurement</h4>
+                    <p class="text-[12px] text-gray-500">These units appear as options when creating an Item, and print on invoices as per GST UQC rules</p>
+                  </div>
+                  <button onclick="openUnitForm()" class="inline-flex items-center gap-1.5 bg-primary hover:bg-primary-dark text-white text-[12px] font-semibold px-3.5 py-2 rounded-lg transition shadow-sm">
+                    <i class="fa-solid fa-plus"></i>
+                    Add New Unit
+                  </button>
+                </div>
+
+                <!-- Units Table Panel (Products-style panelWrap) -->
+                <div id="unitsPanel"></div>
+
+              </div>
+
+            </div><!-- /p-5 -->
+          </div><!-- /card -->
+
+          <!-- Bottom Actions (Reset/Cancel REMOVED) -->
+          <div class="flex flex-wrap items-center justify-between gap-3 mt-6">
+            <div class="text-[12px] text-gray-500 flex items-center gap-1">
+              <i class="fa-solid fa-clock"></i>
+              Last updated: <span class="font-medium text-gray-700" id="lastUpdated">Today at 10:30 AM</span>
+            </div>
+            <div class="flex gap-3">
+              <button onclick="saveCompany()" class="px-6 py-2.5 rounded-lg bg-primary hover:bg-primary-dark text-white text-[13px] font-semibold transition shadow-sm flex items-center gap-1.5">
+                <i class="fa-solid fa-floppy-disk"></i>
+                Save All Changes
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </main>
+      <!-- ========================================================== -->
+      <!-- ============= PAGE CONTENT ENDS HERE ====================== -->
+      <!-- ========================================================== -->
+    </div>
+  </div>
+
+  <!-- ========================================================== -->
+  <!-- SCRIPTS -->
+  <!-- ========================================================== -->
+
+  <!-- Shell JS -->
+  <script src="/assets/js/nav-sidebar.js"></script>
+
+  <!-- Main Settings JS (all logic — Products page ke exact patterns) -->
+  <script>
+    // =============================================================
+    // NAV-SIDEBAR INIT
+    // =============================================================
+    NavSidebar.init({
+      basePath: "",
+      activePage: "settings",
+      pageTitle: "Organization Setup",
+      user: {
+        name: "Admin",
+        role: "Super Admin",
+        avatarUrl: "",
+      },
+    });
+
+    // =============================================================
+    // SVG ICONS (same as Products page)
+    // =============================================================
+    function iconEdit() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`;
+    }
+    function iconTrash() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>`;
+    }
+    function iconEye() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    }
+    function iconX() {
+      return `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg>`;
+    }
+    function iconSave() {
+      return `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>`;
+    }
+    function iconBox() {
+      return `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>`;
+    }
+    function iconBuilding() {
+      return `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>`;
+    }
+    function iconSearch() {
+      return `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>`;
+    }
+
+    // =============================================================
+    // TOAST SYSTEM (same as Products page)
+    // =============================================================
+    function showToast(message, kind) {
+      kind = kind || 'success';
+      var wrap = document.getElementById('toastWrap');
+      var colors = {
+        success: 'bg-green-600',
+        info: 'bg-primary',
+        warning: 'bg-amber-600',
+        error: 'bg-red-600'
+      };
+      var el = document.createElement('div');
+      el.className = 'toast ' + colors[kind] + ' text-white text-sm font-semibold px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 max-w-xs';
+      el.innerHTML = '<span>' + message + '</span>';
+      wrap.appendChild(el);
+      setTimeout(function() {
+        el.style.transition = 'opacity .3s';
+        el.style.opacity = '0';
+        setTimeout(function() { el.remove(); }, 300);
+      }, 2600);
+    }
+
+    // =============================================================
+    // MODAL SYSTEM (same as Products page)
+    // =============================================================
+    function openModal(innerHtml, opts) {
+      opts = opts || {};
+      var root = document.getElementById('modalRoot');
+      root.innerHTML = `
+        <div class="fixed inset-0 z-[100] flex items-center justify-center p-4" id="modalOverlay">
+          <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px]" id="modalBackdrop"></div>
+          <div class="relative bg-white rounded-2xl shadow-2xl w-full ${opts.width || 'max-w-3xl'} max-h-[92vh] overflow-hidden animate-modal">
+            ${innerHtml}
+          </div>
+        </div>`;
+      document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      var root = document.getElementById('modalRoot');
+      root.innerHTML = '';
+      document.body.style.overflow = '';
+    }
+
+    function modalHeader(title, subtitle) {
+      return `
+        <div class="flex items-start justify-between px-6 py-5 border-b border-gray-100 sticky top-0 bg-white z-10">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900">${title}</h3>
+            ${subtitle ? '<p class="text-xs text-gray-500 mt-0.5">' + subtitle + '</p>' : ''}
+          </div>
+          <button onclick="closeModal()" class="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 transition">${iconX()}</button>
+        </div>`;
+    }
+
+    function modalFooter(saveLabel, onSaveAttr, extraBtns) {
+      return `
+        <div class="flex items-center justify-between gap-2 px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl sticky bottom-0">
+          <div>${extraBtns || ''}</div>
+          <div class="flex gap-2">
+            <button onclick="closeModal()" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-white transition">Cancel</button>
+            <button ${onSaveAttr} class="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary-dark transition shadow-sm flex items-center gap-1.5">
+              ${iconSave()} ${saveLabel}
+            </button>
+          </div>
+        </div>`;
+    }
+
+    function fld(label, inputHtml, hint) {
+      return `
+        <div class="mb-3">
+          <label class="form-label">${label}</label>
+          ${inputHtml}
+          ${hint ? '<div class="form-hint">' + hint + '</div>' : ''}
+        </div>`;
+    }
+
+    function inputBase() { return "form-input"; }
+
+    // =============================================================
+    // HELPERS (same as Products page)
+    // =============================================================
+    function money(n) { return '₹' + Number(n || 0).toLocaleString('en-IN'); }
+
+    function badge(text, color) {
+      var map = { green: 'badge-green', amber: 'badge-amber', red: 'badge-red', gray: 'badge-gray', blue: 'badge-blue' };
+      var dot = { green: 'badge-dot-green', amber: 'badge-dot-amber', red: 'badge-dot-red', gray: 'badge-dot-gray', blue: 'badge-dot-blue' };
+      return '<span class="badge ' + map[color] + '"><span class="badge-dot ' + dot[color] + '"></span>' + text + '</span>';
+    }
+
+    function rowActionsHtml(editFn, delFn, viewFn) {
+      var html = '<div class="flex gap-1 justify-end">';
+      if (viewFn) {
+        html += '<button onclick="' + viewFn + '" class="btn-icon-action" title="View">' + iconEye() + '</button>';
+      }
+      html += '<button onclick="' + editFn + '" class="btn-icon-action" title="Edit">' + iconEdit() + '</button>';
+      html += '<button onclick="' + delFn + '" class="btn-icon-action danger" title="Delete">' + iconTrash() + '</button>';
+      html += '</div>';
+      return html;
+    }
+
+    // Products page ka panelWrap — same green border
+    function panelWrap(titleHtml, bodyHtml, extraHead) {
+      return `
+        <div class="bg-white border border-[#6da84c] rounded-xl shadow-sm overflow-hidden">
+          <div class="flex items-center justify-between gap-3 flex-wrap px-5 py-4 border-b border-gray-100">
+            <div class="font-bold text-[14.5px] text-gray-800 flex items-center gap-2">${titleHtml}</div>
+            ${extraHead || ''}
+          </div>
+          <div>${bodyHtml}</div>
+        </div>`;
+    }
+
+    // Products page ka tableHtml — same sticky header + fixed height
+    function tableHtml(cols, rowsHtml) {
+      var colHeaders = cols.map(function(c) {
+        return '<th class="text-left text-[11px] font-bold uppercase tracking-wide text-gray-500 px-4 py-3 whitespace-nowrap">' + c + '</th>';
+      }).join('');
+      return `
+        <div class="overflow-auto h-[370px]">
+          <table class="w-full text-[13px]">
+            <thead class="sticky top-0">
+              <tr class="bg-gray-50 border-b border-gray-200">${colHeaders}</tr>
+            </thead>
+            <tbody id="tbody-anchor">${rowsHtml}</tbody>
+          </table>
+        </div>`;
+    }
+
+    // =============================================================
+    // PAGE TABS
+    // =============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+      var tabs = document.querySelectorAll('.page-tab-btn');
+      tabs.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          tabs.forEach(function(b) { b.classList.remove('active'); });
+          this.classList.add('active');
+          var panels = document.querySelectorAll('.page-tab-panel');
+          panels.forEach(function(p) { p.classList.remove('active'); });
+          var target = document.getElementById(this.dataset.tab);
+          if (target) target.classList.add('active');
+        });
+      });
+      renderUnits();
+    });
+
+    // =============================================================
+    // STATE CODE UPDATER
+    // =============================================================
+    function updateStateCode() {
+      var state = document.getElementById('compState').value;
+      var stateCodeMap = {
+        'Maharashtra': '27', 'Delhi': '07', 'Karnataka': '29', 'Tamil Nadu': '33',
+        'Gujarat': '24', 'Uttar Pradesh': '09', 'Rajasthan': '08', 'Kerala': '32',
+        'Telangana': '36', 'West Bengal': '19', 'Andhra Pradesh': '28', 'Bihar': '10',
+        'Chhattisgarh': '22', 'Goa': '30', 'Haryana': '06', 'Himachal Pradesh': '02',
+        'Jharkhand': '20', 'Madhya Pradesh': '23', 'Odisha': '21', 'Punjab': '03',
+        'Uttarakhand': '05'
+      };
+      document.getElementById('compStateCode').value = stateCodeMap[state] || '';
+    }
+
+    // =============================================================
+    // LOGO PREVIEW
+    // =============================================================
+    function previewLogo(event) {
+      var file = event.target.files[0];
+      if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var preview = document.getElementById('logoPreview');
+          preview.innerHTML = '<img src="' + e.target.result + '" class="logo-preview" alt="Logo">';
+        };
+        reader.readAsDataURL(file);
+        showToast('Logo uploaded successfully', 'success');
+      }
+    }
+
+    // =============================================================
+    // UNITS DATA — pre-populated with items relevant to the business
+    // =============================================================
+    var unitsData = [
+      { id: 'unit-001', name: 'Numbers', code: 'NOS', decimals: 0, category: 'Equipment', description: 'Countable items — blowers, pumps, valves' },
+      { id: 'unit-002', name: 'Kilogram', code: 'KGS', decimals: 3, category: 'Chemicals', description: 'Weight-based items — chemicals, media' },
+      { id: 'unit-003', name: 'Litre', code: 'LTR', decimals: 2, category: 'Chemicals', description: 'Liquid chemicals — coagulant, flocculant' }
+    ];
+
+    var editingUnitId = null;
+
+    // =============================================================
+    // RENDER UNITS — Products-style table inside panelWrap
+    // =============================================================
+    function renderUnits() {
+      var badgeEl = document.getElementById('unitsCountBadge');
+      if (badgeEl) badgeEl.textContent = unitsData.length;
+
+      var rowsHtml = '';
+      if (unitsData.length === 0) {
+        rowsHtml = `
+          <tr>
+            <td colspan="6" class="text-center py-10 text-gray-400 text-sm">
+              <div class="flex justify-center mb-2 empty-icon-svg">${iconBox()}</div>
+              No units found. Click
+              <button onclick="openUnitForm()" class="text-primary font-semibold hover:underline mx-1">add a new unit</button>
+              to get started.
+            </td>
+          </tr>`;
+      } else {
+        rowsHtml = unitsData.map(function(u) {
+          return `
+            <tr class="border-b border-gray-100 table-row-hover">
+              <td class="px-4 py-3">
+                <div class="font-semibold text-gray-800">${u.name}</div>
+                ${u.description ? '<div class="text-[11.5px] text-gray-400 mt-0.5">' + u.description + '</div>' : ''}
+              </td>
+              <td class="px-4 py-3">${badge(u.code || '—', 'blue')}</td>
+              <td class="px-4 py-3 text-gray-600">${u.decimals != null ? u.decimals : '0'} decimal(s)</td>
+              <td class="px-4 py-3 text-gray-600">${u.category || '—'}</td>
+              <td class="px-4 py-3">
+                <span class="text-[11px] text-gray-400 font-mono">${u.id}</span>
+              </td>
+              <td class="px-4 py-3">${rowActionsHtml(
+                "editUnit('"+u.id+"')",
+                "delUnit('"+u.id+"')",
+                null
+              )}</td>
+            </tr>`;
+        }).join('');
+      }
+
+      var panelHtml = panelWrap(
+        'All Units <span class="text-[11px] font-bold bg-primary-soft text-primary-dark px-2 py-0.5 rounded-full ml-1">' + unitsData.length + '</span>',
+        tableHtml(['Unit Name', 'Code', 'Decimals', 'Category', 'ID', 'Actions'], rowsHtml)
+      );
+
+      document.getElementById('unitsPanel').innerHTML = panelHtml;
+    }
+
+    // =============================================================
+    // INLINE FORM (Add / Edit Unit) — NO MODAL
+    // =============================================================
+    function openUnitForm() {
+      editingUnitId = null;
+      document.getElementById('unitFormTitle').textContent = 'Add New Unit';
+      document.getElementById('unitSaveLabel').textContent = 'Save Unit';
+      document.getElementById('u_name').value = '';
+      document.getElementById('u_code').value = 'NOS';
+      document.getElementById('u_decimals').value = '0';
+      document.getElementById('u_category').value = '';
+      document.getElementById('u_description').value = '';
+      setUnitFieldError('u_name', false);
+      setUnitFieldError('u_code', false);
+      document.getElementById('unitFormWrap').classList.remove('hidden');
+      document.getElementById('u_name').focus();
+    }
+
+    function editUnit(id) {
+      var unit = unitsData.find(function(u) { return u.id === id; });
+      if (!unit) return;
+      editingUnitId = id;
+      document.getElementById('unitFormTitle').textContent = 'Edit Unit';
+      document.getElementById('unitSaveLabel').textContent = 'Update Unit';
+      document.getElementById('u_name').value = unit.name || '';
+      document.getElementById('u_code').value = unit.code || 'NOS';
+      document.getElementById('u_decimals').value = String(unit.decimals != null ? unit.decimals : 0);
+      document.getElementById('u_category').value = unit.category || '';
+      document.getElementById('u_description').value = unit.description || '';
+      setUnitFieldError('u_name', false);
+      setUnitFieldError('u_code', false);
+      document.getElementById('unitFormWrap').classList.remove('hidden');
+      document.getElementById('unitFormWrap').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      document.getElementById('u_name').focus();
+    }
+
+    function cancelUnitForm() {
+      editingUnitId = null;
+      document.getElementById('unitFormWrap').classList.add('hidden');
+      setUnitFieldError('u_name', false);
+      setUnitFieldError('u_code', false);
+    }
+
+    function saveUnit() {
+      var name = (document.getElementById('u_name').value || '').trim();
+      var code = document.getElementById('u_code').value || '';
+      var decimals = parseInt(document.getElementById('u_decimals').value, 10) || 0;
+      var category = (document.getElementById('u_category').value || '').trim();
+      var description = (document.getElementById('u_description').value || '').trim();
+
+      // Products-style inline validation
+      var nameMissing = !name;
+      setUnitFieldError('u_name', nameMissing);
+      if (nameMissing) {
+        showToast('Please enter Unit Name', 'error');
+        document.getElementById('u_name').focus();
+        return;
+      }
+
+      var codeMissing = !code;
+      setUnitFieldError('u_code', codeMissing);
+      if (codeMissing) {
+        showToast('Please select a Unit Code', 'error');
+        return;
+      }
+
+      // Prevent duplicate unit codes
+      var duplicate = unitsData.some(function(u) {
+        return u.code === code && u.id !== editingUnitId;
+      });
+      if (duplicate) {
+        setUnitFieldError('u_code', true);
+        showToast('A unit with code "' + code + '" already exists', 'error');
+        return;
+      }
+      setUnitFieldError('u_code', false);
+
+      if (editingUnitId) {
+        var existing = unitsData.find(function(u) { return u.id === editingUnitId; });
+        if (existing) {
+          existing.name = name;
+          existing.code = code;
+          existing.decimals = decimals;
+          existing.category = category;
+          existing.description = description;
+          showToast('Unit updated successfully', 'success');
+        }
+      } else {
+        unitsData.push({
+          id: 'unit-' + String(Date.now()),
+          name: name,
+          code: code,
+          decimals: decimals,
+          category: category,
+          description: description
+        });
+        showToast('Unit added successfully', 'success');
+      }
+
+      cancelUnitForm();
+      renderUnits();
+    }
+
+    function delUnit(id) {
+      var unit = unitsData.find(function(u) { return u.id === id; });
+      if (!unit) return;
+
+      // Products-style delete confirmation modal
+      var modalContent = `
+        ${modalHeader('Delete Unit', unit.name + ' (' + unit.code + ')')}
+        <div class="px-6 py-4 text-sm text-gray-600">
+          <p>Are you sure you want to permanently delete <b class="text-gray-800">${unit.name}</b>?</p>
+          <p class="text-gray-400 text-[12px] mt-1">Items already using this unit will keep their existing value, but it will no longer appear as an option for new items.</p>
+        </div>
+        ${modalFooter('Delete', 'onclick="confirmDelUnit(\'' + id + '\')"', '')}
+      `;
+      openModal(modalContent, { width: 'max-w-md' });
+    }
+
+    function confirmDelUnit(id) {
+      unitsData = unitsData.filter(function(u) { return u.id !== id; });
+      closeModal();
+      renderUnits();
+      showToast('Unit deleted successfully', 'warning');
+    }
+
+    // Products-style inline error toggle
+    function setUnitFieldError(id, hasError) {
+      var el = document.getElementById(id);
+      var err = document.getElementById('err_' + id);
+      if (el) el.classList.toggle('border-red-500', !!hasError);
+      if (err) err.classList.toggle('hidden', !hasError);
+    }
+
+    // =============================================================
+    // SAVE COMPANY
+    // =============================================================
+    function saveCompany() {
+      var name = document.getElementById('compLegalName').value;
+      if (!name) {
+        setUnitFieldError('compLegalName', true);
+        showToast('Please enter company name', 'error');
+        return;
+      }
+      setUnitFieldError('compLegalName', false);
+      showToast('Company settings saved successfully', 'success');
+      document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+    }
+
+    // =============================================================
+    // KEYBOARD SHORTCUTS
+    // =============================================================
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        saveCompany();
+      }
+      if (e.key === 'Escape') {
+        cancelUnitForm();
+        closeModal();
+      }
+    });
+
+    // =============================================================
+    // INIT LOG
+    // =============================================================
+    console.log('Organization Setup Module Loaded Successfully');
+    console.log('Company: Kunash Media Pvt. Ltd.');
+    console.log('Location: Mumbai, Maharashtra (State Code: 27)');
+    console.log('GSTIN: 27AABCU1234D1ZP');
+    console.log('Units of Measurement:', unitsData.length, '(Inline CRUD — no modal for add/edit)');
+
+  </script>
+
+</body>
+</html>

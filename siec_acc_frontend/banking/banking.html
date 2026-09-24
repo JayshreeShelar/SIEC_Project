@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+<link rel="manifest" href="/favicon_io/site.webmanifest">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<title>Banking — Aquilon ERP</title>
+
+<script>
+  (function () {
+    try {
+      var collapsed = localStorage.getItem("sidebarCollapsed") === "true";
+      document.documentElement.classList.add(collapsed ? "sidebar-collapsed" : "sidebar-expanded");
+    } catch (e) {
+      document.documentElement.classList.add("sidebar-expanded");
+    }
+  })();
+</script>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: { DEFAULT: "#6da84c", dark: "#5c9140", soft: "#eef5e8" },
+          secondary: { DEFAULT: "#1985bf", soft: "#e7f3fa" },
+        },
+      },
+    },
+  };
+</script>
+
+<link rel="stylesheet" href="/assets/css/nav-sidebar.css" />
+
+<style>
+  body {
+    font-size: 12px;
+    background: #f3f4f6;
+  }
+
+  .form-input {
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fafafa;
+    color: #1a1a2e;
+  }
+  .form-input:focus {
+    border-color: #6da84c;
+    box-shadow: 0 0 0 3px rgba(109, 168, 76, 0.12);
+    background: #ffffff;
+  }
+  .form-input:disabled {
+    background: #f3f4f6;
+    cursor: not-allowed;
+  }
+
+  .form-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #374151;
+    display: block;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .form-label .required { color: #ef4444; margin-left: 2px; }
+  .form-hint { font-size: 9.5px; color: #9ca3af; margin-top: 2px; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+  }
+  .badge-green { background: #dcfce7; color: #166534; }
+  .badge-amber { background: #fef3c7; color: #92400e; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  .badge-gray { background: #f1f5f9; color: #475569; }
+  .badge-blue { background: #dbeafe; color: #1e40af; }
+  .badge-purple { background: #ede9fe; color: #5b21b6; }
+  .badge-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .badge-dot-green { background: #22c55e; }
+  .badge-dot-amber { background: #f59e0b; }
+  .badge-dot-red { background: #ef4444; }
+  .badge-dot-gray { background: #94a3b8; }
+  .badge-dot-blue { background: #3b82f6; }
+  .badge-dot-purple { background: #8b5cf6; }
+
+  .stat-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    padding: 10px 14px !important;
+  }
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  }
+  .stat-card .stat-label {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+  }
+  .stat-card .stat-value {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-top: 2px;
+  }
+
+  .table-row-hover:hover {
+    background: #f8fafc;
+  }
+
+  .btn-icon-action {
+    transition: all 0.15s ease;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-icon-action:hover {
+    background: #f1f5f9;
+    color: #6da84c;
+  }
+  .btn-icon-action.danger:hover {
+    background: #fee2e2;
+    color: #ef4444;
+  }
+  .btn-icon-action.primary:hover {
+    background: #eef5e8;
+    color: #6da84c;
+  }
+
+  .toast {
+    animation: fadeIn 0.2s ease;
+    font-size: 12px;
+  }
+  .toast-success { background: #16a34a; }
+  .toast-error { background: #dc2626; }
+  .toast-warning { background: #f59e0b; }
+  .toast-info { background: #6da84c; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.96) translateY(6px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .animate-modal { animation: modalIn 0.18s ease; }
+
+  .modal-scroll {
+    max-height: 55vh;
+    overflow-y: auto;
+  }
+  .modal-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+  .modal-scroll::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+  }
+
+  .empty-icon-svg {
+    opacity: 0.2;
+    width: 40px;
+    height: 40px;
+    color: #94a3b8;
+  }
+
+  .page-title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .page-subtitle {
+    font-size: 12px;
+    color: #6b7280;
+  }
+  .page-breadcrumb {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6da84c;
+  }
+
+  table th {
+    font-size: 9.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+    padding: 8px 12px;
+  }
+  table td {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+  table td .font-mono {
+    font-size: 11px;
+  }
+
+  .modal-title {
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .modal-subtitle {
+    font-size: 11px;
+    color: #6b7280;
+  }
+
+  .filter-btn {
+    font-size: 11px;
+    padding: 5px 12px;
+  }
+  .filter-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Bank Account Card */
+  .bank-account-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 14px 16px;
+    background: #ffffff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .bank-account-card:hover {
+    border-color: #6da84c;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+  .bank-account-card .bank-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1a2e;
+  }
+  .bank-account-card .bank-balance {
+    font-size: 18px;
+    font-weight: 700;
+    color: #6da84c;
+  }
+  .bank-account-card .bank-details {
+    font-size: 10px;
+    color: #6b7280;
+  }
+
+  /* Reconciliation */
+  .recon-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 4px;
+    transition: background 0.15s;
+  }
+  .recon-item:hover {
+    background: #f8fafc;
+  }
+  .recon-item.matched {
+    border-color: #22c55e;
+    background: #f0fdf4;
+  }
+  .recon-item.unmatched {
+    border-color: #ef4444;
+    background: #fef2f2;
+  }
+</style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 antialiased text-sm">
+
+  <div class="flex min-h-screen">
+    <div id="sidebar-root"></div>
+
+    <div class="app-main flex-1 flex flex-col min-w-0">
+      <div id="topbar-root"></div>
+
+      <main class="p-3 sm:p-4 lg:p-5">
+
+        <div id="toastWrap" class="fixed bottom-5 right-5 z-[200] flex flex-col gap-2 items-end"></div>
+        <div id="modalRoot"></div>
+
+        <div class="max-w-7xl mx-auto">
+
+          <!-- ===== PAGE HEADER ===== -->
+          <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+            <div>
+              <div class="page-breadcrumb">Finance</div>
+              <h1 class="page-title text-gray-900">Banking</h1>
+              <p class="page-subtitle mt-0.5">Manage bank accounts, transactions, transfers, and reconciliation.</p>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <button onclick="openAddAccount()" class="inline-flex items-center gap-1.5 bg-primary hover:bg-primary-dark text-white text-[11px] font-semibold px-3 py-2 rounded-lg transition shadow-sm">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+                Add Account
+              </button>
+              <button onclick="openAddTransaction()" class="inline-flex items-center gap-1.5 bg-secondary hover:bg-secondary-dark text-white text-[11px] font-semibold px-3 py-2 rounded-lg transition shadow-sm">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                  <path d="M7 10l5 5 5-5"/>
+                  <path d="M12 15V3"/>
+                </svg>
+                New Transaction
+              </button>
+            </div>
+          </div>
+
+          <!-- ===== STATS CARDS ===== -->
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-2.5 mb-4">
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Total Balance</div>
+              <div class="stat-value text-primary" id="totalBalance">₹0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Accounts</div>
+              <div class="stat-value" id="totalAccounts">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Transactions</div>
+              <div class="stat-value" id="totalTransactions">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Deposits</div>
+              <div class="stat-value text-green-600" id="totalDeposits">₹0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Withdrawals</div>
+              <div class="stat-value text-red-600" id="totalWithdrawals">₹0</div>
+            </div>
+          </div>
+
+          <!-- ===== TABS: Accounts, Transactions, Reconciliation ===== -->
+          <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+            <div class="flex overflow-x-auto border-b border-gray-200 px-4 pt-2 gap-1" id="bankTabs">
+              <button class="page-tab-btn active" data-tab="tab-accounts">
+                <svg class="w-3.5 h-3.5 inline mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 21h18"/>
+                  <path d="M5 21V10M10 21V10M14 21V10M19 21V10"/>
+                  <path d="M2 10l10-6 10 6"/>
+                </svg>
+                Accounts
+              </button>
+              <button class="page-tab-btn" data-tab="tab-transactions">
+                <svg class="w-3.5 h-3.5 inline mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                  <path d="M7 10l5 5 5-5"/>
+                  <path d="M12 15V3"/>
+                </svg>
+                Transactions
+              </button>
+              <button class="page-tab-btn" data-tab="tab-reconciliation">
+                <svg class="w-3.5 h-3.5 inline mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+                Reconciliation
+              </button>
+            </div>
+
+            <div class="p-5">
+              <!-- ===== TAB 1: ACCOUNTS ===== -->
+              <div id="tab-accounts" class="page-tab-panel active">
+                <div id="accountsPanel"></div>
+              </div>
+
+              <!-- ===== TAB 2: TRANSACTIONS ===== -->
+              <div id="tab-transactions" class="page-tab-panel">
+                <div id="transactionsPanel"></div>
+              </div>
+
+              <!-- ===== TAB 3: RECONCILIATION ===== -->
+              <div id="tab-reconciliation" class="page-tab-panel">
+                <div id="reconciliationPanel"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ========================================================== -->
+  <!-- SCRIPTS -->
+  <!-- ========================================================== -->
+
+  <script src="/assets/js/nav-sidebar.js"></script>
+  <script>
+    // =============================================================
+    // NAV-SIDEBAR INIT
+    // =============================================================
+    NavSidebar.init({
+      basePath: "",
+      activePage: "banking",
+      pageTitle: "Banking",
+      user: {
+        name: "Admin",
+        role: "Super Admin",
+        avatarUrl: "",
+      },
+    });
+
+    // =============================================================
+    // SVG ICONS
+    // =============================================================
+    function iconPlus() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>`;
+    }
+    function iconEdit() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`;
+    }
+    function iconTrash() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>`;
+    }
+    function iconEye() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    }
+    function iconX() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg>`;
+    }
+    function iconFilter() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M7 12h10M11 18h2"/></svg>`;
+    }
+    function iconSave() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>`;
+    }
+    function iconInfo() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>`;
+    }
+    function iconDocument() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><path d="M14 2v6h6"/></svg>`;
+    }
+    function iconSearch() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>`;
+    }
+    function iconBank() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V10M10 21V10M14 21V10M19 21V10"/><path d="M2 10l10-6 10 6"/></svg>`;
+    }
+    function iconTransfer() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16l-4-4 4-4"/><path d="M21 12h-12"/></svg>`;
+    }
+    function iconReconcile() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>`;
+    }
+
+    // =============================================================
+    // TOAST
+    // =============================================================
+    function showToast(message, kind) {
+      kind = kind || 'success';
+      var wrap = document.getElementById('toastWrap');
+      var colors = {
+        success: 'bg-green-600',
+        info: 'bg-primary',
+        warning: 'bg-amber-600',
+        error: 'bg-red-600'
+      };
+      var el = document.createElement('div');
+      el.className = 'toast ' + colors[kind] + ' text-white font-semibold px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 max-w-xs';
+      el.innerHTML = '<span>' + message + '</span>';
+      wrap.appendChild(el);
+      setTimeout(function() {
+        el.style.transition = 'opacity .3s';
+        el.style.opacity = '0';
+        setTimeout(function() { el.remove(); }, 300);
+      }, 2600);
+    }
+
+    // =============================================================
+    // MODAL
+    // =============================================================
+    function openModal(innerHtml, opts) {
+      opts = opts || {};
+      var root = document.getElementById('modalRoot');
+      root.innerHTML = `
+        <div class="fixed inset-0 z-[100] flex items-center justify-center p-3" id="modalOverlay">
+          <div class="absolute inset-0 bg-black/40 backdrop-blur-[1px]" id="modalBackdrop"></div>
+          <div class="relative bg-white rounded-xl shadow-2xl w-full ${opts.width || 'max-w-4xl'} max-h-[92vh] overflow-hidden animate-modal">
+            ${innerHtml}
+          </div>
+        </div>`;
+      document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      var root = document.getElementById('modalRoot');
+      root.innerHTML = '';
+      document.body.style.overflow = '';
+    }
+
+    function modalHeader(title, subtitle) {
+      return `
+        <div class="flex items-start justify-between px-5 py-3.5 border-b border-gray-100 sticky top-0 bg-white z-10">
+          <div>
+            <h3 class="modal-title text-gray-900">${title}</h3>
+            ${subtitle ? '<p class="modal-subtitle mt-0.5">' + subtitle + '</p>' : ''}
+          </div>
+          <button onclick="closeModal()" class="w-7 h-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 transition">${iconX()}</button>
+        </div>`;
+    }
+
+    function modalFooter(saveLabel, onSaveAttr, extraBtns) {
+      return `
+        <div class="flex items-center justify-between gap-2 px-5 py-3 border-t border-gray-100 bg-gray-50 rounded-b-xl sticky bottom-0">
+          <div>${extraBtns || ''}</div>
+          <div class="flex gap-2">
+            <button onclick="closeModal()" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-600 border border-gray-200 hover:bg-white transition">Cancel</button>
+            <button ${onSaveAttr} class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-primary hover:bg-primary-dark transition shadow-sm flex items-center gap-1.5">
+              ${iconSave()} ${saveLabel}
+            </button>
+          </div>
+        </div>`;
+    }
+
+    function fld(label, inputHtml, hint) {
+      return `
+        <div class="mb-2">
+          <label class="form-label">${label}</label>
+          ${inputHtml}
+          ${hint ? '<div class="form-hint">' + hint + '</div>' : ''}
+        </div>`;
+    }
+
+    function inputBase() { return "form-input"; }
+
+    // =============================================================
+    // PAGE TABS
+    // =============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+      var tabs = document.querySelectorAll('#bankTabs .page-tab-btn');
+      tabs.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          tabs.forEach(function(b) { b.classList.remove('active'); });
+          this.classList.add('active');
+          var panels = document.querySelectorAll('.page-tab-panel');
+          panels.forEach(function(p) { p.classList.remove('active'); });
+          document.getElementById(this.dataset.tab).classList.add('active');
+        });
+      });
+    });
+
+    // =============================================================
+    // HELPERS
+    // =============================================================
+    function money(n) { return '₹' + Number(n).toLocaleString('en-IN'); }
+
+    function statusBadge(status) {
+      var map = {
+        active: 'badge-green',
+        inactive: 'badge-gray',
+        pending: 'badge-amber',
+        reconciled: 'badge-blue',
+        matched: 'badge-green',
+        unmatched: 'badge-red'
+      };
+      var dot = {
+        active: 'badge-dot-green',
+        inactive: 'badge-dot-gray',
+        pending: 'badge-dot-amber',
+        reconciled: 'badge-dot-blue',
+        matched: 'badge-dot-green',
+        unmatched: 'badge-dot-red'
+      };
+      var label = status.charAt(0).toUpperCase() + status.slice(1);
+      return '<span class="badge ' + map[status] + '"><span class="badge-dot ' + dot[status] + '"></span>' + label + '</span>';
+    }
+
+    function transactionTypeBadge(type) {
+      var map = {
+        deposit: 'badge-green',
+        withdrawal: 'badge-red',
+        transfer: 'badge-blue'
+      };
+      var dot = {
+        deposit: 'badge-dot-green',
+        withdrawal: 'badge-dot-red',
+        transfer: 'badge-dot-blue'
+      };
+      var label = type.charAt(0).toUpperCase() + type.slice(1);
+      return '<span class="badge ' + map[type] + '"><span class="badge-dot ' + dot[type] + '"></span>' + label + '</span>';
+    }
+
+    function rowActionsHtml(editFn, delFn, viewFn) {
+      var html = '<div class="flex gap-1">';
+      if (viewFn) {
+        html += '<button onclick="' + viewFn + '" class="btn-icon-action" title="View">' + iconEye() + '</button>';
+      }
+      html += '<button onclick="' + editFn + '" class="btn-icon-action" title="Edit">' + iconEdit() + '</button>';
+      html += '<button onclick="' + delFn + '" class="btn-icon-action danger" title="Delete">' + iconTrash() + '</button>';
+      html += '</div>';
+      return html;
+    }
+
+    function panelWrap(titleHtml, bodyHtml, extraHead) {
+      return `
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+          <div class="flex items-center justify-between gap-3 flex-wrap px-4 py-2.5 border-b border-gray-100">
+            <div class="font-semibold text-sm text-gray-800 flex items-center gap-2">${titleHtml}</div>
+            ${extraHead || ''}
+          </div>
+          <div>${bodyHtml}</div>
+        </div>`;
+    }
+
+    function tableHtml(cols, rowsHtml) {
+      var colHeaders = cols.map(function(c) {
+        return '<th class="text-left font-semibold whitespace-nowrap">' + c + '</th>';
+      }).join('');
+      return `
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gray-50 border-b border-gray-200">${colHeaders}</tr>
+            </thead>
+            <tbody id="tbody-anchor">${rowsHtml}</tbody>
+          </table>
+        </div>`;
+    }
+
+    // =============================================================
+    // DATA
+    // =============================================================
+
+    var bankAccounts = [{
+      id: 'ACC-001',
+      name: 'HDFC Bank — Current',
+      bankName: 'HDFC Bank',
+      accountNumber: '1234567890',
+      ifsc: 'HDFC0000123',
+      branch: 'BKC, Mumbai',
+      balance: 840000,
+      status: 'active',
+      type: 'Current',
+      createdAt: '2025-04-01'
+    }, {
+      id: 'ACC-002',
+      name: 'ICICI Bank — Current',
+      bankName: 'ICICI Bank',
+      accountNumber: '9876543210',
+      ifsc: 'ICIC0000456',
+      branch: 'Bandra, Mumbai',
+      balance: 360000,
+      status: 'active',
+      type: 'Current',
+      createdAt: '2025-04-01'
+    }, {
+      id: 'ACC-003',
+      name: 'Petty Cash',
+      bankName: 'Cash',
+      accountNumber: 'PC-001',
+      ifsc: '—',
+      branch: 'Office',
+      balance: 60000,
+      status: 'active',
+      type: 'Cash',
+      createdAt: '2025-04-01'
+    }, {
+      id: 'ACC-004',
+      name: 'Payment Clearing',
+      bankName: 'Clearing Account',
+      accountNumber: 'CLR-001',
+      ifsc: '—',
+      branch: '—',
+      balance: 104822,
+      status: 'active',
+      type: 'Clearing',
+      createdAt: '2025-04-01'
+    }];
+
+    var transactions = [{
+      id: 'TXN-001',
+      date: '2026-01-05',
+      accountId: 'ACC-001',
+      type: 'deposit',
+      amount: 250000,
+      description: 'Client payment - XYZ Retail Store',
+      reference: 'INV/25-26/001',
+      status: 'reconciled',
+      createdAt: '2026-01-05'
+    }, {
+      id: 'TXN-002',
+      date: '2026-01-10',
+      accountId: 'ACC-001',
+      type: 'withdrawal',
+      amount: 85000,
+      description: 'Office rent payment',
+      reference: 'EXP-001',
+      status: 'reconciled',
+      createdAt: '2026-01-10'
+    }, {
+      id: 'TXN-003',
+      date: '2026-01-15',
+      accountId: 'ACC-002',
+      type: 'deposit',
+      amount: 150000,
+      description: 'Client payment - ABC Enterprises',
+      reference: 'INV/25-26/002',
+      status: 'pending',
+      createdAt: '2026-01-15'
+    }, {
+      id: 'TXN-004',
+      date: '2026-01-20',
+      accountId: 'ACC-001',
+      type: 'withdrawal',
+      amount: 72000,
+      description: 'Staff salaries',
+      reference: 'EXP-002',
+      status: 'reconciled',
+      createdAt: '2026-01-20'
+    }, {
+      id: 'TXN-005',
+      date: '2026-01-25',
+      accountId: 'ACC-002',
+      type: 'transfer',
+      amount: 50000,
+      description: 'Transfer to HDFC Current',
+      reference: 'TRF-001',
+      status: 'pending',
+      createdAt: '2026-01-25'
+    }, {
+      id: 'TXN-006',
+      date: '2026-02-01',
+      accountId: 'ACC-003',
+      type: 'withdrawal',
+      amount: 15000,
+      description: 'Office supplies',
+      reference: 'EXP-005',
+      status: 'reconciled',
+      createdAt: '2026-02-01'
+    }, {
+      id: 'TXN-007',
+      date: '2026-02-05',
+      accountId: 'ACC-001',
+      type: 'deposit',
+      amount: 31200,
+      description: 'Vendor refund - Global Imports',
+      reference: 'REF-001',
+      status: 'pending',
+      createdAt: '2026-02-05'
+    }, {
+      id: 'TXN-008',
+      date: '2026-02-08',
+      accountId: 'ACC-004',
+      type: 'deposit',
+      amount: 104822,
+      description: 'Payment clearing balance',
+      reference: 'CLR-001',
+      status: 'reconciled',
+      createdAt: '2026-02-08'
+    }];
+
+    var nextAccNo = 5;
+    var nextTxnNo = 9;
+
+    // =============================================================
+    // FUNCTIONS
+    // =============================================================
+
+    function getAccountName(id) {
+      var a = bankAccounts.find(function(x) { return x.id === id; });
+      return a ? a.name : id;
+    }
+
+    function getAccountBalance(id) {
+      var a = bankAccounts.find(function(x) { return x.id === id; });
+      return a ? a.balance : 0;
+    }
+
+    function renderStats() {
+      var totalBalance = bankAccounts.reduce(function(sum, a) { return sum + a.balance; }, 0);
+      var deposits = transactions.filter(function(t) { return t.type === 'deposit'; }).reduce(function(sum, t) { return sum + t.amount; }, 0);
+      var withdrawals = transactions.filter(function(t) { return t.type === 'withdrawal' || t.type === 'transfer'; }).reduce(function(sum, t) { return sum + t.amount; }, 0);
+
+      document.getElementById('totalBalance').textContent = money(totalBalance);
+      document.getElementById('totalAccounts').textContent = bankAccounts.length;
+      document.getElementById('totalTransactions').textContent = transactions.length;
+      document.getElementById('totalDeposits').textContent = money(deposits);
+      document.getElementById('totalWithdrawals').textContent = money(withdrawals);
+    }
+
+    // =============================================================
+    // RENDER ACCOUNTS
+    // =============================================================
+
+    function renderAccounts() {
+      var cardsHtml = bankAccounts.map(function(a) {
+        return `
+          <div class="bank-account-card">
+            <div class="flex items-start justify-between">
+              <div>
+                <div class="bank-name">${a.name}</div>
+                <div class="bank-details">${a.bankName} · ${a.accountNumber}</div>
+                <div class="bank-details">IFSC: ${a.ifsc} · ${a.branch}</div>
+              </div>
+              <div class="text-right">
+                <div class="bank-balance">${money(a.balance)}</div>
+                <div class="bank-details">${statusBadge(a.status)}</div>
+              </div>
+            </div>
+            <div class="flex gap-1 mt-2">
+              <button onclick="editAccount('${a.id}')" class="btn-icon-action" title="Edit">${iconEdit()}</button>
+              <button onclick="deleteAccount('${a.id}')" class="btn-icon-action danger" title="Delete">${iconTrash()}</button>
+            </div>
+          </div>`;
+      }).join('');
+
+      if (bankAccounts.length === 0) {
+        cardsHtml = `
+          <div class="text-center py-8 text-gray-400 text-sm">
+            <div class="flex justify-center mb-2 empty-icon-svg">${iconBank()}</div>
+            No bank accounts found. Click "Add Account" to create one.
+          </div>`;
+      }
+
+      document.getElementById('accountsPanel').innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${cardsHtml}</div>
+      `;
+
+      renderStats();
+    }
+
+    // =============================================================
+    // RENDER TRANSACTIONS
+    // =============================================================
+
+    function renderTransactions() {
+      var rowsHtml = transactions.map(function(t) {
+        var sign = t.type === 'deposit' ? '+' : '-';
+        var color = t.type === 'deposit' ? 'text-green-600' : 'text-red-600';
+        return `
+          <tr class="border-b border-gray-100 table-row-hover">
+            <td class="px-3 py-2.5">
+              <div class="font-semibold text-gray-800 text-sm">${t.id}</div>
+              <div class="text-[10px] text-gray-400">${t.date}</div>
+            </td>
+            <td class="px-3 py-2.5">${transactionTypeBadge(t.type)}</td>
+            <td class="px-3 py-2.5 text-sm text-gray-700">${getAccountName(t.accountId)}</td>
+            <td class="px-3 py-2.5 text-sm text-gray-600">${t.description}</td>
+            <td class="px-3 py-2.5 font-mono font-semibold ${color}">${sign}${money(t.amount)}</td>
+            <td class="px-3 py-2.5 text-xs text-gray-500">${t.reference || '—'}</td>
+            <td class="px-3 py-2.5">${statusBadge(t.status)}</td>
+            <td class="px-3 py-2.5">${rowActionsHtml(
+              "editTransaction('"+t.id+"')",
+              "deleteTransaction('"+t.id+"')",
+              "viewTransaction('"+t.id+"')"
+            )}</td>
+          </tr>`;
+      }).join('');
+
+      if (transactions.length === 0) {
+        rowsHtml = `
+          <tr>
+            <td colspan="8" class="text-center py-10 text-gray-400 text-sm">
+              <div class="flex justify-center mb-2 empty-icon-svg">${iconBank()}</div>
+              No transactions found.
+            </td>
+          </tr>`;
+      }
+
+      var panelHtml = panelWrap(
+        'All Transactions <span class="text-[10px] font-bold bg-primary-soft text-primary-dark px-2 py-0.5 rounded-full ml-1">' + transactions.length + '</span>',
+        tableHtml(['Transaction', 'Type', 'Account', 'Description', 'Amount', 'Reference', 'Status', 'Actions'], rowsHtml),
+        '<div class="flex items-center gap-2"><span class="text-[10px] text-gray-400">Show:</span><select id="pageSizeSelect" class="text-[10px] border border-gray-200 rounded-lg px-2 py-1 bg-white outline-none"><option value="10">10</option><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option></select></div>'
+      );
+
+      document.getElementById('transactionsPanel').innerHTML = panelHtml;
+    }
+
+    // =============================================================
+    // RENDER RECONCILIATION
+    // =============================================================
+
+    function renderReconciliation() {
+      var reconItems = transactions.map(function(t) {
+        var isMatched = t.status === 'reconciled';
+        return `
+          <div class="recon-item ${isMatched ? 'matched' : 'unmatched'}">
+            <div>
+              <span class="font-semibold text-sm">${t.id}</span>
+              <span class="text-gray-500 text-xs ml-2">${t.date}</span>
+              <span class="text-gray-600 text-sm ml-2">${t.description}</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="font-mono font-semibold ${t.type === 'deposit' ? 'text-green-600' : 'text-red-600'}">${t.type === 'deposit' ? '+' : '-'}${money(t.amount)}</span>
+              ${isMatched ? '<span class="text-green-600 text-xs font-semibold">✓ Matched</span>' : '<button onclick="reconcileTransaction(\''+t.id+'\')" class="text-xs text-primary font-semibold hover:underline">Reconcile</button>'}
+            </div>
+          </div>`;
+      }).join('');
+
+      if (transactions.length === 0) {
+        reconItems = `
+          <div class="text-center py-8 text-gray-400 text-sm">
+            <div class="flex justify-center mb-2 empty-icon-svg">${iconBank()}</div>
+            No transactions to reconcile.
+          </div>`;
+      }
+
+      var totalReconciled = transactions.filter(function(t) { return t.status === 'reconciled'; }).length;
+      var total = transactions.length;
+
+      document.getElementById('reconciliationPanel').innerHTML = `
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <span class="text-sm font-semibold">Reconciliation Status</span>
+            <span class="text-xs text-gray-500 ml-2">${totalReconciled}/${total} reconciled</span>
+          </div>
+          <button onclick="reconcileAll()" class="text-xs font-semibold text-primary hover:underline">Reconcile All</button>
+        </div>
+        <div class="space-y-2">${reconItems}</div>
+        <div class="mt-3 text-xs text-gray-400">
+          💡 Click "Reconcile" on individual transactions or "Reconcile All" to mark all as reconciled.
+        </div>
+      `;
+    }
+
+    // =============================================================
+    // ACCOUNT FUNCTIONS
+    // =============================================================
+
+    function openAddAccount() { openAccountModal(null); }
+
+    function editAccount(id) {
+      var a = bankAccounts.find(function(x) { return x.id === id; });
+      if (a) openAccountModal(a);
+    }
+
+    function openAccountModal(existing) {
+      var e = existing || {
+        name: '',
+        bankName: '',
+        accountNumber: '',
+        ifsc: '',
+        branch: '',
+        balance: '',
+        type: 'Current',
+        status: 'active'
+      };
+      var isEdit = !!existing;
+
+      var modalContent = `
+        ${modalHeader(isEdit ? 'Edit Account' : 'Add Bank Account', isEdit ? e.id : 'Create a new bank account')}
+        <div class="px-5 py-4">
+          <div class="grid grid-cols-2 gap-3">
+            ${fld('Account Name *', '<input type="text" class="form-input" id="f_name" value="' + e.name + '" placeholder="e.g. HDFC Bank — Current">')}
+            ${fld('Bank Name *', '<input type="text" class="form-input" id="f_bank" value="' + e.bankName + '" placeholder="Bank name">')}
+            ${fld('Account Number *', '<input type="text" class="form-input" id="f_account" value="' + e.accountNumber + '" placeholder="Account number">')}
+            ${fld('IFSC Code', '<input type="text" class="form-input" id="f_ifsc" value="' + e.ifsc + '" placeholder="IFSC code">')}
+            ${fld('Branch', '<input type="text" class="form-input" id="f_branch" value="' + e.branch + '" placeholder="Branch name">')}
+            ${fld('Opening Balance (₹)', '<input type="number" class="form-input" id="f_balance" value="' + (e.balance || '0') + '" placeholder="0.00" step="0.01">')}
+            ${fld('Account Type', '<select class="form-input" id="f_type"><option ' + (e.type === 'Current' ? 'selected' : '') + '>Current</option><option ' + (e.type === 'Savings' ? 'selected' : '') + '>Savings</option><option ' + (e.type === 'Cash' ? 'selected' : '') + '>Cash</option><option ' + (e.type === 'Clearing' ? 'selected' : '') + '>Clearing</option></select>')}
+            ${fld('Status', '<select class="form-input" id="f_status"><option ' + (e.status === 'active' ? 'selected' : '') + ' value="active">Active</option><option ' + (e.status === 'inactive' ? 'selected' : '') + ' value="inactive">Inactive</option></select>')}
+          </div>
+        </div>
+        ${modalFooter(isEdit ? 'Update Account' : 'Save Account', 'onclick="saveAccount(\'' + (isEdit ? e.id : '') + '\')"')}
+      `;
+
+      openModal(modalContent, { width: 'max-w-lg' });
+    }
+
+    function saveAccount(existingId) {
+      var name = document.getElementById('f_name').value.trim();
+      var bankName = document.getElementById('f_bank').value.trim();
+      var accountNumber = document.getElementById('f_account').value.trim();
+      var ifsc = document.getElementById('f_ifsc').value.trim();
+      var branch = document.getElementById('f_branch').value.trim();
+      var balance = parseFloat(document.getElementById('f_balance').value) || 0;
+      var type = document.getElementById('f_type').value;
+      var status = document.getElementById('f_status').value;
+
+      if (!name || !bankName || !accountNumber) {
+        showToast('Please fill all required fields (Name, Bank Name, Account Number)', 'error');
+        return;
+      }
+
+      if (existingId) {
+        var a = bankAccounts.find(function(x) { return x.id === existingId; });
+        if (a) {
+          a.name = name;
+          a.bankName = bankName;
+          a.accountNumber = accountNumber;
+          a.ifsc = ifsc;
+          a.branch = branch;
+          a.balance = balance;
+          a.type = type;
+          a.status = status;
+          showToast('Account updated successfully', 'success');
+        }
+      } else {
+        var newAccount = {
+          id: 'ACC-' + String(nextAccNo++).padStart(3, '0'),
+          name: name,
+          bankName: bankName,
+          accountNumber: accountNumber,
+          ifsc: ifsc || '—',
+          branch: branch || '—',
+          balance: balance,
+          status: status,
+          type: type,
+          createdAt: new Date().toISOString().split('T')[0]
+        };
+        bankAccounts.unshift(newAccount);
+        showToast('Account created successfully', 'success');
+      }
+
+      closeModal();
+      renderAccounts();
+    }
+
+    function deleteAccount(id) {
+      if (confirm('Are you sure you want to delete this account?')) {
+        bankAccounts = bankAccounts.filter(function(x) { return x.id !== id; });
+        renderAccounts();
+        showToast('Account deleted', 'warning');
+      }
+    }
+
+    // =============================================================
+    // TRANSACTION FUNCTIONS
+    // =============================================================
+
+    function openAddTransaction() { openTransactionModal(null); }
+
+    function editTransaction(id) {
+      var t = transactions.find(function(x) { return x.id === id; });
+      if (t) openTransactionModal(t);
+    }
+
+    function openTransactionModal(existing) {
+      var e = existing || {
+        date: new Date().toISOString().split('T')[0],
+        accountId: bankAccounts[0] ? bankAccounts[0].id : '',
+        type: 'deposit',
+        amount: '',
+        description: '',
+        reference: '',
+        status: 'pending'
+      };
+      var isEdit = !!existing;
+
+      var accountOptions = bankAccounts.map(function(a) {
+        return '<option ' + (a.id === e.accountId ? 'selected' : '') + ' value="' + a.id + '">' + a.name + ' (' + money(a.balance) + ')</option>';
+      }).join('');
+
+      var modalContent = `
+        ${modalHeader(isEdit ? 'Edit Transaction' : 'New Transaction', isEdit ? e.id : 'Record a new bank transaction')}
+        <div class="px-5 py-4">
+          <div class="grid grid-cols-2 gap-3">
+            ${fld('Date *', '<input type="date" class="form-input" id="tx_date" value="' + e.date + '">')}
+            ${fld('Account *', '<select class="form-input" id="tx_account">' + accountOptions + '</select>')}
+            ${fld('Type *', '<select class="form-input" id="tx_type"><option ' + (e.type === 'deposit' ? 'selected' : '') + ' value="deposit">Deposit</option><option ' + (e.type === 'withdrawal' ? 'selected' : '') + ' value="withdrawal">Withdrawal</option><option ' + (e.type === 'transfer' ? 'selected' : '') + ' value="transfer">Transfer</option></select>')}
+            ${fld('Amount (₹) *', '<input type="number" class="form-input" id="tx_amount" value="' + (e.amount || '') + '" placeholder="0.00" step="0.01">')}
+          </div>
+          ${fld('Description *', '<input type="text" class="form-input" id="tx_description" value="' + (e.description || '') + '" placeholder="Transaction description">')}
+          ${fld('Reference', '<input type="text" class="form-input" id="tx_reference" value="' + (e.reference || '') + '" placeholder="Invoice/Bill/Cheque number">')}
+          ${fld('Status', '<select class="form-input" id="tx_status"><option ' + (e.status === 'pending' ? 'selected' : '') + ' value="pending">Pending</option><option ' + (e.status === 'reconciled' ? 'selected' : '') + ' value="reconciled">Reconciled</option></select>')}
+        </div>
+        ${modalFooter(isEdit ? 'Update Transaction' : 'Save Transaction', 'onclick="saveTransaction(\'' + (isEdit ? e.id : '') + '\')"')}
+      `;
+
+      openModal(modalContent, { width: 'max-w-lg' });
+    }
+
+    function saveTransaction(existingId) {
+      var date = document.getElementById('tx_date').value;
+      var accountId = document.getElementById('tx_account').value;
+      var type = document.getElementById('tx_type').value;
+      var amount = parseFloat(document.getElementById('tx_amount').value) || 0;
+      var description = document.getElementById('tx_description').value.trim();
+      var reference = document.getElementById('tx_reference').value.trim() || '';
+      var status = document.getElementById('tx_status').value;
+
+      if (!date || !accountId || amount <= 0 || !description) {
+        showToast('Please fill all required fields (Date, Account, Amount, Description)', 'error');
+        return;
+      }
+
+      if (existingId) {
+        var t = transactions.find(function(x) { return x.id === existingId; });
+        if (t) {
+          // Revert old balance
+          var oldAccount = bankAccounts.find(function(a) { return a.id === t.accountId; });
+          if (oldAccount) {
+            if (t.type === 'deposit') oldAccount.balance -= t.amount;
+            else if (t.type === 'withdrawal' || t.type === 'transfer') oldAccount.balance += t.amount;
+          }
+
+          t.date = date;
+          t.accountId = accountId;
+          t.type = type;
+          t.amount = amount;
+          t.description = description;
+          t.reference = reference;
+          t.status = status;
+
+          // Apply new balance
+          var newAccount = bankAccounts.find(function(a) { return a.id === accountId; });
+          if (newAccount) {
+            if (type === 'deposit') newAccount.balance += amount;
+            else if (type === 'withdrawal' || type === 'transfer') newAccount.balance -= amount;
+          }
+          showToast('Transaction updated successfully', 'success');
+        }
+      } else {
+        var newTransaction = {
+          id: 'TXN-' + String(nextTxnNo++).padStart(3, '0'),
+          date: date,
+          accountId: accountId,
+          type: type,
+          amount: amount,
+          description: description,
+          reference: reference,
+          status: status,
+          createdAt: date
+        };
+        transactions.unshift(newTransaction);
+
+        // Update account balance
+        var account = bankAccounts.find(function(a) { return a.id === accountId; });
+        if (account) {
+          if (type === 'deposit') account.balance += amount;
+          else if (type === 'withdrawal' || type === 'transfer') account.balance -= amount;
+        }
+        showToast('Transaction created successfully', 'success');
+      }
+
+      closeModal();
+      renderAccounts();
+      renderTransactions();
+      renderReconciliation();
+    }
+
+    function deleteTransaction(id) {
+      if (confirm('Are you sure you want to delete this transaction?')) {
+        var t = transactions.find(function(x) { return x.id === id; });
+        if (t) {
+          // Revert balance
+          var account = bankAccounts.find(function(a) { return a.id === t.accountId; });
+          if (account) {
+            if (t.type === 'deposit') account.balance -= t.amount;
+            else if (t.type === 'withdrawal' || t.type === 'transfer') account.balance += t.amount;
+          }
+          transactions = transactions.filter(function(x) { return x.id !== id; });
+          renderAccounts();
+          renderTransactions();
+          renderReconciliation();
+          showToast('Transaction deleted', 'warning');
+        }
+      }
+    }
+
+    function viewTransaction(id) {
+      var t = transactions.find(function(x) { return x.id === id; });
+      if (!t) return;
+
+      var modalContent = `
+        ${modalHeader('Transaction Details', t.id)}
+        <div class="px-5 py-4">
+          <div class="grid grid-cols-2 gap-3 text-sm">
+            <div><span class="text-gray-500">Date</span><br><span class="font-semibold">${t.date}</span></div>
+            <div><span class="text-gray-500">Type</span><br>${transactionTypeBadge(t.type)}</div>
+            <div><span class="text-gray-500">Account</span><br><span class="font-semibold">${getAccountName(t.accountId)}</span></div>
+            <div><span class="text-gray-500">Amount</span><br><span class="font-semibold ${t.type === 'deposit' ? 'text-green-600' : 'text-red-600'}">${t.type === 'deposit' ? '+' : '-'}${money(t.amount)}</span></div>
+            <div><span class="text-gray-500">Description</span><br><span class="font-semibold">${t.description}</span></div>
+            <div><span class="text-gray-500">Reference</span><br><span class="font-semibold">${t.reference || '—'}</span></div>
+            <div><span class="text-gray-500">Status</span><br>${statusBadge(t.status)}</div>
+          </div>
+        </div>
+        ${modalFooter('Close', 'onclick="closeModal()"')}
+      `;
+
+      openModal(modalContent, { width: 'max-w-lg' });
+    }
+
+    // =============================================================
+    // RECONCILIATION FUNCTIONS
+    // =============================================================
+
+    function reconcileTransaction(id) {
+      var t = transactions.find(function(x) { return x.id === id; });
+      if (t) {
+        t.status = 'reconciled';
+        renderReconciliation();
+        renderTransactions();
+        showToast('Transaction ' + t.id + ' reconciled!', 'success');
+      }
+    }
+
+    function reconcileAll() {
+      var pending = transactions.filter(function(t) { return t.status !== 'reconciled'; });
+      if (pending.length === 0) {
+        showToast('All transactions are already reconciled!', 'info');
+        return;
+      }
+      pending.forEach(function(t) { t.status = 'reconciled'; });
+      renderReconciliation();
+      renderTransactions();
+      showToast(pending.length + ' transactions reconciled!', 'success');
+    }
+
+    // =============================================================
+    // SEARCH
+    // =============================================================
+
+    (function addSearchToTopbar() {
+      var searchContainer = document.querySelector('.app-main header');
+      if (searchContainer) {
+        var searchHtml = `
+          <div class="hidden sm:flex flex-1 max-w-[420px] relative ml-4">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">${iconSearch()}</span>
+            <input type="text" id="searchInput" placeholder="Search transactions by description, reference…"
+              onkeyup="filterBanking()"
+              class="w-full border border-gray-200 bg-gray-50 focus:bg-white rounded-lg pl-9 pr-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition placeholder:text-gray-400">
+          </div>
+        `;
+        var headerContent = searchContainer.innerHTML;
+        var hamburgerIndex = headerContent.indexOf('lg:hidden');
+        if (hamburgerIndex !== -1) {
+          var firstDivEnd = headerContent.indexOf('</div>', hamburgerIndex) + 6;
+          var before = headerContent.substring(0, firstDivEnd);
+          var after = headerContent.substring(firstDivEnd);
+          searchContainer.innerHTML = before + searchHtml + after;
+        }
+      }
+    })();
+
+    function filterBanking() {
+      var q = document.getElementById('searchInput').value.toLowerCase();
+      var rows = document.querySelectorAll('#tbody-anchor tr');
+      rows.forEach(function(row) {
+        var text = row.textContent.toLowerCase();
+        row.style.display = text.indexOf(q) !== -1 ? '' : 'none';
+      });
+    }
+
+    // =============================================================
+    // INIT
+    // =============================================================
+
+    renderAccounts();
+    renderTransactions();
+    renderReconciliation();
+
+    console.log('💰 Banking Module Loaded Successfully');
+    console.log('📊 Total Accounts:', bankAccounts.length);
+    console.log('💳 Total Balance:', money(bankAccounts.reduce(function(sum, a) { return sum + a.balance; }, 0)));
+    console.log('📝 Total Transactions:', transactions.length);
+
+  </script>
+
+</body>
+</html>

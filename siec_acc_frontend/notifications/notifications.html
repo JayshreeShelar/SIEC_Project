@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+<link rel="manifest" href="/favicon_io/site.webmanifest">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<title>Notifications & Automation — Aquilon ERP</title>
+
+<script>
+  (function () {
+    try {
+      var collapsed = localStorage.getItem("sidebarCollapsed") === "true";
+      document.documentElement.classList.add(collapsed ? "sidebar-collapsed" : "sidebar-expanded");
+    } catch (e) {
+      document.documentElement.classList.add("sidebar-expanded");
+    }
+  })();
+</script>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: { DEFAULT: "#6da84c", dark: "#5c9140", soft: "#eef5e8" },
+          secondary: { DEFAULT: "#1985bf", soft: "#e7f3fa" },
+        },
+      },
+    },
+  };
+</script>
+
+<link rel="stylesheet" href="/assets/css/nav-sidebar.css" />
+
+<style>
+  body {
+    font-size: 12px;
+    background: #f3f4f6;
+  }
+
+  .form-input {
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fafafa;
+    color: #1a1a2e;
+  }
+  .form-input:focus {
+    border-color: #6da84c;
+    box-shadow: 0 0 0 3px rgba(109, 168, 76, 0.12);
+    background: #ffffff;
+  }
+  .form-input:disabled {
+    background: #f3f4f6;
+    cursor: not-allowed;
+  }
+
+  .form-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #374151;
+    display: block;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .form-label .required { color: #ef4444; margin-left: 2px; }
+  .form-hint { font-size: 9.5px; color: #9ca3af; margin-top: 2px; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+  }
+  .badge-green { background: #dcfce7; color: #166534; }
+  .badge-amber { background: #fef3c7; color: #92400e; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  .badge-gray { background: #f1f5f9; color: #475569; }
+  .badge-blue { background: #dbeafe; color: #1e40af; }
+  .badge-purple { background: #ede9fe; color: #5b21b6; }
+  .badge-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .badge-dot-green { background: #22c55e; }
+  .badge-dot-amber { background: #f59e0b; }
+  .badge-dot-red { background: #ef4444; }
+  .badge-dot-gray { background: #94a3b8; }
+  .badge-dot-blue { background: #3b82f6; }
+  .badge-dot-purple { background: #8b5cf6; }
+
+  .stat-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    padding: 10px 14px !important;
+  }
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  }
+  .stat-card .stat-label {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+  }
+  .stat-card .stat-value {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-top: 2px;
+  }
+
+  .table-row-hover:hover {
+    background: #f8fafc;
+  }
+
+  .btn-icon-action {
+    transition: all 0.15s ease;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-icon-action:hover {
+    background: #f1f5f9;
+    color: #6da84c;
+  }
+  .btn-icon-action.danger:hover {
+    background: #fee2e2;
+    color: #ef4444;
+  }
+  .btn-icon-action.primary:hover {
+    background: #eef5e8;
+    color: #6da84c;
+  }
+
+  .toast {
+    animation: fadeIn 0.2s ease;
+    font-size: 12px;
+  }
+  .toast-success { background: #16a34a; }
+  .toast-error { background: #dc2626; }
+  .toast-warning { background: #f59e0b; }
+  .toast-info { background: #6da84c; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.96) translateY(6px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .animate-modal { animation: modalIn 0.18s ease; }
+
+  .modal-scroll {
+    max-height: 55vh;
+    overflow-y: auto;
+  }
+  .modal-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+  .modal-scroll::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+  }
+
+  .empty-icon-svg {
+    opacity: 0.2;
+    width: 40px;
+    height: 40px;
+    color: #94a3b8;
+  }
+
+  .page-title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .page-subtitle {
+    font-size: 12px;
+    color: #6b7280;
+  }
+  .page-breadcrumb {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6da84c;
+  }
+
+  table th {
+    font-size: 9.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+    padding: 8px 12px;
+  }
+  table td {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+  table td .font-mono {
+    font-size: 11px;
+  }
+
+  .modal-title {
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .modal-subtitle {
+    font-size: 11px;
+    color: #6b7280;
+  }
+
+  .filter-btn {
+    font-size: 11px;
+    padding: 5px 12px;
+  }
+  .filter-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Page tabs */
+  .page-tab-btn {
+    transition: all 0.2s ease;
+    padding: 8px 14px;
+    font-size: 11px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    color: #6b7280;
+    cursor: pointer;
+    background: transparent;
+    white-space: nowrap;
+  }
+  .page-tab-btn.active {
+    color: #6da84c;
+    border-bottom-color: #6da84c;
+    font-weight: 600;
+  }
+  .page-tab-btn:hover:not(.active) {
+    color: #1f2937;
+    border-bottom-color: #d1d5db;
+  }
+  .page-tab-panel { display: none; }
+  .page-tab-panel.active { display: block; animation: fadeIn 0.25s ease; }
+
+  /* Notification item */
+  .notif-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #ffffff;
+    transition: border-color 0.2s, background 0.15s;
+    margin-bottom: 8px;
+  }
+  .notif-item:hover {
+    border-color: #6da84c;
+    background: #f8fafc;
+  }
+  .notif-item.unread {
+    background: #f0f9ec;
+    border-color: #6da84c;
+  }
+  .notif-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .notif-icon-reminder { background: #fef3c7; color: #92400e; }
+  .notif-icon-stock { background: #fee2e2; color: #991b1b; }
+  .notif-icon-approval { background: #dbeafe; color: #1e40af; }
+  .notif-icon-payment { background: #dcfce7; color: #166534; }
+  .notif-icon-budget { background: #ede9fe; color: #5b21b6; }
+  .notif-icon-system { background: #f1f5f9; color: #475569; }
+
+  .notif-title {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+  .notif-desc {
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 2px;
+  }
+  .notif-time {
+    font-size: 10px;
+    color: #9ca3af;
+    margin-top: 4px;
+  }
+
+  /* Automation rule card */
+  .rule-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 14px 16px;
+    background: #ffffff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .rule-card:hover {
+    border-color: #6da84c;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+  .rule-card .rule-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+  .rule-card .rule-desc {
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 2px;
+  }
+  .rule-card .rule-meta {
+    font-size: 10.5px;
+    color: #6da84c;
+    font-weight: 600;
+    margin-top: 6px;
+  }
+
+  /* Toggle switch */
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+  }
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #cbd5e1;
+    transition: 0.3s;
+    border-radius: 20px;
+  }
+  .toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+  }
+  .toggle-switch input:checked + .toggle-slider {
+    background-color: #6da84c;
+  }
+  .toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(16px);
+  }
+</style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 antialiased text-sm">
+
+  <div class="flex min-h-screen">
+    <div id="sidebar-root"></div>
+
+    <div class="app-main flex-1 flex flex-col min-w-0">
+      <div id="topbar-root"></div>
+
+      <main class="p-3 sm:p-4 lg:p-5">
+
+        <div id="toastWrap" class="fixed bottom-5 right-5 z-[200] flex flex-col gap-2 items-end"></div>
+        <div id="modalRoot"></div>
+
+        <div class="max-w-7xl mx-auto">
+
+          <!-- ===== PAGE HEADER ===== -->
+          <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+            <div>
+              <div class="page-breadcrumb">System</div>
+              <h1 class="page-title text-gray-900">Notifications & Automation</h1>
+              <p class="page-subtitle mt-0.5">Alerts, reminders, automation rules and system notifications.</p>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <button onclick="markAllRead()" class="inline-flex items-center gap-1.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-[11px] font-semibold px-3 py-2 rounded-lg transition">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+                Mark All Read
+              </button>
+              <button onclick="openAddRule()" class="inline-flex items-center gap-1.5 bg-primary hover:bg-primary-dark text-white text-[11px] font-semibold px-3 py-2 rounded-lg transition shadow-sm">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+                Add Rule
+              </button>
+            </div>
+          </div>
+
+          <!-- ===== STATS CARDS ===== -->
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-2.5 mb-4">
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Total Notifications</div>
+              <div class="stat-value" id="totalNotifs">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Unread</div>
+              <div class="stat-value text-primary" id="unreadNotifs">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Active Rules</div>
+              <div class="stat-value text-blue-600" id="activeRules">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Triggers Today</div>
+              <div class="stat-value text-amber-600" id="triggersToday">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Emails Sent</div>
+              <div class="stat-value text-green-600" id="emailsSent">0</div>
+            </div>
+          </div>
+
+          <!-- ===== TABS ===== -->
+          <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+            <div class="flex overflow-x-auto border-b border-gray-200 px-4 pt-2 gap-1" id="notifTabs">
+              <button class="page-tab-btn active" data-tab="tab-inbox">
+                <svg class="w-3.5 h-3.5 inline mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.7 21a2 2 0 01-3.4 0"/>
+                </svg>
+                Inbox
+              </button>
+              <button class="page-tab-btn" data-tab="tab-rules">
+                <svg class="w-3.5 h-3.5 inline mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M19.4 15a1.7 1.7 0 00.34 1.87l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.7 1.7 0 00-1.87-.34 1.7 1.7 0 00-1 1.55V21a2 2 0 01-4 0v-.09a1.7 1.7 0 00-1-1.55 1.7 1.7 0 00-1.87.34l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.7 1.7 0 00.34-1.87 1.7 1.7 0 00-1.55-1H3a2 2 0 010-4h.09a1.7 1.7 0 001.55-1 1.7 1.7 0 00-.34-1.87l-.06-.06a2 2 0 112.83-2.83l.06.06a1.7 1.7 0 001.87.34H9a1.7 1.7 0 001-1.55V3a2 2 0 014 0v.09a1.7 1.7 0 001 1.55 1.7 1.7 0 001.87-.34l.06-.06a2 2 0 112.83 2.83l-.06.06a1.7 1.7 0 00-.34 1.87V9c.26.45.71.76 1.23.9L21 9.91a2 2 0 010 4h-.09a1.7 1.7 0 00-1.55 1z"/>
+                </svg>
+                Automation Rules
+              </button>
+              <button class="page-tab-btn" data-tab="tab-templates">
+                <svg class="w-3.5 h-3.5 inline mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <path d="M22 6l-10 7L2 6"/>
+                </svg>
+                Email Templates
+              </button>
+              <button class="page-tab-btn" data-tab="tab-settings">
+                <svg class="w-3.5 h-3.5 inline mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+                Preferences
+              </button>
+            </div>
+
+            <div class="p-5">
+              <div id="tab-inbox" class="page-tab-panel active"><div id="inboxPanel"></div></div>
+              <div id="tab-rules" class="page-tab-panel"><div id="rulesPanel"></div></div>
+              <div id="tab-templates" class="page-tab-panel"><div id="templatesPanel"></div></div>
+              <div id="tab-settings" class="page-tab-panel"><div id="settingsPanel"></div></div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ========================================================== -->
+  <!-- SCRIPTS -->
+  <!-- ========================================================== -->
+
+  <script src="/assets/js/nav-sidebar.js"></script>
+  <script>
+    // =============================================================
+    // NAV-SIDEBAR INIT
+    // =============================================================
+    NavSidebar.init({
+      basePath: "",
+      activePage: "notifications",
+      pageTitle: "Notifications",
+      user: {
+        name: "Admin",
+        role: "Super Admin",
+        avatarUrl: "",
+      },
+    });
+
+    // =============================================================
+    // SVG ICONS
+    // =============================================================
+    function iconX() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg>`; }
+    function iconSearch() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>`; }
+    function iconSave() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>`; }
+    function iconBell() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>`; }
+    function iconClock() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>`; }
+    function iconBox() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>`; }
+    function iconCheck() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>`; }
+    function iconPayment() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V10M10 21V10M14 21V10M19 21V10"/><path d="M2 10l10-6 10 6"/></svg>`; }
+    function iconTarget() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>`; }
+    function iconCog() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.34 1.87l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.7 1.7 0 00-1.87-.34 1.7 1.7 0 00-1 1.55V21a2 2 0 01-4 0v-.09a1.7 1.7 0 00-1-1.55 1.7 1.7 0 00-1.87.34l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.7 1.7 0 00.34-1.87 1.7 1.7 0 00-1.55-1H3a2 2 0 010-4h.09a1.7 1.7 0 001.55-1 1.7 1.7 0 00-.34-1.87l-.06-.06a2 2 0 112.83-2.83l.06.06a1.7 1.7 0 001.87.34H9a1.7 1.7 0 001-1.55V3a2 2 0 014 0v.09a1.7 1.7 0 001 1.55 1.7 1.7 0 001.87-.34l.06-.06a2 2 0 112.83 2.83l-.06.06a1.7 1.7 0 00-.34 1.87V9c.26.45.71.76 1.23.9L21 9.91a2 2 0 010 4h-.09a1.7 1.7 0 00-1.55 1z"/></svg>`; }
+    function iconPlus() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>`; }
+    function iconEdit() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`; }
+    function iconTrash() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>`; }
+    function iconInfo() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>`; }
+
+    // =============================================================
+    // TOAST
+    // =============================================================
+    function showToast(message, kind) {
+      kind = kind || 'success';
+      var wrap = document.getElementById('toastWrap');
+      var colors = { success: 'bg-green-600', info: 'bg-primary', warning: 'bg-amber-600', error: 'bg-red-600' };
+      var el = document.createElement('div');
+      el.className = 'toast ' + colors[kind] + ' text-white font-semibold px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 max-w-xs';
+      el.innerHTML = '<span>' + message + '</span>';
+      wrap.appendChild(el);
+      setTimeout(function() {
+        el.style.transition = 'opacity .3s';
+        el.style.opacity = '0';
+        setTimeout(function() { el.remove(); }, 300);
+      }, 2600);
+    }
+
+    // =============================================================
+    // MODAL
+    // =============================================================
+    function openModal(innerHtml, opts) {
+      opts = opts || {};
+      var root = document.getElementById('modalRoot');
+      root.innerHTML = `
+        <div class="fixed inset-0 z-[100] flex items-center justify-center p-3" id="modalOverlay">
+          <div class="absolute inset-0 bg-black/40 backdrop-blur-[1px]" id="modalBackdrop"></div>
+          <div class="relative bg-white rounded-xl shadow-2xl w-full ${opts.width || 'max-w-2xl'} max-h-[92vh] overflow-hidden animate-modal">
+            ${innerHtml}
+          </div>
+        </div>`;
+      document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      var root = document.getElementById('modalRoot');
+      root.innerHTML = '';
+      document.body.style.overflow = '';
+    }
+
+    function modalHeader(title, subtitle) {
+      return `
+        <div class="flex items-start justify-between px-5 py-3.5 border-b border-gray-100 sticky top-0 bg-white z-10">
+          <div>
+            <h3 class="modal-title text-gray-900">${title}</h3>
+            ${subtitle ? '<p class="modal-subtitle mt-0.5">' + subtitle + '</p>' : ''}
+          </div>
+          <button onclick="closeModal()" class="w-7 h-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 transition">${iconX()}</button>
+        </div>`;
+    }
+
+    function modalFooter(saveLabel, onSaveAttr, extraBtns) {
+      return `
+        <div class="flex items-center justify-between gap-2 px-5 py-3 border-t border-gray-100 bg-gray-50 rounded-b-xl sticky bottom-0">
+          <div>${extraBtns || ''}</div>
+          <div class="flex gap-2">
+            <button onclick="closeModal()" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-600 border border-gray-200 hover:bg-white transition">Cancel</button>
+            <button ${onSaveAttr} class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-primary hover:bg-primary-dark transition shadow-sm flex items-center gap-1.5">
+              ${iconSave()} ${saveLabel}
+            </button>
+          </div>
+        </div>`;
+    }
+
+    function fld(label, inputHtml, hint) {
+      return `
+        <div class="mb-2">
+          <label class="form-label">${label}</label>
+          ${inputHtml}
+          ${hint ? '<div class="form-hint">' + hint + '</div>' : ''}
+        </div>`;
+    }
+
+    function inputBase() { return "form-input"; }
+
+    // =============================================================
+    // PAGE TABS
+    // =============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+      var tabs = document.querySelectorAll('#notifTabs .page-tab-btn');
+      tabs.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          tabs.forEach(function(b) { b.classList.remove('active'); });
+          this.classList.add('active');
+          var panels = document.querySelectorAll('.page-tab-panel');
+          panels.forEach(function(p) { p.classList.remove('active'); });
+          document.getElementById(this.dataset.tab).classList.add('active');
+        });
+      });
+    });
+
+    // =============================================================
+    // HELPERS
+    // =============================================================
+    function panelWrap(titleHtml, bodyHtml, extraHead) {
+      return `
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+          <div class="flex items-center justify-between gap-3 flex-wrap px-4 py-2.5 border-b border-gray-100">
+            <div class="font-semibold text-sm text-gray-800 flex items-center gap-2">${titleHtml}</div>
+            ${extraHead || ''}
+          </div>
+          <div>${bodyHtml}</div>
+        </div>`;
+    }
+
+    // =============================================================
+    // DATA — NOTIFICATIONS
+    // =============================================================
+
+    var notifications = [{
+      id: 'N-001',
+      type: 'stock',
+      title: 'Low Stock Alert: Chemical Dosing Pump',
+      desc: 'Stock is 3 units (Reorder level: 5 units). Please reorder soon.',
+      time: '10 min ago',
+      read: false,
+      ref: 'INV-005'
+    }, {
+      id: 'N-002',
+      type: 'reminder',
+      title: 'Invoice Overdue: INV/25-26/002',
+      desc: 'Invoice for ABC Enterprises (₹1,41,865) is 5 days overdue.',
+      time: '1 hour ago',
+      read: false,
+      ref: 'INV-002'
+    }, {
+      id: 'N-003',
+      type: 'approval',
+      title: 'Purchase Order Awaiting Approval',
+      desc: 'PO/25-26/005 for Premium Raw Materials (₹2,18,500) needs approval.',
+      time: '2 hours ago',
+      read: false,
+      ref: 'PO-005'
+    }, {
+      id: 'N-004',
+      type: 'payment',
+      title: 'Payment Received: ₹1,00,000',
+      desc: 'Payment received from XYZ Retail Store against INV/25-26/001.',
+      time: '3 hours ago',
+      read: true,
+      ref: 'INV-001'
+    }, {
+      id: 'N-005',
+      type: 'budget',
+      title: 'Project Budget Alert: PRJ-001',
+      desc: 'Operation & Supervision — WHE budget usage reached 62%. Watch for overruns.',
+      time: '5 hours ago',
+      read: true,
+      ref: 'PRJ-001'
+    }, {
+      id: 'N-006',
+      type: 'stock',
+      title: 'Out of Stock: Sodium Hypochlorite',
+      desc: 'Zero stock. Reorder immediately to fulfil pending orders.',
+      time: '1 day ago',
+      read: true,
+      ref: 'INV-008'
+    }, {
+      id: 'N-007',
+      type: 'system',
+      title: 'Backup Completed',
+      desc: 'Daily automatic backup completed successfully at 2:00 AM.',
+      time: '1 day ago',
+      read: true,
+      ref: ''
+    }];
+
+    // =============================================================
+    // DATA — AUTOMATION RULES
+    // =============================================================
+
+    var automationRules = [{
+      id: 'RULE-001',
+      name: 'Invoice Due Reminder',
+      desc: 'Send reminder 3 days before invoice due date',
+      trigger: 'Invoice Due Date = Today + 3 days',
+      action: 'Send Email to Customer',
+      frequency: 'Daily',
+      active: true,
+      triggers: 24
+    }, {
+      id: 'RULE-002',
+      name: 'Invoice Overdue Alert',
+      desc: 'Notify internal team + customer when invoice is overdue',
+      trigger: 'Invoice Due Date < Today',
+      action: 'Send Email to Customer & Admin',
+      frequency: 'Daily',
+      active: true,
+      triggers: 12
+    }, {
+      id: 'RULE-003',
+      name: 'Low Stock Alert',
+      desc: 'Send alert when stock falls below reorder level',
+      trigger: 'Stock ≤ Reorder Level',
+      action: 'Send In-App Notification to Admin',
+      frequency: 'Instant',
+      active: true,
+      triggers: 8
+    }, {
+      id: 'RULE-004',
+      name: 'Purchase Approval Request',
+      desc: 'Notify approvers when a Purchase Order requires approval',
+      trigger: 'PO Status = Pending',
+      action: 'Send Email + In-App Notification',
+      frequency: 'Instant',
+      active: true,
+      triggers: 5
+    }, {
+      id: 'RULE-005',
+      name: 'Payment Received Confirmation',
+      desc: 'Send receipt email when payment is recorded against invoice',
+      trigger: 'Payment Recorded',
+      action: 'Send Email to Customer',
+      frequency: 'Instant',
+      active: true,
+      triggers: 16
+    }, {
+      id: 'RULE-006',
+      name: 'Vendor Payment Automation',
+      desc: 'Send email to vendor on payment saved (Enhancement #1)',
+      trigger: 'Vendor Payment Saved',
+      action: 'Send Email to Vendor',
+      frequency: 'Instant',
+      active: true,
+      triggers: 9
+    }, {
+      id: 'RULE-007',
+      name: 'Project Budget Alert',
+      desc: 'Alert project manager when budget usage exceeds 80%',
+      trigger: 'Project Budget Usage ≥ 80%',
+      action: 'Send Email to Project Manager',
+      frequency: 'Daily',
+      active: true,
+      triggers: 3
+    }, {
+      id: 'RULE-008',
+      name: 'Project On-Hold Reminder',
+      desc: 'Send reminder when project is On Hold for 7+ days',
+      trigger: 'Project On Hold ≥ 7 days',
+      action: 'Send In-App Notification',
+      frequency: 'Weekly',
+      active: false,
+      triggers: 0
+    }, {
+      id: 'RULE-009',
+      name: 'Estimate Expiry Reminder',
+      desc: 'Notify sales team when estimate is nearing expiry',
+      trigger: 'Estimate Valid Till = Today + 5 days',
+      action: 'Send In-App Notification',
+      frequency: 'Daily',
+      active: true,
+      triggers: 4
+    }];
+
+    // =============================================================
+    // DATA — EMAIL TEMPLATES
+    // =============================================================
+
+    var emailTemplates = [{
+      id: 'TPL-001',
+      name: 'Invoice Reminder Email',
+      subject: 'Reminder: Invoice {invoice_number} is due on {due_date}',
+      body: 'Dear {customer_name},\n\nThis is a friendly reminder that invoice {invoice_number} for {amount} is due on {due_date}.\n\nPlease make the payment at your earliest convenience.\n\nRegards,\n{company_name}',
+      category: 'Sales'
+    }, {
+      id: 'TPL-002',
+      name: 'Payment Confirmation Email',
+      subject: 'Payment Confirmation - {bill_number}',
+      body: 'Dear Vendor,\n\nThis is to confirm that we have processed your payment.\n\nPayment Details:\n- Amount: {amount}\n- Date: {payment_date}\n- Bill/Reference: {bill_number}\n- Mode of Payment: {payment_mode}\n\nPlease find the payment receipt attached.\n\nRegards,\n{company_name} Team',
+      category: 'Purchase'
+    }, {
+      id: 'TPL-003',
+      name: 'Invoice Email to Customer',
+      subject: 'Invoice {invoice_number} from {company_name}',
+      body: 'Dear {customer_name},\n\nPlease find attached your invoice {invoice_number}.\n\nInvoice Details:\n- Amount: {amount}\n- Due Date: {due_date}\n\nPlease make the payment by the due date.\n\nRegards,\n{company_name} Team',
+      category: 'Sales'
+    }, {
+      id: 'TPL-004',
+      name: 'Purchase Approval Request',
+      subject: 'Approval Required: PO {po_number}',
+      body: 'Dear Approver,\n\nPurchase Order {po_number} for {amount} requires your approval.\n\nVendor: {vendor_name}\nRequested By: {user_name}\n\nPlease review and approve/reject.\n\nRegards,\n{company_name}',
+      category: 'Purchase'
+    }, {
+      id: 'TPL-005',
+      name: 'Low Stock Alert',
+      subject: 'Low Stock Alert: {item_name}',
+      body: 'Hi Team,\n\nThe stock for {item_name} has fallen to {current_stock} {unit}. The reorder level is {reorder_level} {unit}.\n\nPlease reorder soon.\n\nRegards,\n{company_name}',
+      category: 'Inventory'
+    }];
+
+    // =============================================================
+    // DATA — PREFERENCES
+    // =============================================================
+
+    var preferences = {
+      emailNotifications: true,
+      inAppNotifications: true,
+      soundAlerts: false,
+      dailyDigest: true,
+      weeklyReport: true,
+      notifyAdminOn: {
+        newSale: true,
+        newPurchase: true,
+        paymentReceived: true,
+        lowStock: true,
+        approvalPending: true,
+        overdueInvoice: true
+      },
+      quietHours: { enabled: false, from: '22:00', to: '08:00' }
+    };
+
+    // =============================================================
+    // RENDER STATS
+    // =============================================================
+
+    function renderStats() {
+      document.getElementById('totalNotifs').textContent = notifications.length;
+      document.getElementById('unreadNotifs').textContent = notifications.filter(function(n) { return !n.read; }).length;
+      document.getElementById('activeRules').textContent = automationRules.filter(function(r) { return r.active; }).length;
+      document.getElementById('triggersToday').textContent = automationRules.reduce(function(s, r) { return s + r.triggers; }, 0);
+      document.getElementById('emailsSent').textContent = 42;
+    }
+
+    // =============================================================
+    // RENDER INBOX
+    // =============================================================
+
+    function renderInbox() {
+      var itemsHtml = notifications.map(function(n) {
+        var iconClass = 'notif-icon-' + n.type;
+        var iconHtml = n.type === 'stock' ? iconBox() :
+                       n.type === 'reminder' ? iconClock() :
+                       n.type === 'approval' ? iconCheck() :
+                       n.type === 'payment' ? iconPayment() :
+                       n.type === 'budget' ? iconTarget() : iconBell();
+        return `
+          <div class="notif-item ${!n.read ? 'unread' : ''}">
+            <div class="notif-icon ${iconClass}">${iconHtml}</div>
+            <div class="flex-1 min-w-0">
+              <div class="notif-title">${n.title}</div>
+              <div class="notif-desc">${n.desc}</div>
+              <div class="notif-time">${n.time}${n.ref ? ' · Ref: ' + n.ref : ''}</div>
+            </div>
+            <div class="flex gap-1">
+              ${!n.read ? '<button onclick="markRead(\'' + n.id + '\')" class="btn-icon-action primary" title="Mark Read">' + iconCheck() + '</button>' : ''}
+              <button onclick="dismissNotif('${n.id}')" class="btn-icon-action danger" title="Dismiss">${iconX()}</button>
+            </div>
+          </div>`;
+      }).join('');
+
+      if (notifications.length === 0) {
+        itemsHtml = `
+          <div class="text-center py-10 text-gray-400 text-sm">
+            <div class="flex justify-center mb-2 empty-icon-svg">${iconBell()}</div>
+            No notifications. You're all caught up!
+          </div>`;
+      }
+
+      document.getElementById('inboxPanel').innerHTML = `
+        <div class="flex items-center justify-between mb-3">
+          <div class="text-sm font-bold text-gray-800">Inbox</div>
+          <div class="text-[10.5px] text-gray-500">${notifications.filter(function(n) { return !n.read; }).length} unread</div>
+        </div>
+        <div>${itemsHtml}</div>
+      `;
+
+      renderStats();
+    }
+
+    function markRead(id) {
+      var n = notifications.find(function(x) { return x.id === id; });
+      if (n) {
+        n.read = true;
+        renderInbox();
+        showToast('Marked as read', 'success');
+      }
+    }
+
+    function dismissNotif(id) {
+      notifications = notifications.filter(function(x) { return x.id !== id; });
+      renderInbox();
+      showToast('Notification dismissed', 'info');
+    }
+
+    function markAllRead() {
+      notifications.forEach(function(n) { n.read = true; });
+      renderInbox();
+      showToast('All notifications marked as read', 'success');
+    }
+
+    // =============================================================
+    // RENDER RULES
+    // =============================================================
+
+    function renderRules() {
+      var cardsHtml = automationRules.map(function(r) {
+        return `
+          <div class="rule-card">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <div class="flex-1 min-w-0">
+                <div class="rule-name">${r.name}</div>
+                <div class="rule-desc">${r.desc}</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" ${r.active ? 'checked' : ''} onchange="toggleRule('${r.id}')">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="grid grid-cols-3 gap-2 text-[10.5px] text-gray-500 mt-2 pt-2 border-t border-gray-100">
+              <div>
+                <div class="font-semibold text-gray-700">Trigger</div>
+                <div class="truncate" title="${r.trigger}">${r.trigger}</div>
+              </div>
+              <div>
+                <div class="font-semibold text-gray-700">Action</div>
+                <div class="truncate" title="${r.action}">${r.action}</div>
+              </div>
+              <div>
+                <div class="font-semibold text-gray-700">Frequency</div>
+                <div>${r.frequency}</div>
+              </div>
+            </div>
+            <div class="flex items-center justify-between mt-2">
+              <div class="rule-meta">${r.triggers} triggers</div>
+              <div class="flex gap-1.5">
+                <button onclick="editRule('${r.id}')" class="text-[10.5px] font-semibold text-primary hover:underline">Edit</button>
+                <span class="text-gray-300">|</span>
+                <button onclick="deleteRule('${r.id}')" class="text-[10.5px] font-semibold text-red-500 hover:underline">Delete</button>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+
+      document.getElementById('rulesPanel').innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">${cardsHtml}</div>
+        <div class="mt-4 p-3 bg-primary-soft rounded-lg border border-primary/20 text-xs text-gray-600">
+          <div class="flex items-start gap-2">
+            ${iconInfo()}
+            <div>
+              <b>Automation Rules:</b> Rules run automatically in the background. Toggle OFF to pause a rule temporarily.
+              Edit trigger conditions or email templates anytime.
+            </div>
+          </div>
+        </div>
+      `;
+
+      renderStats();
+    }
+
+    function toggleRule(id) {
+      var r = automationRules.find(function(x) { return x.id === id; });
+      if (r) {
+        r.active = !r.active;
+        renderRules();
+        showToast('Rule ' + (r.active ? 'activated' : 'paused'), r.active ? 'success' : 'warning');
+      }
+    }
+
+    function openAddRule() {
+      var modalContent = `
+        ${modalHeader('Add Automation Rule', 'Create a new automation rule')}
+        <div class="px-5 py-4">
+          ${fld('Rule Name *', '<input type="text" class="form-input" id="r_name" placeholder="e.g. Customer Birthday Greeting">')}
+          ${fld('Description', '<input type="text" class="form-input" id="r_desc" placeholder="Short description">')}
+          <div class="grid grid-cols-2 gap-3">
+            ${fld('Trigger Event *', '<select class="form-input" id="r_trigger"><option>Invoice Due Date = Today + 3 days</option><option>Invoice Overdue</option><option>Stock ≤ Reorder Level</option><option>PO Approval Pending</option><option>Payment Recorded</option><option>Vendor Payment Saved</option><option>Project Budget ≥ 80%</option><option>Project On Hold ≥ 7 days</option></select>')}
+            ${fld('Action *', '<select class="form-input" id="r_action"><option>Send Email</option><option>Send In-App Notification</option><option>Send Email + In-App Notification</option><option>Send SMS</option></select>')}
+            ${fld('Frequency', '<select class="form-input" id="r_freq"><option>Instant</option><option>Daily</option><option>Weekly</option><option>Monthly</option></select>')}
+          </div>
+          <label class="flex items-center gap-2 mt-2 text-[12px]">
+            <input type="checkbox" id="r_active" checked class="accent-primary"> <span>Activate Rule</span>
+          </label>
+        </div>
+        ${modalFooter('Create Rule', 'onclick="saveRule()"')}
+      `;
+      openModal(modalContent, { width: 'max-w-lg' });
+    }
+
+    function saveRule() {
+      var name = document.getElementById('r_name').value.trim();
+      var desc = document.getElementById('r_desc').value.trim();
+      if (!name) { showToast('Rule name is required', 'error'); return; }
+      automationRules.push({
+        id: 'RULE-' + String(automationRules.length + 1).padStart(3, '0'),
+        name: name,
+        desc: desc || '—',
+        trigger: document.getElementById('r_trigger').value,
+        action: document.getElementById('r_action').value,
+        frequency: document.getElementById('r_freq').value,
+        active: document.getElementById('r_active').checked,
+        triggers: 0
+      });
+      closeModal();
+      renderRules();
+      showToast('Rule created successfully', 'success');
+    }
+
+    function editRule(id) {
+      var r = automationRules.find(function(x) { return x.id === id; });
+      if (!r) return;
+
+      var modalContent = `
+        ${modalHeader('Edit Rule', r.name)}
+        <div class="px-5 py-4">
+          ${fld('Rule Name *', '<input type="text" class="form-input" id="r_name" value="' + r.name + '">')}
+          ${fld('Description', '<input type="text" class="form-input" id="r_desc" value="' + r.desc + '">')}
+          <div class="grid grid-cols-2 gap-3">
+            ${fld('Trigger', '<input type="text" class="form-input" id="r_trigger" value="' + r.trigger + '">')}
+            ${fld('Action', '<input type="text" class="form-input" id="r_action" value="' + r.action + '">')}
+            ${fld('Frequency', '<select class="form-input" id="r_freq"><option ' + (r.frequency === 'Instant' ? 'selected' : '') + '>Instant</option><option ' + (r.frequency === 'Daily' ? 'selected' : '') + '>Daily</option><option ' + (r.frequency === 'Weekly' ? 'selected' : '') + '>Weekly</option><option ' + (r.frequency === 'Monthly' ? 'selected' : '') + '>Monthly</option></select>')}
+          </div>
+          <label class="flex items-center gap-2 mt-2 text-[12px]">
+            <input type="checkbox" id="r_active" ${r.active ? 'checked' : ''} class="accent-primary"> <span>Active</span>
+          </label>
+        </div>
+        ${modalFooter('Update Rule', 'onclick="updateRule(\'' + id + '\')"')}
+      `;
+      openModal(modalContent, { width: 'max-w-lg' });
+    }
+
+    function updateRule(id) {
+      var r = automationRules.find(function(x) { return x.id === id; });
+      if (!r) return;
+      r.name = document.getElementById('r_name').value.trim();
+      r.desc = document.getElementById('r_desc').value.trim();
+      r.trigger = document.getElementById('r_trigger').value;
+      r.action = document.getElementById('r_action').value;
+      r.frequency = document.getElementById('r_freq').value;
+      r.active = document.getElementById('r_active').checked;
+      closeModal();
+      renderRules();
+      showToast('Rule updated', 'success');
+    }
+
+    function deleteRule(id) {
+      if (confirm('Delete this automation rule?')) {
+        automationRules = automationRules.filter(function(x) { return x.id !== id; });
+        renderRules();
+        showToast('Rule deleted', 'warning');
+      }
+    }
+
+    // =============================================================
+    // RENDER TEMPLATES
+    // =============================================================
+
+    function renderTemplates() {
+      var cardsHtml = emailTemplates.map(function(t) {
+        return `
+          <div class="rule-card">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <div>
+                <div class="rule-name">${t.name}</div>
+                <div class="rule-desc">Category: ${t.category}</div>
+              </div>
+            </div>
+            <div class="text-[11px] text-gray-500 mb-1"><b>Subject:</b> ${t.subject}</div>
+            <div class="text-[10.5px] text-gray-400 p-2 bg-gray-50 rounded mt-1" style="max-height:80px;overflow:hidden;">
+              ${t.body.substring(0, 150)}${t.body.length > 150 ? '...' : ''}
+            </div>
+            <div class="flex gap-1.5 mt-2">
+              <button onclick="editTemplate('${t.id}')" class="text-[10.5px] font-semibold text-primary hover:underline">Edit</button>
+              <span class="text-gray-300">|</span>
+              <button onclick="previewTemplate('${t.id}')" class="text-[10.5px] font-semibold text-primary hover:underline">Preview</button>
+              <span class="text-gray-300">|</span>
+              <button onclick="deleteTemplate('${t.id}')" class="text-[10.5px] font-semibold text-red-500 hover:underline">Delete</button>
+            </div>
+          </div>`;
+      }).join('');
+
+      document.getElementById('templatesPanel').innerHTML = `
+        <div class="flex items-center justify-between mb-3">
+          <div class="text-sm font-bold text-gray-800">Email Templates</div>
+          <button onclick="openAddTemplate()" class="text-[10.5px] font-semibold text-primary hover:underline flex items-center gap-1">${iconPlus()} Add Template</button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${cardsHtml}</div>
+        <div class="mt-4 p-3 bg-primary-soft rounded-lg border border-primary/20 text-[11px] text-gray-600">
+          <b>Placeholders:</b> {customer_name}, {vendor_name}, {invoice_number}, {po_number}, {amount}, {due_date}, {payment_date}, {payment_mode}, {bill_number}, {company_name}, {user_name}, {item_name}, {current_stock}, {reorder_level}, {unit}
+        </div>
+      `;
+    }
+
+    function editTemplate(id) {
+      var t = emailTemplates.find(function(x) { return x.id === id; });
+      if (!t) return;
+
+      var modalContent = `
+        ${modalHeader('Edit Template', t.name)}
+        <div class="px-5 py-4 modal-scroll">
+          ${fld('Template Name *', '<input type="text" class="form-input" id="t_name" value="' + t.name + '">')}
+          ${fld('Category', '<select class="form-input" id="t_cat"><option ' + (t.category === 'Sales' ? 'selected' : '') + '>Sales</option><option ' + (t.category === 'Purchase' ? 'selected' : '') + '>Purchase</option><option ' + (t.category === 'Inventory' ? 'selected' : '') + '>Inventory</option><option ' + (t.category === 'Projects' ? 'selected' : '') + '>Projects</option><option ' + (t.category === 'System' ? 'selected' : '') + '>System</option></select>')}
+          ${fld('Subject', '<input type="text" class="form-input" id="t_subject" value="' + t.subject.replace(/"/g, '&quot;') + '">')}
+          ${fld('Body', '<textarea rows="8" class="form-input" id="t_body">' + t.body + '</textarea>', 'Use placeholders like {customer_name}, {amount}, {company_name}')}
+        </div>
+        ${modalFooter('Save Template', 'onclick="saveTemplate(\'' + id + '\')"')}
+      `;
+      openModal(modalContent, { width: 'max-w-2xl' });
+    }
+
+    function saveTemplate(id) {
+      var t = emailTemplates.find(function(x) { return x.id === id; });
+      if (!t) return;
+      t.name = document.getElementById('t_name').value.trim();
+      t.category = document.getElementById('t_cat').value;
+      t.subject = document.getElementById('t_subject').value;
+      t.body = document.getElementById('t_body').value;
+      closeModal();
+      renderTemplates();
+      showToast('Template updated', 'success');
+    }
+
+    function previewTemplate(id) {
+      var t = emailTemplates.find(function(x) { return x.id === id; });
+      if (!t) return;
+
+      var sampleSubject = t.subject
+        .replace(/{customer_name}/g, 'XYZ Retail Store')
+        .replace(/{vendor_name}/g, 'Global Imports Inc.')
+        .replace(/{invoice_number}/g, 'INV/25-26/001')
+        .replace(/{po_number}/g, 'PO/25-26/001')
+        .replace(/{bill_number}/g, 'PUR/25-26/001')
+        .replace(/{amount}/g, '₹1,67,029')
+        .replace(/{due_date}/g, '30-Jan-2026')
+        .replace(/{payment_date}/g, '25-Jan-2026')
+        .replace(/{payment_mode}/g, 'Bank Transfer')
+        .replace(/{company_name}/g, 'Kunash Media Pvt. Ltd.')
+        .replace(/{user_name}/g, 'Rajesh Sharma')
+        .replace(/{item_name}/g, 'Chemical Dosing Pump')
+        .replace(/{current_stock}/g, '3')
+        .replace(/{reorder_level}/g, '5')
+        .replace(/{unit}/g, 'Pcs');
+
+      var sampleBody = t.body
+        .replace(/{customer_name}/g, 'XYZ Retail Store')
+        .replace(/{vendor_name}/g, 'Global Imports Inc.')
+        .replace(/{invoice_number}/g, 'INV/25-26/001')
+        .replace(/{po_number}/g, 'PO/25-26/001')
+        .replace(/{bill_number}/g, 'PUR/25-26/001')
+        .replace(/{amount}/g, '₹1,67,029')
+        .replace(/{due_date}/g, '30-Jan-2026')
+        .replace(/{payment_date}/g, '25-Jan-2026')
+        .replace(/{payment_mode}/g, 'Bank Transfer')
+        .replace(/{company_name}/g, 'Kunash Media Pvt. Ltd.')
+        .replace(/{user_name}/g, 'Rajesh Sharma')
+        .replace(/{item_name}/g, 'Chemical Dosing Pump')
+        .replace(/{current_stock}/g, '3')
+        .replace(/{reorder_level}/g, '5')
+        .replace(/{unit}/g, 'Pcs');
+
+      var modalContent = `
+        ${modalHeader('Email Preview', 'Sample data shown')}
+        <div class="px-5 py-4">
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <div class="text-[11px] text-gray-500 mb-2">
+              <b>From:</b> no-reply@kunashmedia.com<br>
+              <b>To:</b> customer@example.com<br>
+              <b>Subject:</b> ${sampleSubject}
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-4 text-[12px] text-gray-700 whitespace-pre-wrap font-mono">${sampleBody}</div>
+          </div>
+        </div>
+        ${modalFooter('Close', 'onclick="closeModal()"')}
+      `;
+      openModal(modalContent, { width: 'max-w-2xl' });
+    }
+
+    function openAddTemplate() {
+      var modalContent = `
+        ${modalHeader('Add Email Template', 'Create a new email template')}
+        <div class="px-5 py-4 modal-scroll">
+          ${fld('Template Name *', '<input type="text" class="form-input" id="t_name" placeholder="e.g. Welcome Email">')}
+          ${fld('Category', '<select class="form-input" id="t_cat"><option>Sales</option><option>Purchase</option><option>Inventory</option><option>Projects</option><option>System</option></select>')}
+          ${fld('Subject', '<input type="text" class="form-input" id="t_subject" placeholder="Subject line">')}
+          ${fld('Body', '<textarea rows="8" class="form-input" id="t_body" placeholder="Email body with placeholders"></textarea>')}
+        </div>
+        ${modalFooter('Create Template', 'onclick="createTemplate()"')}
+      `;
+      openModal(modalContent, { width: 'max-w-2xl' });
+    }
+
+    function createTemplate() {
+      var name = document.getElementById('t_name').value.trim();
+      if (!name) { showToast('Template name is required', 'error'); return; }
+      emailTemplates.push({
+        id: 'TPL-' + String(emailTemplates.length + 1).padStart(3, '0'),
+        name: name,
+        subject: document.getElementById('t_subject').value,
+        body: document.getElementById('t_body').value,
+        category: document.getElementById('t_cat').value
+      });
+      closeModal();
+      renderTemplates();
+      showToast('Template created', 'success');
+    }
+
+    function deleteTemplate(id) {
+      if (confirm('Delete this template?')) {
+        emailTemplates = emailTemplates.filter(function(x) { return x.id !== id; });
+        renderTemplates();
+        showToast('Template deleted', 'warning');
+      }
+    }
+
+    // =============================================================
+    // RENDER PREFERENCES
+    // =============================================================
+
+    function renderSettings() {
+      var p = preferences;
+
+      document.getElementById('settingsPanel').innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-white border border-gray-200 rounded-xl p-4">
+            <h4 class="text-sm font-bold text-gray-800 mb-3">Notification Channels</h4>
+            <div class="space-y-3">
+              ${channelRow('Email Notifications', 'emailNotifications', p.emailNotifications)}
+              ${channelRow('In-App Notifications', 'inAppNotifications', p.inAppNotifications)}
+              ${channelRow('Sound Alerts', 'soundAlerts', p.soundAlerts)}
+            </div>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-xl p-4">
+            <h4 class="text-sm font-bold text-gray-800 mb-3">Reports & Digests</h4>
+            <div class="space-y-3">
+              ${channelRow('Daily Digest (8:00 AM)', 'dailyDigest', p.dailyDigest)}
+              ${channelRow('Weekly Summary Report', 'weeklyReport', p.weeklyReport)}
+            </div>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-xl p-4 md:col-span-2">
+            <h4 class="text-sm font-bold text-gray-800 mb-3">Notify Admin On</h4>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+              ${channelRow('New Sale', 'notifyAdminOn_newSale', p.notifyAdminOn.newSale)}
+              ${channelRow('New Purchase', 'notifyAdminOn_newPurchase', p.notifyAdminOn.newPurchase)}
+              ${channelRow('Payment Received', 'notifyAdminOn_paymentReceived', p.notifyAdminOn.paymentReceived)}
+              ${channelRow('Low Stock', 'notifyAdminOn_lowStock', p.notifyAdminOn.lowStock)}
+              ${channelRow('Approval Pending', 'notifyAdminOn_approvalPending', p.notifyAdminOn.approvalPending)}
+              ${channelRow('Overdue Invoice', 'notifyAdminOn_overdueInvoice', p.notifyAdminOn.overdueInvoice)}
+            </div>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-xl p-4 md:col-span-2">
+            <h4 class="text-sm font-bold text-gray-800 mb-3">Quiet Hours</h4>
+            <div class="flex flex-wrap items-center gap-4">
+              <label class="flex items-center gap-2 text-[12px]">
+                <input type="checkbox" id="quiet_enabled" ${p.quietHours.enabled ? 'checked' : ''} class="accent-primary">
+                <span>Enable Quiet Hours</span>
+              </label>
+              <div class="flex items-center gap-2">
+                <span class="text-[11px] text-gray-600">From</span>
+                <input type="time" class="form-input" id="quiet_from" value="${p.quietHours.from}" style="width:100px;">
+                <span class="text-[11px] text-gray-600">To</span>
+                <input type="time" class="form-input" id="quiet_to" value="${p.quietHours.to}" style="width:100px;">
+              </div>
+            </div>
+            <div class="text-[10.5px] text-gray-400 mt-2">No notifications will be sent during these hours (except critical alerts).</div>
+          </div>
+        </div>
+
+        <div class="mt-4 flex gap-2">
+          <button onclick="savePreferences()" class="px-4 py-1.5 rounded-lg bg-primary hover:bg-primary-dark text-white text-xs font-semibold transition shadow-sm">Save Preferences</button>
+        </div>
+      `;
+    }
+
+    function channelRow(label, key, checked) {
+      return `
+        <div class="flex items-center justify-between py-1.5">
+          <span class="text-[12px] text-gray-700">${label}</span>
+          <label class="toggle-switch">
+            <input type="checkbox" data-pref="${key}" ${checked ? 'checked' : ''}>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>`;
+    }
+
+    function savePreferences() {
+      document.querySelectorAll('[data-pref]').forEach(function(el) {
+        var key = el.dataset.pref;
+        if (key.indexOf('notifyAdminOn_') === 0) {
+          preferences.notifyAdminOn[key.replace('notifyAdminOn_', '')] = el.checked;
+        } else {
+          preferences[key] = el.checked;
+        }
+      });
+
+      var qe = document.getElementById('quiet_enabled');
+      var qf = document.getElementById('quiet_from');
+      var qt = document.getElementById('quiet_to');
+      if (qe) preferences.quietHours.enabled = qe.checked;
+      if (qf) preferences.quietHours.from = qf.value;
+      if (qt) preferences.quietHours.to = qt.value;
+
+      showToast('Preferences saved successfully', 'success');
+    }
+
+    // =============================================================
+    // INIT
+    // =============================================================
+
+    renderInbox();
+    renderRules();
+    renderTemplates();
+    renderSettings();
+
+    console.log('🔔 Notifications & Automation Module Loaded Successfully');
+    console.log('📬 Notifications:', notifications.length);
+    console.log('⚙️ Automation Rules:', automationRules.length);
+    console.log('📧 Email Templates:', emailTemplates.length);
+
+  </script>
+
+</body>
+</html>

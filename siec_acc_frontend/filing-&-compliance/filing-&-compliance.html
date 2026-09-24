@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+<link rel="manifest" href="/favicon_io/site.webmanifest">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<title>Filing & Compliance — Aquilon ERP</title>
+
+<script>
+  (function () {
+    try {
+      var collapsed = localStorage.getItem("sidebarCollapsed") === "true";
+      document.documentElement.classList.add(collapsed ? "sidebar-collapsed" : "sidebar-expanded");
+    } catch (e) {
+      document.documentElement.classList.add("sidebar-expanded");
+    }
+  })();
+</script>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: { DEFAULT: "#6da84c", dark: "#5c9140", soft: "#eef5e8" },
+          secondary: { DEFAULT: "#1985bf", soft: "#e7f3fa" },
+        },
+      },
+    },
+  };
+</script>
+
+<link rel="stylesheet" href="/assets/css/nav-sidebar.css" />
+
+<style>
+  body { font-size: 12px; background: #f3f4f6; }
+
+  .form-input {
+    width: 100%; border: 1px solid #e5e7eb; border-radius: 6px;
+    padding: 5px 10px; font-size: 11px; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fafafa; color: #1a1a2e;
+  }
+  .form-input:focus {
+    border-color: #6da84c;
+    box-shadow: 0 0 0 3px rgba(109, 168, 76, 0.12);
+    background: #ffffff;
+  }
+  .form-input:disabled { background: #f3f4f6; cursor: not-allowed; }
+
+  .form-label {
+    font-size: 10px; font-weight: 600; color: #374151;
+    display: block; margin-bottom: 3px;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .form-label .required { color: #ef4444; margin-left: 2px; }
+  .form-hint { font-size: 9.5px; color: #9ca3af; margin-top: 2px; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; font-weight: 600;
+    padding: 2px 8px; border-radius: 12px;
+  }
+  .badge-green { background: #dcfce7; color: #166534; }
+  .badge-amber { background: #fef3c7; color: #92400e; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  .badge-gray { background: #f1f5f9; color: #475569; }
+  .badge-blue { background: #dbeafe; color: #1e40af; }
+  .badge-purple { background: #ede9fe; color: #5b21b6; }
+  .badge-dot { width: 5px; height: 5px; border-radius: 50%; display: inline-block; }
+  .badge-dot-green { background: #22c55e; }
+  .badge-dot-amber { background: #f59e0b; }
+  .badge-dot-red { background: #ef4444; }
+  .badge-dot-gray { background: #94a3b8; }
+  .badge-dot-blue { background: #3b82f6; }
+  .badge-dot-purple { background: #8b5cf6; }
+
+  .stat-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    padding: 10px 14px !important;
+  }
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  }
+  .stat-card .stat-label {
+    font-size: 9px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.06em; color: #6b7280;
+  }
+  .stat-card .stat-value {
+    font-size: 17px; font-weight: 700;
+    color: #1a1a2e; margin-top: 2px;
+  }
+
+  .table-row-hover:hover { background: #f8fafc; }
+
+  .btn-icon-action {
+    transition: all 0.15s ease; width: 28px; height: 28px;
+    border-radius: 6px; display: inline-flex; align-items: center;
+    justify-content: center; color: #94a3b8;
+    background: transparent; border: none; cursor: pointer;
+  }
+  .btn-icon-action:hover { background: #f1f5f9; color: #6da84c; }
+  .btn-icon-action.danger:hover { background: #fee2e2; color: #ef4444; }
+  .btn-icon-action.primary:hover { background: #eef5e8; color: #6da84c; }
+
+  .toast { animation: fadeIn 0.2s ease; font-size: 12px; }
+  .toast-success { background: #16a34a; }
+  .toast-error { background: #dc2626; }
+  .toast-warning { background: #f59e0b; }
+  .toast-info { background: #6da84c; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.96) translateY(6px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .animate-modal { animation: modalIn 0.18s ease; }
+
+  .modal-scroll { max-height: 55vh; overflow-y: auto; }
+  .modal-scroll::-webkit-scrollbar { width: 4px; }
+  .modal-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+
+  .empty-icon-svg { opacity: 0.2; width: 40px; height: 40px; color: #94a3b8; }
+
+  .page-title { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+  .page-subtitle { font-size: 12px; color: #6b7280; }
+  .page-breadcrumb {
+    font-size: 10px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.08em; color: #6da84c;
+  }
+
+  table th {
+    font-size: 9.5px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.06em; color: #6b7280; padding: 8px 12px;
+  }
+  table td { font-size: 12px; padding: 8px 12px; }
+  table td .font-mono { font-size: 11px; }
+
+  .modal-title { font-size: 16px; font-weight: 700; }
+  .modal-subtitle { font-size: 11px; color: #6b7280; }
+
+  .filter-btn { font-size: 11px; padding: 5px 12px; }
+  .filter-btn svg { width: 14px; height: 14px; }
+
+  /* Page tabs */
+  .page-tab-btn {
+    transition: all 0.2s ease; padding: 8px 14px;
+    font-size: 11px; font-weight: 500;
+    border-bottom: 2px solid transparent;
+    color: #6b7280; cursor: pointer;
+    background: transparent; white-space: nowrap;
+  }
+  .page-tab-btn.active {
+    color: #6da84c; border-bottom-color: #6da84c; font-weight: 600;
+  }
+  .page-tab-btn:hover:not(.active) {
+    color: #1f2937; border-bottom-color: #d1d5db;
+  }
+  .page-tab-panel { display: none; }
+  .page-tab-panel.active { display: block; animation: fadeIn 0.25s ease; }
+
+  /* Filing card */
+  .filing-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 14px 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .filing-card:hover {
+    border-color: #6da84c;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+  .filing-card .filing-name {
+    font-size: 13px; font-weight: 700; color: #1a1a2e;
+  }
+  .filing-card .filing-desc {
+    font-size: 10.5px; color: #6b7280; margin-top: 2px;
+  }
+  .filing-card .filing-meta {
+    font-size: 10.5px; color: #6b7280; margin-top: 6px;
+    display: flex; justify-content: space-between;
+  }
+
+  /* Calendar item */
+  .cal-item {
+    display: flex; gap: 12px; padding: 10px 12px;
+    border: 1px solid #e5e7eb; border-radius: 8px;
+    background: #ffffff; margin-bottom: 8px;
+    transition: border-color 0.2s, background 0.15s;
+  }
+  .cal-item:hover { border-color: #6da84c; background: #f8fafc; }
+  .cal-item.overdue { border-color: #ef4444; background: #fef2f2; }
+  .cal-item.upcoming { border-color: #f59e0b; background: #fffbeb; }
+  .cal-item.filed { border-color: #22c55e; background: #f0fdf4; }
+
+  .cal-date-box {
+    width: 50px; height: 50px; border-radius: 8px;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; flex-shrink: 0;
+    background: #f1f5f9; color: #475569;
+  }
+  .cal-date-box .day {
+    font-size: 16px; font-weight: 700; line-height: 1;
+  }
+  .cal-date-box .month {
+    font-size: 9px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.04em; margin-top: 2px;
+  }
+  .cal-date-box.overdue { background: #fee2e2; color: #991b1b; }
+  .cal-date-box.upcoming { background: #fef3c7; color: #92400e; }
+  .cal-date-box.filed { background: #dcfce7; color: #166534; }
+
+  /* Compliance summary */
+  .compliance-summary {
+    background: linear-gradient(135deg, #eef5e8, #dcfce7);
+    border: 1px solid #6da84c;
+    border-radius: 10px;
+    padding: 16px 20px;
+  }
+  .compliance-summary .title {
+    font-size: 13px; font-weight: 700; color: #166534;
+  }
+  .compliance-summary .desc {
+    font-size: 11px; color: #374151; margin-top: 4px;
+  }
+
+  /* Status bar */
+  .status-bar {
+    height: 6px; border-radius: 3px;
+    background: #e5e7eb; overflow: hidden;
+    display: flex;
+  }
+  .status-bar .seg-green { background: #22c55e; }
+  .status-bar .seg-amber { background: #f59e0b; }
+  .status-bar .seg-red { background: #ef4444; }
+</style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 antialiased text-sm">
+
+  <div class="flex min-h-screen">
+    <div id="sidebar-root"></div>
+
+    <div class="app-main flex-1 flex flex-col min-w-0">
+      <div id="topbar-root"></div>
+
+      <main class="p-3 sm:p-4 lg:p-5">
+
+        <div id="toastWrap" class="fixed bottom-5 right-5 z-[200] flex flex-col gap-2 items-end"></div>
+        <div id="modalRoot"></div>
+
+        <div class="max-w-7xl mx-auto">
+
+          <!-- ===== PAGE HEADER ===== -->
+          <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+            <div>
+              <div class="page-breadcrumb">Compliance</div>
+              <h1 class="page-title text-gray-900">Filing &amp; Compliance</h1>
+              <p class="page-subtitle mt-0.5">GST filings, TDS returns, ROC compliance and full compliance calendar.</p>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <button onclick="openAddFiling()" class="inline-flex items-center gap-1.5 bg-primary hover:bg-primary-dark text-white text-[11px] font-semibold px-3 py-2 rounded-lg transition shadow-sm">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+                New Filing
+              </button>
+              <button onclick="exportCompliance()" class="inline-flex items-center gap-1.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-[11px] font-semibold px-3 py-2 rounded-lg transition">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                  <path d="M7 10l5 5 5-5"/>
+                  <path d="M12 15V3"/>
+                </svg>
+                Export
+              </button>
+            </div>
+          </div>
+
+          <!-- ===== COMPLIANCE SUMMARY ===== -->
+          <div class="compliance-summary mb-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div class="title">✓ GST Compliance Status — Current Period</div>
+                <div class="desc">GSTR-1 and GSTR-3B filed for last month. TDS return due in 5 days. ROC filings up to date.</div>
+              </div>
+              <div class="flex items-center gap-4">
+                <div class="text-center">
+                  <div class="text-[10px] text-gray-500 uppercase font-semibold">Filed</div>
+                  <div class="text-lg font-bold text-green-600" id="complianceFiled">0</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-[10px] text-gray-500 uppercase font-semibold">Pending</div>
+                  <div class="text-lg font-bold text-amber-600" id="compliancePending">0</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-[10px] text-gray-500 uppercase font-semibold">Overdue</div>
+                  <div class="text-lg font-bold text-red-600" id="complianceOverdue">0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== STATS CARDS ===== -->
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-2.5 mb-4">
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Total Filings</div>
+              <div class="stat-value" id="totalFilings">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">This Month</div>
+              <div class="stat-value text-blue-600" id="thisMonthFilings">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">GST Filings</div>
+              <div class="stat-value text-primary" id="gstFilings">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">TDS Filings</div>
+              <div class="stat-value text-purple-600" id="tdsFilings">0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Due Soon</div>
+              <div class="stat-value text-amber-600" id="dueSoon">0</div>
+            </div>
+          </div>
+
+          <!-- ===== TABS ===== -->
+          <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+            <div class="flex overflow-x-auto border-b border-gray-200 px-4 pt-2 gap-1" id="complianceTabs">
+              <button class="page-tab-btn active" data-tab="tab-calendar">
+                <svg class="w-3.5 h-3.5 inline mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                Compliance Calendar
+              </button>
+              <button class="page-tab-btn" data-tab="tab-gst">
+                <svg class="w-3.5 h-3.5 inline mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"></path>
+                  <path d="M9 12l2 2 4-4"></path>
+                </svg>
+                GST Filings
+              </button>
+              <button class="page-tab-btn" data-tab="tab-tds">
+                <svg class="w-3.5 h-3.5 inline mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 6h18M3 12h18M3 18h18"/>
+                </svg>
+                TDS Filings
+              </button>
+              <button class="page-tab-btn" data-tab="tab-roc">
+                <svg class="w-3.5 h-3.5 inline mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4.5A2.5 2.5 0 016.5 2H20v18H6.5A2.5 2.5 0 014 17.5v-13z"/>
+                </svg>
+                ROC &amp; Other
+              </button>
+              <button class="page-tab-btn" data-tab="tab-history">
+                <svg class="w-3.5 h-3.5 inline mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="9"/>
+                  <path d="M12 7v5l3 3"/>
+                </svg>
+                Filing History
+              </button>
+            </div>
+
+            <div class="p-5">
+              <div id="tab-calendar" class="page-tab-panel active"><div id="calendarPanel"></div></div>
+              <div id="tab-gst" class="page-tab-panel"><div id="gstPanel"></div></div>
+              <div id="tab-tds" class="page-tab-panel"><div id="tdsPanel"></div></div>
+              <div id="tab-roc" class="page-tab-panel"><div id="rocPanel"></div></div>
+              <div id="tab-history" class="page-tab-panel"><div id="historyPanel"></div></div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ========================================================== -->
+  <!-- SCRIPTS -->
+  <!-- ========================================================== -->
+
+  <script src="/assets/js/nav-sidebar.js"></script>
+  <script>
+    // =============================================================
+    // NAV-SIDEBAR INIT
+    // =============================================================
+    NavSidebar.init({
+      basePath: "",
+      activePage: "filing",
+      pageTitle: "Filing & Compliance",
+      user: {
+        name: "Admin",
+        role: "Super Admin",
+        avatarUrl: "",
+      },
+    });
+
+    // =============================================================
+    // SVG ICONS
+    // =============================================================
+    function iconPlus() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>`; }
+    function iconEdit() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`; }
+    function iconTrash() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>`; }
+    function iconEye() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`; }
+    function iconX() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg>`; }
+    function iconSearch() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>`; }
+    function iconSave() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>`; }
+    function iconCheck() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>`; }
+    function iconDownload() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>`; }
+    function iconAlert() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>`; }
+    function iconFileShield() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><path d="M14 2v6h6"/><path d="M9 15l2 2 4-4"/></svg>`; }
+    function iconGST() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>`; }
+    function iconTDS() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>`; }
+    function iconROC() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4.5A2.5 2.5 0 016.5 2H20v18H6.5A2.5 2.5 0 014 17.5v-13z"/><path d="M4 17.5A2.5 2.5 0 016.5 20H20"/></svg>`; }
+    function iconCalendar() { return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`; }
+    function iconInfo() { return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>`; }
+
+    // =============================================================
+    // TOAST
+    // =============================================================
+    function showToast(message, kind) {
+      kind = kind || 'success';
+      var wrap = document.getElementById('toastWrap');
+      var colors = { success: 'bg-green-600', info: 'bg-primary', warning: 'bg-amber-600', error: 'bg-red-600' };
+      var el = document.createElement('div');
+      el.className = 'toast ' + colors[kind] + ' text-white font-semibold px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 max-w-xs';
+      el.innerHTML = '<span>' + message + '</span>';
+      wrap.appendChild(el);
+      setTimeout(function() {
+        el.style.transition = 'opacity .3s';
+        el.style.opacity = '0';
+        setTimeout(function() { el.remove(); }, 300);
+      }, 2600);
+    }
+
+    // =============================================================
+    // MODAL
+    // =============================================================
+    function openModal(innerHtml, opts) {
+      opts = opts || {};
+      var root = document.getElementById('modalRoot');
+      root.innerHTML = `
+        <div class="fixed inset-0 z-[100] flex items-center justify-center p-3" id="modalOverlay">
+          <div class="absolute inset-0 bg-black/40 backdrop-blur-[1px]" id="modalBackdrop"></div>
+          <div class="relative bg-white rounded-xl shadow-2xl w-full ${opts.width || 'max-w-4xl'} max-h-[92vh] overflow-hidden animate-modal">
+            ${innerHtml}
+          </div>
+        </div>`;
+      document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      var root = document.getElementById('modalRoot');
+      root.innerHTML = '';
+      document.body.style.overflow = '';
+    }
+
+    function modalHeader(title, subtitle) {
+      return `
+        <div class="flex items-start justify-between px-5 py-3.5 border-b border-gray-100 sticky top-0 bg-white z-10">
+          <div>
+            <h3 class="modal-title text-gray-900">${title}</h3>
+            ${subtitle ? '<p class="modal-subtitle mt-0.5">' + subtitle + '</p>' : ''}
+          </div>
+          <button onclick="closeModal()" class="w-7 h-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 transition">${iconX()}</button>
+        </div>`;
+    }
+
+    function modalFooter(saveLabel, onSaveAttr, extraBtns) {
+      return `
+        <div class="flex items-center justify-between gap-2 px-5 py-3 border-t border-gray-100 bg-gray-50 rounded-b-xl sticky bottom-0">
+          <div>${extraBtns || ''}</div>
+          <div class="flex gap-2">
+            <button onclick="closeModal()" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-600 border border-gray-200 hover:bg-white transition">Cancel</button>
+            <button ${onSaveAttr} class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-primary hover:bg-primary-dark transition shadow-sm flex items-center gap-1.5">
+              ${iconSave()} ${saveLabel}
+            </button>
+          </div>
+        </div>`;
+    }
+
+    function fld(label, inputHtml, hint) {
+      return `<div class="mb-2"><label class="form-label">${label}</label>${inputHtml}${hint ? '<div class="form-hint">' + hint + '</div>' : ''}</div>`;
+    }
+
+    function inputBase() { return "form-input"; }
+
+    // =============================================================
+    // PAGE TABS
+    // =============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+      var tabs = document.querySelectorAll('#complianceTabs .page-tab-btn');
+      tabs.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          tabs.forEach(function(b) { b.classList.remove('active'); });
+          this.classList.add('active');
+          var panels = document.querySelectorAll('.page-tab-panel');
+          panels.forEach(function(p) { p.classList.remove('active'); });
+          document.getElementById(this.dataset.tab).classList.add('active');
+        });
+      });
+    });
+
+    // =============================================================
+    // HELPERS
+    // =============================================================
+    function money(n) { return '₹' + Number(n).toLocaleString('en-IN'); }
+
+    function formatDate(d) {
+      var date = new Date(d);
+      var options = { day: '2-digit', month: 'short', year: 'numeric' };
+      return date.toLocaleDateString('en-IN', options);
+    }
+
+    function statusBadge(status) {
+      var map = { filed: 'badge-green', pending: 'badge-amber', overdue: 'badge-red', draft: 'badge-gray', upcoming: 'badge-blue' };
+      var dot = { filed: 'badge-dot-green', pending: 'badge-dot-amber', overdue: 'badge-dot-red', draft: 'badge-dot-gray', upcoming: 'badge-dot-blue' };
+      var label = status.charAt(0).toUpperCase() + status.slice(1);
+      return '<span class="badge ' + map[status] + '"><span class="badge-dot ' + dot[status] + '"></span>' + label + '</span>';
+    }
+
+    function filingTypeBadge(type) {
+      var colors = { GST: 'badge-green', TDS: 'badge-purple', ROC: 'badge-blue', ITR: 'badge-amber' };
+      return '<span class="badge ' + (colors[type] || 'badge-gray') + '">' + type + '</span>';
+    }
+
+    function panelWrap(titleHtml, bodyHtml, extraHead) {
+      return `
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+          <div class="flex items-center justify-between gap-3 flex-wrap px-4 py-2.5 border-b border-gray-100">
+            <div class="font-semibold text-sm text-gray-800 flex items-center gap-2">${titleHtml}</div>
+            ${extraHead || ''}
+          </div>
+          <div>${bodyHtml}</div>
+        </div>`;
+    }
+
+    function tableHtml(cols, rowsHtml) {
+      var colHeaders = cols.map(function(c) {
+        return '<th class="text-left font-semibold whitespace-nowrap">' + c + '</th>';
+      }).join('');
+      return `
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead><tr class="bg-gray-50 border-b border-gray-200">${colHeaders}</tr></thead>
+            <tbody id="tbody-anchor">${rowsHtml}</tbody>
+          </table>
+        </div>`;
+    }
+
+    // =============================================================
+    // DATA
+    // =============================================================
+
+    var filings = [{
+      id: 'FIL-001',
+      type: 'GST',
+      form: 'GSTR-1',
+      period: 'January 2026',
+      dueDate: '2026-02-11',
+      filedDate: '2026-02-08',
+      amount: 67069,
+      status: 'filed',
+      reference: 'GSTR1-202601-FILED',
+      notes: 'Outward supplies'
+    }, {
+      id: 'FIL-002',
+      type: 'GST',
+      form: 'GSTR-3B',
+      period: 'January 2026',
+      dueDate: '2026-02-20',
+      filedDate: '2026-02-18',
+      amount: 19664,
+      status: 'filed',
+      reference: 'GSTR3B-202601-FILED',
+      notes: 'Summary return with payment'
+    }, {
+      id: 'FIL-003',
+      type: 'GST',
+      form: 'GSTR-1',
+      period: 'February 2026',
+      dueDate: '2026-03-11',
+      filedDate: '',
+      amount: 8158,
+      status: 'pending',
+      reference: '',
+      notes: 'Outward supplies — pending'
+    }, {
+      id: 'FIL-004',
+      type: 'GST',
+      form: 'GSTR-3B',
+      period: 'February 2026',
+      dueDate: '2026-03-20',
+      filedDate: '',
+      amount: 0,
+      status: 'upcoming',
+      reference: '',
+      notes: 'Summary return — will show net GST'
+    }, {
+      id: 'FIL-005',
+      type: 'TDS',
+      form: 'Form 26Q',
+      period: 'Q3 FY 2025-26',
+      dueDate: '2026-01-31',
+      filedDate: '2026-01-28',
+      amount: 12500,
+      status: 'filed',
+      reference: 'TDS26Q-Q3-FILED',
+      notes: 'TDS on vendor payments'
+    }, {
+      id: 'FIL-006',
+      type: 'TDS',
+      form: 'Form 26Q',
+      period: 'Q4 FY 2025-26',
+      dueDate: '2026-05-31',
+      filedDate: '',
+      amount: 0,
+      status: 'upcoming',
+      reference: '',
+      notes: 'Q4 TDS return'
+    }, {
+      id: 'FIL-007',
+      type: 'TDS',
+      form: 'Form 24Q',
+      period: 'Q3 FY 2025-26',
+      dueDate: '2026-01-31',
+      filedDate: '2026-01-29',
+      amount: 48000,
+      status: 'filed',
+      reference: 'TDS24Q-Q3-FILED',
+      notes: 'TDS on salaries'
+    }, {
+      id: 'FIL-008',
+      type: 'ROC',
+      form: 'AOC-4',
+      period: 'FY 2024-25',
+      dueDate: '2025-10-30',
+      filedDate: '2025-10-25',
+      amount: 0,
+      status: 'filed',
+      reference: 'AOC4-FY24-25-FILED',
+      notes: 'Annual financial statements'
+    }, {
+      id: 'FIL-009',
+      type: 'ROC',
+      form: 'MGT-7',
+      period: 'FY 2024-25',
+      dueDate: '2025-11-29',
+      filedDate: '2025-11-27',
+      amount: 0,
+      status: 'filed',
+      reference: 'MGT7-FY24-25-FILED',
+      notes: 'Annual return'
+    }, {
+      id: 'FIL-010',
+      type: 'ROC',
+      form: 'DIR-3 KYC',
+      period: 'FY 2025-26',
+      dueDate: '2026-09-30',
+      filedDate: '',
+      amount: 0,
+      status: 'upcoming',
+      reference: '',
+      notes: 'Director KYC — due Sep 30'
+    }, {
+      id: 'FIL-011',
+      type: 'GST',
+      form: 'GSTR-9',
+      period: 'FY 2024-25',
+      dueDate: '2025-12-31',
+      filedDate: '2025-12-28',
+      amount: 0,
+      status: 'filed',
+      reference: 'GSTR9-FY24-25-FILED',
+      notes: 'Annual return'
+    }, {
+      id: 'FIL-012',
+      type: 'GST',
+      form: 'GSTR-1',
+      period: 'December 2025',
+      dueDate: '2026-01-11',
+      filedDate: '',
+      amount: 45321,
+      status: 'overdue',
+      reference: '',
+      notes: 'Overdue — need to file immediately'
+    }];
+
+    var nextFilNo = 13;
+
+    // =============================================================
+    // RENDER STATS
+    // =============================================================
+
+    function renderStats() {
+      var total = filings.length;
+      var today = new Date();
+      var thisMonth = today.toISOString().substring(0, 7);
+      var monthFilings = filings.filter(function(f) { return f.dueDate.substring(0, 7) === thisMonth; }).length;
+      var gst = filings.filter(function(f) { return f.type === 'GST'; }).length;
+      var tds = filings.filter(function(f) { return f.type === 'TDS'; }).length;
+      var filed = filings.filter(function(f) { return f.status === 'filed'; }).length;
+      var pending = filings.filter(function(f) { return f.status === 'pending' || f.status === 'upcoming'; }).length;
+      var overdue = filings.filter(function(f) { return f.status === 'overdue'; }).length;
+
+      // Due soon (next 15 days, not filed)
+      var dueSoon = filings.filter(function(f) {
+        if (f.status === 'filed') return false;
+        var due = new Date(f.dueDate);
+        var diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+        return diffDays >= 0 && diffDays <= 15;
+      }).length;
+
+      document.getElementById('totalFilings').textContent = total;
+      document.getElementById('thisMonthFilings').textContent = monthFilings;
+      document.getElementById('gstFilings').textContent = gst;
+      document.getElementById('tdsFilings').textContent = tds;
+      document.getElementById('dueSoon').textContent = dueSoon;
+
+      document.getElementById('complianceFiled').textContent = filed;
+      document.getElementById('compliancePending').textContent = pending;
+      document.getElementById('complianceOverdue').textContent = overdue;
+    }
+
+    // =============================================================
+    // RENDER COMPLIANCE CALENDAR
+    // =============================================================
+
+    function renderCalendar() {
+      var today = new Date();
+      var sortedFilings = filings.slice().sort(function(a, b) {
+        return a.dueDate.localeCompare(b.dueDate);
+      });
+
+      var itemsHtml = sortedFilings.map(function(f) {
+        var dueDate = new Date(f.dueDate);
+        var diffDays = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+
+        var itemClass = f.status === 'filed' ? 'filed' : (diffDays < 0 ? 'overdue' : (diffDays <= 15 ? 'upcoming' : ''));
+
+        var day = dueDate.getDate();
+        var month = dueDate.toLocaleString('en-IN', { month: 'short' });
+
+        return `
+          <div class="cal-item ${itemClass}">
+            <div class="cal-date-box ${itemClass}">
+              <div class="day">${day}</div>
+              <div class="month">${month}</div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-semibold text-sm">${f.form}</span>
+                ${filingTypeBadge(f.type)}
+                ${statusBadge(f.status)}
+              </div>
+              <div class="text-[11px] text-gray-500 mt-1">${f.period} · Due: ${formatDate(f.dueDate)}${f.filedDate ? ' · Filed: ' + formatDate(f.filedDate) : ''}</div>
+              <div class="text-[11px] text-gray-600 mt-0.5">${f.notes}</div>
+            </div>
+            <div class="flex items-center gap-1">
+              ${f.amount > 0 ? '<div class="text-right mr-2"><div class="text-[10px] text-gray-500">Amount</div><div class="font-mono font-semibold text-sm">' + money(f.amount) + '</div></div>' : ''}
+              ${f.status !== 'filed' ? '<button onclick="markFiled(\'' + f.id + '\')" class="btn-icon-action primary" title="Mark Filed">' + iconCheck() + '</button>' : ''}
+              <button onclick="viewFiling('${f.id}')" class="btn-icon-action" title="View">${iconEye()}</button>
+            </div>
+          </div>`;
+      }).join('');
+
+      if (sortedFilings.length === 0) {
+        itemsHtml = '<div class="text-center py-6 text-gray-400 text-sm">No filings scheduled</div>';
+      }
+
+      document.getElementById('calendarPanel').innerHTML = `
+        <div class="flex items-center justify-between mb-3">
+          <div class="text-sm font-bold text-gray-800">Compliance Calendar (All Upcoming & Past Filings)</div>
+          <div class="flex items-center gap-3 text-[10.5px]">
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500"></span> Overdue</span>
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span> Due Soon</span>
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500"></span> Filed</span>
+          </div>
+        </div>
+        <div>${itemsHtml}</div>
+      `;
+    }
+
+    // =============================================================
+    // RENDER GST FILINGS
+    // =============================================================
+
+    function renderGSTFilings() {
+      var filtered = filings.filter(function(f) { return f.type === 'GST'; });
+      var rowsHtml = filtered.map(function(f) {
+        return `
+          <tr class="border-b border-gray-100 table-row-hover">
+            <td class="px-3 py-2.5 font-semibold text-sm">${f.form}</td>
+            <td class="px-3 py-2.5 text-xs text-gray-600">${f.period}</td>
+            <td class="px-3 py-2.5 text-xs">${formatDate(f.dueDate)}</td>
+            <td class="px-3 py-2.5 text-xs">${f.filedDate ? formatDate(f.filedDate) : '—'}</td>
+            <td class="px-3 py-2.5 font-mono font-semibold text-sm text-right">${f.amount > 0 ? money(f.amount) : '—'}</td>
+            <td class="px-3 py-2.5">${statusBadge(f.status)}</td>
+            <td class="px-3 py-2.5 text-[10.5px] text-gray-400 font-mono">${f.reference || '—'}</td>
+            <td class="px-3 py-2.5 text-center">
+              ${f.status !== 'filed' ? '<button onclick="markFiled(\'' + f.id + '\')" class="btn-icon-action primary" title="Mark Filed">' + iconCheck() + '</button>' : ''}
+              <button onclick="viewFiling('${f.id}')" class="btn-icon-action" title="View">${iconEye()}</button>
+            </td>
+          </tr>`;
+      }).join('');
+
+      document.getElementById('gstPanel').innerHTML = panelWrap(
+        'GST Filings <span class="text-[10px] font-bold bg-primary-soft text-primary-dark px-2 py-0.5 rounded-full ml-1">' + filtered.length + '</span>',
+        tableHtml(['Form', 'Period', 'Due Date', 'Filed Date', 'Tax Amount', 'Status', 'Reference', 'Actions'], rowsHtml)
+      );
+    }
+
+    // =============================================================
+    // RENDER TDS FILINGS
+    // =============================================================
+
+    function renderTDSFilings() {
+      var filtered = filings.filter(function(f) { return f.type === 'TDS'; });
+      var rowsHtml = filtered.map(function(f) {
+        return `
+          <tr class="border-b border-gray-100 table-row-hover">
+            <td class="px-3 py-2.5 font-semibold text-sm">${f.form}</td>
+            <td class="px-3 py-2.5 text-xs text-gray-600">${f.period}</td>
+            <td class="px-3 py-2.5 text-xs">${formatDate(f.dueDate)}</td>
+            <td class="px-3 py-2.5 text-xs">${f.filedDate ? formatDate(f.filedDate) : '—'}</td>
+            <td class="px-3 py-2.5 font-mono font-semibold text-sm text-right">${f.amount > 0 ? money(f.amount) : '—'}</td>
+            <td class="px-3 py-2.5">${statusBadge(f.status)}</td>
+            <td class="px-3 py-2.5 text-[10.5px] text-gray-400 font-mono">${f.reference || '—'}</td>
+            <td class="px-3 py-2.5 text-center">
+              ${f.status !== 'filed' ? '<button onclick="markFiled(\'' + f.id + '\')" class="btn-icon-action primary" title="Mark Filed">' + iconCheck() + '</button>' : ''}
+              <button onclick="viewFiling('${f.id}')" class="btn-icon-action" title="View">${iconEye()}</button>
+            </td>
+          </tr>`;
+      }).join('');
+
+      document.getElementById('tdsPanel').innerHTML = panelWrap(
+        'TDS Filings <span class="text-[10px] font-bold bg-primary-soft text-primary-dark px-2 py-0.5 rounded-full ml-1">' + filtered.length + '</span>',
+        tableHtml(['Form', 'Period', 'Due Date', 'Filed Date', 'Amount', 'Status', 'Reference', 'Actions'], rowsHtml)
+      );
+    }
+
+    // =============================================================
+    // RENDER ROC FILINGS
+    // =============================================================
+
+    function renderROCFilings() {
+      var filtered = filings.filter(function(f) { return f.type === 'ROC'; });
+      var rowsHtml = filtered.map(function(f) {
+        return `
+          <tr class="border-b border-gray-100 table-row-hover">
+            <td class="px-3 py-2.5 font-semibold text-sm">${f.form}</td>
+            <td class="px-3 py-2.5 text-xs text-gray-600">${f.period}</td>
+            <td class="px-3 py-2.5 text-xs">${formatDate(f.dueDate)}</td>
+            <td class="px-3 py-2.5 text-xs">${f.filedDate ? formatDate(f.filedDate) : '—'}</td>
+            <td class="px-3 py-2.5">${statusBadge(f.status)}</td>
+            <td class="px-3 py-2.5 text-[10.5px] text-gray-400 font-mono">${f.reference || '—'}</td>
+            <td class="px-3 py-2.5 text-[10.5px] text-gray-600">${f.notes}</td>
+            <td class="px-3 py-2.5 text-center">
+              ${f.status !== 'filed' ? '<button onclick="markFiled(\'' + f.id + '\')" class="btn-icon-action primary" title="Mark Filed">' + iconCheck() + '</button>' : ''}
+              <button onclick="viewFiling('${f.id}')" class="btn-icon-action" title="View">${iconEye()}</button>
+            </td>
+          </tr>`;
+      }).join('');
+
+      if (filtered.length === 0) {
+        rowsHtml = '<tr><td colspan="8" class="text-center py-6 text-gray-400 text-sm">No ROC filings</td></tr>';
+      }
+
+      document.getElementById('rocPanel').innerHTML = panelWrap(
+        'ROC & Other Compliance <span class="text-[10px] font-bold bg-primary-soft text-primary-dark px-2 py-0.5 rounded-full ml-1">' + filtered.length + '</span>',
+        tableHtml(['Form', 'Period', 'Due Date', 'Filed Date', 'Status', 'Reference', 'Notes', 'Actions'], rowsHtml)
+      );
+    }
+
+    // =============================================================
+    // RENDER FILING HISTORY
+    // =============================================================
+
+    function renderHistory() {
+      var filedFilings = filings.filter(function(f) { return f.status === 'filed'; });
+      filedFilings.sort(function(a, b) { return b.filedDate.localeCompare(a.filedDate); });
+
+      var rowsHtml = filedFilings.map(function(f) {
+        return `
+          <tr class="border-b border-gray-100 table-row-hover">
+            <td class="px-3 py-2.5 text-xs text-gray-500">${formatDate(f.filedDate)}</td>
+            <td class="px-3 py-2.5 font-semibold text-sm">${f.form}</td>
+            <td class="px-3 py-2.5">${filingTypeBadge(f.type)}</td>
+            <td class="px-3 py-2.5 text-xs">${f.period}</td>
+            <td class="px-3 py-2.5 font-mono text-sm text-right">${f.amount > 0 ? money(f.amount) : '—'}</td>
+            <td class="px-3 py-2.5 font-mono text-[10.5px] text-gray-500">${f.reference}</td>
+            <td class="px-3 py-2.5 text-center">
+              <button onclick="downloadFiling('${f.id}')" class="btn-icon-action primary" title="Download Receipt">${iconDownload()}</button>
+            </td>
+          </tr>`;
+      }).join('');
+
+      document.getElementById('historyPanel').innerHTML = panelWrap(
+        'Filing History <span class="text-[10px] font-bold bg-primary-soft text-primary-dark px-2 py-0.5 rounded-full ml-1">' + filedFilings.length + '</span>',
+        tableHtml(['Filed On', 'Form', 'Type', 'Period', 'Amount', 'Reference', 'Actions'], rowsHtml)
+      );
+    }
+
+    // =============================================================
+    // ACTIONS
+    // =============================================================
+
+    function markFiled(id) {
+      var f = filings.find(function(x) { return x.id === id; });
+      if (!f) return;
+      f.status = 'filed';
+      f.filedDate = new Date().toISOString().split('T')[0];
+      f.reference = f.form.replace(/\s+/g, '') + '-' + f.period.replace(/\s+/g, '').toUpperCase() + '-FILED';
+      renderAll();
+      showToast(f.form + ' marked as Filed!', 'success');
+    }
+
+    function viewFiling(id) {
+      var f = filings.find(function(x) { return x.id === id; });
+      if (!f) return;
+
+      var modalContent = `
+        ${modalHeader(f.form + ' — ' + f.period, f.type + ' Filing')}
+        <div class="px-5 py-4">
+          <div class="grid grid-cols-2 gap-3 text-sm">
+            <div><span class="text-gray-500">Form</span><br><span class="font-semibold">${f.form}</span></div>
+            <div><span class="text-gray-500">Type</span><br>${filingTypeBadge(f.type)}</div>
+            <div><span class="text-gray-500">Period</span><br><span class="font-semibold">${f.period}</span></div>
+            <div><span class="text-gray-500">Status</span><br>${statusBadge(f.status)}</div>
+            <div><span class="text-gray-500">Due Date</span><br><span class="font-semibold">${formatDate(f.dueDate)}</span></div>
+            <div><span class="text-gray-500">Filed Date</span><br><span class="font-semibold">${f.filedDate ? formatDate(f.filedDate) : '—'}</span></div>
+            ${f.amount > 0 ? '<div><span class="text-gray-500">Tax Amount</span><br><span class="font-semibold text-primary">' + money(f.amount) + '</span></div>' : ''}
+            <div><span class="text-gray-500">Reference</span><br><span class="font-mono text-xs">${f.reference || '—'}</span></div>
+            <div class="col-span-2"><span class="text-gray-500">Notes</span><br><span>${f.notes}</span></div>
+          </div>
+        </div>
+        ${modalFooter('Close', 'onclick="closeModal()"')}
+      `;
+      openModal(modalContent, { width: 'max-w-lg' });
+    }
+
+    function downloadFiling(id) {
+      var f = filings.find(function(x) { return x.id === id; });
+      if (!f) return;
+      showToast('Downloading ' + f.form + ' acknowledgment...', 'info');
+    }
+
+    function openAddFiling() {
+      var modalContent = `
+        ${modalHeader('Add Filing', 'Schedule a new compliance filing')}
+        <div class="px-5 py-4">
+          <div class="grid grid-cols-2 gap-3">
+            ${fld('Filing Type *', '<select class="form-input" id="f_type"><option>GST</option><option>TDS</option><option>ROC</option><option>ITR</option></select>')}
+            ${fld('Form Name *', '<input type="text" class="form-input" id="f_form" placeholder="e.g. GSTR-1, Form 26Q">')}
+            ${fld('Period *', '<input type="text" class="form-input" id="f_period" placeholder="e.g. January 2026">')}
+            ${fld('Due Date *', '<input type="date" class="form-input" id="f_dueDate">')}
+            ${fld('Amount (₹)', '<input type="number" class="form-input" id="f_amount" placeholder="0.00" step="0.01">')}
+            ${fld('Status', '<select class="form-input" id="f_status"><option value="pending">Pending</option><option value="upcoming">Upcoming</option><option value="filed">Filed</option></select>')}
+          </div>
+          ${fld('Notes', '<textarea rows="2" class="form-input" id="f_notes" placeholder="Additional details"></textarea>')}
+        </div>
+        ${modalFooter('Save Filing', 'onclick="saveFiling()"')}
+      `;
+      openModal(modalContent, { width: 'max-w-lg' });
+    }
+
+    function saveFiling() {
+      var type = document.getElementById('f_type').value;
+      var form = document.getElementById('f_form').value.trim();
+      var period = document.getElementById('f_period').value.trim();
+      var dueDate = document.getElementById('f_dueDate').value;
+      var amount = parseFloat(document.getElementById('f_amount').value) || 0;
+      var status = document.getElementById('f_status').value;
+      var notes = document.getElementById('f_notes').value.trim();
+
+      if (!form || !period || !dueDate) {
+        showToast('Please fill required fields (Form, Period, Due Date)', 'error');
+        return;
+      }
+
+      filings.push({
+        id: 'FIL-' + String(nextFilNo++).padStart(3, '0'),
+        type: type,
+        form: form,
+        period: period,
+        dueDate: dueDate,
+        filedDate: status === 'filed' ? new Date().toISOString().split('T')[0] : '',
+        amount: amount,
+        status: status,
+        reference: '',
+        notes: notes || '—'
+      });
+
+      closeModal();
+      renderAll();
+      showToast('Filing scheduled successfully', 'success');
+    }
+
+    function exportCompliance() {
+      showToast('Exporting compliance report...', 'info');
+      setTimeout(function() { showToast('Exported successfully!', 'success'); }, 1000);
+    }
+
+    // =============================================================
+    // RENDER ALL
+    // =============================================================
+
+    function renderAll() {
+      renderStats();
+      renderCalendar();
+      renderGSTFilings();
+      renderTDSFilings();
+      renderROCFilings();
+      renderHistory();
+    }
+
+    // =============================================================
+    // SEARCH
+    // =============================================================
+
+    (function addSearchToTopbar() {
+      var searchContainer = document.querySelector('.app-main header');
+      if (searchContainer) {
+        var searchHtml = `
+          <div class="hidden sm:flex flex-1 max-w-[420px] relative ml-4">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">${iconSearch()}</span>
+            <input type="text" id="searchInput" placeholder="Search filings by form, period, reference…"
+              onkeyup="filterFiling()"
+              class="w-full border border-gray-200 bg-gray-50 focus:bg-white rounded-lg pl-9 pr-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition placeholder:text-gray-400">
+          </div>
+        `;
+        var headerContent = searchContainer.innerHTML;
+        var hamburgerIndex = headerContent.indexOf('lg:hidden');
+        if (hamburgerIndex !== -1) {
+          var firstDivEnd = headerContent.indexOf('</div>', hamburgerIndex) + 6;
+          var before = headerContent.substring(0, firstDivEnd);
+          var after = headerContent.substring(firstDivEnd);
+          searchContainer.innerHTML = before + searchHtml + after;
+        }
+      }
+    })();
+
+    function filterFiling() {
+      var q = document.getElementById('searchInput').value.toLowerCase();
+      document.querySelectorAll('#tbody-anchor tr').forEach(function(row) {
+        var text = row.textContent.toLowerCase();
+        row.style.display = text.indexOf(q) !== -1 ? '' : 'none';
+      });
+    }
+
+    // =============================================================
+    // INIT
+    // =============================================================
+
+    renderAll();
+
+    console.log('📋 Filing & Compliance Module Loaded Successfully');
+    console.log('📊 Total Filings:', filings.length);
+    console.log('✅ Filed:', filings.filter(function(f) { return f.status === 'filed'; }).length);
+    console.log('⏳ Pending:', filings.filter(function(f) { return f.status === 'pending'; }).length);
+    console.log('⚠️ Overdue:', filings.filter(function(f) { return f.status === 'overdue'; }).length);
+
+  </script>
+
+</body>
+</html>

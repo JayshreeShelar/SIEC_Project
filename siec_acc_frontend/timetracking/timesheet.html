@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+<link rel="manifest" href="/favicon_io/site.webmanifest">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<title>Timesheet — Aquilon ERP</title>
+
+<script>
+  (function () {
+    try {
+      var collapsed = localStorage.getItem("sidebarCollapsed") === "true";
+      document.documentElement.classList.add(collapsed ? "sidebar-collapsed" : "sidebar-expanded");
+    } catch (e) {
+      document.documentElement.classList.add("sidebar-expanded");
+    }
+  })();
+</script>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: { DEFAULT: "#6da84c", dark: "#5c9140", soft: "#eef5e8" },
+          secondary: { DEFAULT: "#1985bf", soft: "#e7f3fa" },
+        },
+      },
+    },
+  };
+</script>
+
+<link rel="stylesheet" href="/assets/css/nav-sidebar.css" />
+
+<style>
+  body {
+    font-size: 12px;
+    background: #f3f4f6;
+  }
+
+  .form-input {
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fafafa;
+    color: #1a1a2e;
+  }
+  .form-input:focus {
+    border-color: #6da84c;
+    box-shadow: 0 0 0 3px rgba(109, 168, 76, 0.12);
+    background: #ffffff;
+  }
+  .form-input:disabled {
+    background: #f3f4f6;
+    cursor: not-allowed;
+  }
+
+  .form-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #374151;
+    display: block;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .form-label .required { color: #ef4444; margin-left: 2px; }
+  .form-hint { font-size: 9.5px; color: #9ca3af; margin-top: 2px; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+  }
+  .badge-green { background: #dcfce7; color: #166534; }
+  .badge-amber { background: #fef3c7; color: #92400e; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  .badge-gray { background: #f1f5f9; color: #475569; }
+  .badge-blue { background: #dbeafe; color: #1e40af; }
+  .badge-purple { background: #ede9fe; color: #5b21b6; }
+  .badge-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .badge-dot-green { background: #22c55e; }
+  .badge-dot-amber { background: #f59e0b; }
+  .badge-dot-red { background: #ef4444; }
+  .badge-dot-gray { background: #94a3b8; }
+  .badge-dot-blue { background: #3b82f6; }
+  .badge-dot-purple { background: #8b5cf6; }
+
+  .stat-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    padding: 10px 14px !important;
+  }
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  }
+  .stat-card .stat-label {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+  }
+  .stat-card .stat-value {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-top: 2px;
+  }
+
+  .table-row-hover:hover {
+    background: #f8fafc;
+  }
+
+  .btn-icon-action {
+    transition: all 0.15s ease;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-icon-action:hover {
+    background: #f1f5f9;
+    color: #6da84c;
+  }
+  .btn-icon-action.danger:hover {
+    background: #fee2e2;
+    color: #ef4444;
+  }
+  .btn-icon-action.primary:hover {
+    background: #eef5e8;
+    color: #6da84c;
+  }
+
+  .toast {
+    animation: fadeIn 0.2s ease;
+    font-size: 12px;
+  }
+  .toast-success { background: #16a34a; }
+  .toast-error { background: #dc2626; }
+  .toast-warning { background: #f59e0b; }
+  .toast-info { background: #6da84c; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.96) translateY(6px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .animate-modal { animation: modalIn 0.18s ease; }
+
+  .modal-scroll {
+    max-height: 55vh;
+    overflow-y: auto;
+  }
+  .modal-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+  .modal-scroll::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+  }
+
+  .empty-icon-svg {
+    opacity: 0.2;
+    width: 40px;
+    height: 40px;
+    color: #94a3b8;
+  }
+
+  .page-title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .page-subtitle {
+    font-size: 12px;
+    color: #6b7280;
+  }
+  .page-breadcrumb {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6da84c;
+  }
+
+  table th {
+    font-size: 9.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+    padding: 8px 12px;
+  }
+  table td {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+  table td .font-mono {
+    font-size: 11px;
+  }
+
+  .modal-title {
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .modal-subtitle {
+    font-size: 11px;
+    color: #6b7280;
+  }
+
+  .filter-btn {
+    font-size: 11px;
+    padding: 5px 12px;
+  }
+  .filter-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Week view */
+  .week-day {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 10px 8px;
+    background: #ffffff;
+    text-align: center;
+    transition: border-color 0.2s, background 0.15s;
+  }
+  .week-day:hover {
+    border-color: #6da84c;
+  }
+  .week-day.today {
+    background: #eef5e8;
+    border-color: #6da84c;
+  }
+  .week-day .day-name {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #6b7280;
+  }
+  .week-day .day-hours {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+  .week-day .day-hours.active {
+    color: #6da84c;
+  }
+  .week-day .day-hours.inactive {
+    color: #d1d5db;
+  }
+
+  /* Timer card */
+  .timer-card {
+    background: linear-gradient(135deg, #6da84c, #5c9140);
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .timer-card .timer-time {
+    font-size: 32px;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.05em;
+  }
+  .timer-card .timer-label {
+    font-size: 11px;
+    opacity: 0.85;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .timer-btn {
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s;
+  }
+  .timer-btn-start {
+    background: white;
+    color: #5c9140;
+  }
+  .timer-btn-start:hover {
+    background: #eef5e8;
+  }
+  .timer-btn-stop {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.4);
+  }
+  .timer-btn-stop:hover {
+    background: rgba(255,255,255,0.3);
+  }
+
+  /* Report summary */
+  .report-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .report-table th {
+    background: #f8fafc;
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6b7280;
+    border-bottom: 2px solid #e5e7eb;
+  }
+  .report-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .report-table .text-right { text-align: right; }
+  .report-table .total-row {
+    border-top: 2px solid #e5e7eb;
+    font-weight: 700;
+    background: #f8fafc;
+  }
+  .report-table .grand-total {
+    font-weight: 700;
+    color: #6da84c;
+    background: #eef5e8;
+  }
+</style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 antialiased text-sm">
+
+  <div class="flex min-h-screen">
+    <div id="sidebar-root"></div>
+
+    <div class="app-main flex-1 flex flex-col min-w-0">
+      <div id="topbar-root"></div>
+
+      <main class="p-3 sm:p-4 lg:p-5">
+
+        <div id="toastWrap" class="fixed bottom-5 right-5 z-[200] flex flex-col gap-2 items-end"></div>
+        <div id="modalRoot"></div>
+
+        <div class="max-w-7xl mx-auto">
+
+          <!-- ===== PAGE HEADER ===== -->
+          <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+            <div>
+              <div class="page-breadcrumb">Operations</div>
+              <h1 class="page-title text-gray-900">Timesheet / Time Tracking</h1>
+              <p class="page-subtitle mt-0.5">Track billable and non-billable hours against projects.</p>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <button onclick="openAddTimesheet()" class="inline-flex items-center gap-1.5 bg-primary hover:bg-primary-dark text-white text-[11px] font-semibold px-3 py-2 rounded-lg transition shadow-sm">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+                Log Time
+              </button>
+              <button onclick="exportTimesheet()" class="inline-flex items-center gap-1.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-[11px] font-semibold px-3 py-2 rounded-lg transition">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                  <path d="M7 10l5 5 5-5"/>
+                  <path d="M12 15V3"/>
+                </svg>
+                Export
+              </button>
+            </div>
+          </div>
+
+          <!-- ===== TIMER CARD ===== -->
+          <div class="timer-card mb-4" id="timerCard">
+            <div>
+              <div class="timer-label">Active Timer</div>
+              <div class="timer-time" id="timerDisplay">00:00:00</div>
+              <div class="text-[11px] opacity-80 mt-1" id="timerTaskInfo">No task running</div>
+            </div>
+            <div class="flex gap-2">
+              <button id="startTimerBtn" onclick="startTimer()" class="timer-btn timer-btn-start">Start Timer</button>
+              <button id="stopTimerBtn" onclick="stopTimer()" class="timer-btn timer-btn-stop" style="display:none;">Stop & Save</button>
+            </div>
+          </div>
+
+          <!-- ===== STATS CARDS ===== -->
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-2.5 mb-4">
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Total Hours</div>
+              <div class="stat-value" id="totalHours">0h</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Billable Hours</div>
+              <div class="stat-value text-green-600" id="billableHours">0h</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Non-Billable</div>
+              <div class="stat-value text-gray-500" id="nonBillableHours">0h</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Billable Amount</div>
+              <div class="stat-value text-primary" id="billableAmount">₹0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Employees</div>
+              <div class="stat-value" id="totalEmployees">0</div>
+            </div>
+          </div>
+
+          <!-- ===== WEEK VIEW ===== -->
+          <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-4 mb-4">
+            <div class="flex items-center justify-between mb-3">
+              <div class="text-sm font-bold text-gray-800">This Week</div>
+              <div class="text-[11px] text-gray-500" id="weekRange"></div>
+            </div>
+            <div class="grid grid-cols-7 gap-2" id="weekView"></div>
+          </div>
+
+          <!-- ===== TIMESHEET TABLE ===== -->
+          <div id="timesheetPanel"></div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ========================================================== -->
+  <!-- SCRIPTS -->
+  <!-- ========================================================== -->
+
+  <script src="/assets/js/nav-sidebar.js"></script>
+  <script>
+    // =============================================================
+    // NAV-SIDEBAR INIT
+    // =============================================================
+    NavSidebar.init({
+      basePath: "",
+      activePage: "timetracking",
+      pageTitle: "Time Tracking",
+      user: {
+        name: "Admin",
+        role: "Super Admin",
+        avatarUrl: "",
+      },
+    });
+
+    // =============================================================
+    // SVG ICONS
+    // =============================================================
+    function iconPlus() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>`;
+    }
+    function iconEdit() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`;
+    }
+    function iconTrash() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>`;
+    }
+    function iconEye() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    }
+    function iconX() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg>`;
+    }
+    function iconSearch() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>`;
+    }
+    function iconClock() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>`;
+    }
+    function iconSave() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>`;
+    }
+    function iconInfo() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>`;
+    }
+    function iconPlay() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg>`;
+    }
+    function iconStop() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>`;
+    }
+    function iconCheck() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>`;
+    }
+
+    // =============================================================
+    // TOAST
+    // =============================================================
+    function showToast(message, kind) {
+      kind = kind || 'success';
+      var wrap = document.getElementById('toastWrap');
+      var colors = {
+        success: 'bg-green-600',
+        info: 'bg-primary',
+        warning: 'bg-amber-600',
+        error: 'bg-red-600'
+      };
+      var el = document.createElement('div');
+      el.className = 'toast ' + colors[kind] + ' text-white font-semibold px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 max-w-xs';
+      el.innerHTML = '<span>' + message + '</span>';
+      wrap.appendChild(el);
+      setTimeout(function() {
+        el.style.transition = 'opacity .3s';
+        el.style.opacity = '0';
+        setTimeout(function() { el.remove(); }, 300);
+      }, 2600);
+    }
+
+    // =============================================================
+    // MODAL
+    // =============================================================
+    function openModal(innerHtml, opts) {
+      opts = opts || {};
+      var root = document.getElementById('modalRoot');
+      root.innerHTML = `
+        <div class="fixed inset-0 z-[100] flex items-center justify-center p-3" id="modalOverlay">
+          <div class="absolute inset-0 bg-black/40 backdrop-blur-[1px]" id="modalBackdrop"></div>
+          <div class="relative bg-white rounded-xl shadow-2xl w-full ${opts.width || 'max-w-4xl'} max-h-[92vh] overflow-hidden animate-modal">
+            ${innerHtml}
+          </div>
+        </div>`;
+      document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      var root = document.getElementById('modalRoot');
+      root.innerHTML = '';
+      document.body.style.overflow = '';
+    }
+
+    function modalHeader(title, subtitle) {
+      return `
+        <div class="flex items-start justify-between px-5 py-3.5 border-b border-gray-100 sticky top-0 bg-white z-10">
+          <div>
+            <h3 class="modal-title text-gray-900">${title}</h3>
+            ${subtitle ? '<p class="modal-subtitle mt-0.5">' + subtitle + '</p>' : ''}
+          </div>
+          <button onclick="closeModal()" class="w-7 h-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 transition">${iconX()}</button>
+        </div>`;
+    }
+
+    function modalFooter(saveLabel, onSaveAttr, extraBtns) {
+      return `
+        <div class="flex items-center justify-between gap-2 px-5 py-3 border-t border-gray-100 bg-gray-50 rounded-b-xl sticky bottom-0">
+          <div>${extraBtns || ''}</div>
+          <div class="flex gap-2">
+            <button onclick="closeModal()" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-600 border border-gray-200 hover:bg-white transition">Cancel</button>
+            <button ${onSaveAttr} class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-primary hover:bg-primary-dark transition shadow-sm flex items-center gap-1.5">
+              ${iconSave()} ${saveLabel}
+            </button>
+          </div>
+        </div>`;
+    }
+
+    function fld(label, inputHtml, hint) {
+      return `
+        <div class="mb-2">
+          <label class="form-label">${label}</label>
+          ${inputHtml}
+          ${hint ? '<div class="form-hint">' + hint + '</div>' : ''}
+        </div>`;
+    }
+
+    function inputBase() { return "form-input"; }
+
+    // =============================================================
+    // HELPERS
+    // =============================================================
+    function money(n) { return '₹' + Number(n).toLocaleString('en-IN'); }
+
+    function statusBadge(status) {
+      var map = {
+        approved: 'badge-green',
+        pending: 'badge-amber',
+        rejected: 'badge-red',
+        draft: 'badge-gray'
+      };
+      var dot = {
+        approved: 'badge-dot-green',
+        pending: 'badge-dot-amber',
+        rejected: 'badge-dot-red',
+        draft: 'badge-dot-gray'
+      };
+      var label = status.charAt(0).toUpperCase() + status.slice(1);
+      return '<span class="badge ' + map[status] + '"><span class="badge-dot ' + dot[status] + '"></span>' + label + '</span>';
+    }
+
+    function billableBadge(billable) {
+      return billable
+        ? '<span class="badge badge-green"><span class="badge-dot badge-dot-green"></span>Billable</span>'
+        : '<span class="badge badge-gray"><span class="badge-dot badge-dot-gray"></span>Non-Billable</span>';
+    }
+
+    function rowActionsHtml(editFn, delFn, viewFn, approveFn) {
+      var html = '<div class="flex gap-1">';
+      if (viewFn) {
+        html += '<button onclick="' + viewFn + '" class="btn-icon-action" title="View">' + iconEye() + '</button>';
+      }
+      if (approveFn) {
+        html += '<button onclick="' + approveFn + '" class="btn-icon-action primary" title="Approve">' + iconCheck() + '</button>';
+      }
+      html += '<button onclick="' + editFn + '" class="btn-icon-action" title="Edit">' + iconEdit() + '</button>';
+      html += '<button onclick="' + delFn + '" class="btn-icon-action danger" title="Delete">' + iconTrash() + '</button>';
+      html += '</div>';
+      return html;
+    }
+
+    function panelWrap(titleHtml, bodyHtml, extraHead) {
+      return `
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+          <div class="flex items-center justify-between gap-3 flex-wrap px-4 py-2.5 border-b border-gray-100">
+            <div class="font-semibold text-sm text-gray-800 flex items-center gap-2">${titleHtml}</div>
+            ${extraHead || ''}
+          </div>
+          <div>${bodyHtml}</div>
+        </div>`;
+    }
+
+    function tableHtml(cols, rowsHtml) {
+      var colHeaders = cols.map(function(c) {
+        return '<th class="text-left font-semibold whitespace-nowrap">' + c + '</th>';
+      }).join('');
+      return `
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gray-50 border-b border-gray-200">${colHeaders}</tr>
+            </thead>
+            <tbody id="tbody-anchor">${rowsHtml}</tbody>
+          </table>
+        </div>`;
+    }
+
+    // =============================================================
+    // DATA
+    // =============================================================
+
+    var employees = [
+      { id: 'EMP-001', name: 'Rajesh Sharma', role: 'Project Manager' },
+      { id: 'EMP-002', name: 'Priya Patel', role: 'Business Analyst' },
+      { id: 'EMP-003', name: 'Amit Kumar', role: 'Developer' },
+      { id: 'EMP-004', name: 'Sneha Reddy', role: 'Designer' },
+      { id: 'EMP-005', name: 'Vikram Singh', role: 'Consultant' }
+    ];
+
+    var projects = [
+      { id: 'PRJ-001', name: 'Operation & Supervision — WHE' },
+      { id: 'PRJ-002', name: 'Odor Control Unit — Retrofit' },
+      { id: 'PRJ-003', name: 'Dual Media Filter — Phase II' },
+      { id: 'PRJ-004', name: 'Site Survey & Consulting' }
+    ];
+
+    var tasks = [
+      'Project Supervision',
+      'Client Meeting',
+      'Documentation',
+      'Site Survey',
+      'Development',
+      'Design Review',
+      'Testing',
+      'Deployment',
+      'Training',
+      'Internal Meeting'
+    ];
+
+    var timesheets = [{
+      id: 'TS-001',
+      date: '2026-02-09',
+      employeeId: 'EMP-001',
+      employeeName: 'Rajesh Sharma',
+      projectId: 'PRJ-001',
+      projectName: 'Operation & Supervision — WHE',
+      task: 'Project Supervision',
+      hours: 8,
+      billable: true,
+      rate: 1500,
+      description: 'Site supervision and coordination',
+      status: 'approved'
+    }, {
+      id: 'TS-002',
+      date: '2026-02-09',
+      employeeId: 'EMP-002',
+      employeeName: 'Priya Patel',
+      projectId: 'PRJ-002',
+      projectName: 'Odor Control Unit — Retrofit',
+      task: 'Client Meeting',
+      hours: 4,
+      billable: true,
+      rate: 2000,
+      description: 'Requirements gathering with XYZ Technologies',
+      status: 'approved'
+    }, {
+      id: 'TS-003',
+      date: '2026-02-10',
+      employeeId: 'EMP-003',
+      employeeName: 'Amit Kumar',
+      projectId: 'PRJ-004',
+      projectName: 'Site Survey & Consulting',
+      task: 'Documentation',
+      hours: 6,
+      billable: false,
+      rate: 0,
+      description: 'Internal project docs and SOPs',
+      status: 'approved'
+    }, {
+      id: 'TS-004',
+      date: '2026-02-10',
+      employeeId: 'EMP-001',
+      employeeName: 'Rajesh Sharma',
+      projectId: 'PRJ-001',
+      projectName: 'Operation & Supervision — WHE',
+      task: 'Site Survey',
+      hours: 10,
+      billable: true,
+      rate: 1500,
+      description: 'Field survey and measurements',
+      status: 'approved'
+    }, {
+      id: 'TS-005',
+      date: '2026-02-10',
+      employeeId: 'EMP-004',
+      employeeName: 'Sneha Reddy',
+      projectId: 'PRJ-003',
+      projectName: 'Dual Media Filter — Phase II',
+      task: 'Design Review',
+      hours: 5,
+      billable: true,
+      rate: 1800,
+      description: 'UI/UX design review with client',
+      status: 'pending'
+    }, {
+      id: 'TS-006',
+      date: '2026-02-11',
+      employeeId: 'EMP-005',
+      employeeName: 'Vikram Singh',
+      projectId: 'PRJ-002',
+      projectName: 'Odor Control Unit — Retrofit',
+      task: 'Development',
+      hours: 7.5,
+      billable: true,
+      rate: 2200,
+      description: 'Backend development for retrofit module',
+      status: 'pending'
+    }, {
+      id: 'TS-007',
+      date: '2026-02-11',
+      employeeId: 'EMP-002',
+      employeeName: 'Priya Patel',
+      projectId: 'PRJ-001',
+      projectName: 'Operation & Supervision — WHE',
+      task: 'Testing',
+      hours: 3,
+      billable: true,
+      rate: 2000,
+      description: 'QA testing of delivered components',
+      status: 'pending'
+    }, {
+      id: 'TS-008',
+      date: '2026-02-11',
+      employeeId: 'EMP-003',
+      employeeName: 'Amit Kumar',
+      projectId: 'PRJ-004',
+      projectName: 'Site Survey & Consulting',
+      task: 'Training',
+      hours: 2,
+      billable: false,
+      rate: 0,
+      description: 'Internal team training session',
+      status: 'draft'
+    }];
+
+    var nextTSNo = 9;
+
+    // =============================================================
+    // TIMER STATE
+    // =============================================================
+
+    var timerInterval = null;
+    var timerSeconds = 0;
+    var timerRunning = false;
+
+    // =============================================================
+    // FUNCTIONS
+    // =============================================================
+
+    function getProjectName(id) {
+      var p = projects.find(function(x) { return x.id === id; });
+      return p ? p.name : id;
+    }
+
+    function formatDate(date) {
+      var d = new Date(date);
+      var options = { day: '2-digit', month: 'short', year: 'numeric' };
+      return d.toLocaleDateString('en-IN', options);
+    }
+
+    function getWeekDates() {
+      var today = new Date();
+      var day = today.getDay();
+      var diff = today.getDate() - day + (day === 0 ? -6 : 1);
+      var monday = new Date(today.setDate(diff));
+      var week = [];
+      for (var i = 0; i < 7; i++) {
+        var d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        week.push(d);
+      }
+      return week;
+    }
+
+    function renderStats() {
+      var totalHours = timesheets.reduce(function(sum, t) { return sum + t.hours; }, 0);
+      var billableHours = timesheets.filter(function(t) { return t.billable; }).reduce(function(sum, t) { return sum + t.hours; }, 0);
+      var nonBillableHours = totalHours - billableHours;
+      var billableAmount = timesheets.filter(function(t) { return t.billable; }).reduce(function(sum, t) { return sum + (t.hours * t.rate); }, 0);
+      var totalEmployees = new Set(timesheets.map(function(t) { return t.employeeId; })).size;
+
+      document.getElementById('totalHours').textContent = totalHours.toFixed(1) + 'h';
+      document.getElementById('billableHours').textContent = billableHours.toFixed(1) + 'h';
+      document.getElementById('nonBillableHours').textContent = nonBillableHours.toFixed(1) + 'h';
+      document.getElementById('billableAmount').textContent = money(billableAmount);
+      document.getElementById('totalEmployees').textContent = totalEmployees;
+    }
+
+    function renderWeekView() {
+      var week = getWeekDates();
+      var todayStr = new Date().toISOString().split('T')[0];
+
+      document.getElementById('weekRange').textContent = formatDate(week[0]) + ' — ' + formatDate(week[6]);
+
+      var html = '';
+      var dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+      week.forEach(function(d, idx) {
+        var dateStr = d.toISOString().split('T')[0];
+        var dayHours = timesheets.filter(function(t) { return t.date === dateStr; }).reduce(function(sum, t) { return sum + t.hours; }, 0);
+        var isToday = dateStr === todayStr;
+        html += `
+          <div class="week-day ${isToday ? 'today' : ''}">
+            <div class="day-name">${dayNames[idx]}</div>
+            <div class="text-[10px] text-gray-400">${d.getDate()}</div>
+            <div class="day-hours ${dayHours > 0 ? 'active' : 'inactive'}">${dayHours}h</div>
+          </div>`;
+      });
+
+      document.getElementById('weekView').innerHTML = html;
+    }
+
+    function renderTimesheet() {
+      var rowsHtml = timesheets.map(function(t) {
+        var canApprove = t.status === 'pending' || t.status === 'draft';
+        return `
+          <tr class="border-b border-gray-100 table-row-hover">
+            <td class="px-3 py-2.5">
+              <div class="font-semibold text-gray-800 text-sm">${t.employeeName}</div>
+              <div class="text-[10px] text-gray-400">${t.id}</div>
+            </td>
+            <td class="px-3 py-2.5 text-xs text-gray-500">${formatDate(t.date)}</td>
+            <td class="px-3 py-2.5 text-sm text-gray-700">${t.projectName}</td>
+            <td class="px-3 py-2.5 text-sm text-gray-600">${t.task}</td>
+            <td class="px-3 py-2.5 text-center font-mono font-semibold text-sm">${t.hours}h</td>
+            <td class="px-3 py-2.5">${billableBadge(t.billable)}</td>
+            <td class="px-3 py-2.5 font-mono text-sm text-right">${t.billable ? money(t.rate) : '—'}</td>
+            <td class="px-3 py-2.5 font-mono font-semibold text-right text-primary">${t.billable ? money(t.hours * t.rate) : '—'}</td>
+            <td class="px-3 py-2.5">${statusBadge(t.status)}</td>
+            <td class="px-3 py-2.5">${rowActionsHtml(
+              "editTimesheet('"+t.id+"')",
+              "delTimesheet('"+t.id+"')",
+              "viewTimesheet('"+t.id+"')",
+              canApprove ? "approveTimesheet('"+t.id+"')" : null
+            )}</td>
+          </tr>`;
+      }).join('');
+
+      if (timesheets.length === 0) {
+        rowsHtml = `
+          <tr>
+            <td colspan="10" class="text-center py-10 text-gray-400 text-sm">
+              <div class="flex justify-center mb-2 empty-icon-svg">${iconClock()}</div>
+              No timesheets found. Click "Log Time" to add an entry.
+            </td>
+          </tr>`;
+      }
+
+      var panelHtml = panelWrap(
+        'All Timesheets <span class="text-[10px] font-bold bg-primary-soft text-primary-dark px-2 py-0.5 rounded-full ml-1">' + timesheets.length + '</span>',
+        tableHtml(['Employee', 'Date', 'Project', 'Task', 'Hours', 'Type', 'Rate', 'Amount', 'Status', 'Actions'], rowsHtml),
+        '<div class="flex items-center gap-2"><span class="text-[10px] text-gray-400">Show:</span><select id="pageSizeSelect" class="text-[10px] border border-gray-200 rounded-lg px-2 py-1 bg-white outline-none"><option value="10">10</option><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option></select></div>'
+      );
+
+      document.getElementById('timesheetPanel').innerHTML = panelHtml;
+      renderStats();
+      renderWeekView();
+    }
+
+    // =============================================================
+    // TIMER FUNCTIONS
+    // =============================================================
+
+    function startTimer() {
+      if (timerRunning) return;
+      timerRunning = true;
+      timerSeconds = 0;
+      document.getElementById('startTimerBtn').style.display = 'none';
+      document.getElementById('stopTimerBtn').style.display = 'inline-block';
+      document.getElementById('timerTaskInfo').textContent = 'Timer running — select task to log';
+
+      timerInterval = setInterval(function() {
+        timerSeconds++;
+        var h = Math.floor(timerSeconds / 3600);
+        var m = Math.floor((timerSeconds % 3600) / 60);
+        var s = timerSeconds % 60;
+        document.getElementById('timerDisplay').textContent =
+          String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+      }, 1000);
+
+      showToast('Timer started!', 'info');
+    }
+
+    function stopTimer() {
+      if (!timerRunning) return;
+      timerRunning = false;
+      clearInterval(timerInterval);
+
+      var h = Math.floor(timerSeconds / 3600);
+      var m = Math.floor((timerSeconds % 3600) / 60);
+      var hoursDecimal = (timerSeconds / 3600).toFixed(2);
+
+      document.getElementById('startTimerBtn').style.display = 'inline-block';
+      document.getElementById('stopTimerBtn').style.display = 'none';
+      document.getElementById('timerTaskInfo').textContent = 'Timer stopped. Log time with prefilled hours.';
+
+      // Open timesheet modal with prefilled hours
+      openAddTimesheetWithHours(parseFloat(hoursDecimal));
+
+      // Reset timer display after logging
+      setTimeout(function() {
+        timerSeconds = 0;
+        document.getElementById('timerDisplay').textContent = '00:00:00';
+        document.getElementById('timerTaskInfo').textContent = 'No task running';
+      }, 1000);
+
+      showToast('Timer stopped! Hours: ' + hoursDecimal, 'success');
+    }
+
+    // =============================================================
+    // TIMESHEET ACTIONS
+    // =============================================================
+
+    function openAddTimesheet() { openTimesheetModal(null, 0); }
+    function openAddTimesheetWithHours(hours) { openTimesheetModal(null, hours); }
+
+    function editTimesheet(id) {
+      var t = timesheets.find(function(x) { return x.id === id; });
+      if (t) openTimesheetModal(t, 0);
+    }
+
+    function openTimesheetModal(existing, prefilledHours) {
+      var e = existing || {
+        id: 'TS-' + String(nextTSNo).padStart(3, '0'),
+        date: new Date().toISOString().split('T')[0],
+        employeeId: employees[0].id,
+        projectId: projects[0].id,
+        task: tasks[0],
+        hours: prefilledHours || 1,
+        billable: true,
+        rate: 1500,
+        description: '',
+        status: 'draft'
+      };
+      var isEdit = !!existing;
+
+      var employeeOptions = employees.map(function(emp) {
+        return '<option ' + (emp.id === e.employeeId ? 'selected' : '') + ' value="' + emp.id + '">' + emp.name + ' (' + emp.role + ')</option>';
+      }).join('');
+
+      var projectOptions = projects.map(function(p) {
+        return '<option ' + (p.id === e.projectId ? 'selected' : '') + ' value="' + p.id + '">' + p.name + '</option>';
+      }).join('');
+
+      var taskOptions = tasks.map(function(t) {
+        return '<option ' + (t === e.task ? 'selected' : '') + '>' + t + '</option>';
+      }).join('');
+
+      var modalContent = `
+        ${modalHeader(isEdit ? 'Edit Timesheet' : 'Log Time', isEdit ? e.id : 'Record time spent on a project')}
+        <div class="px-5 py-4 modal-scroll">
+          <div class="grid grid-cols-2 gap-3">
+            ${fld('Date *', '<input type="date" class="form-input" id="ts_date" value="' + e.date + '">')}
+            ${fld('Employee *', '<select class="form-input" id="ts_employee">' + employeeOptions + '</select>')}
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            ${fld('Project *', '<select class="form-input" id="ts_project">' + projectOptions + '</select>')}
+            ${fld('Task *', '<select class="form-input" id="ts_task">' + taskOptions + '</select>')}
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            ${fld('Hours *', '<input type="number" class="form-input" id="ts_hours" value="' + e.hours + '" step="0.5" min="0.5" placeholder="0.0">')}
+            ${fld('Billable?', '<select class="form-input" id="ts_billable" onchange="toggleRateField()"><option ' + (e.billable ? 'selected' : '') + ' value="true">Yes</option><option ' + (!e.billable ? 'selected' : '') + ' value="false">No</option></select>')}
+            ${fld('Rate (₹/hr)', '<input type="number" class="form-input" id="ts_rate" value="' + e.rate + '" step="50" ' + (!e.billable ? 'disabled' : '') + '>')}
+          </div>
+          ${fld('Description', '<textarea rows="2" class="form-input" id="ts_description" placeholder="Work summary">' + (e.description || '') + '</textarea>')}
+          ${fld('Status', '<select class="form-input" id="ts_status"><option ' + (e.status === 'draft' ? 'selected' : '') + ' value="draft">Draft</option><option ' + (e.status === 'pending' ? 'selected' : '') + ' value="pending">Pending</option><option ' + (e.status === 'approved' ? 'selected' : '') + ' value="approved">Approved</option><option ' + (e.status === 'rejected' ? 'selected' : '') + ' value="rejected">Rejected</option></select>')}
+        </div>
+        ${modalFooter(isEdit ? 'Update Timesheet' : 'Save Timesheet', 'onclick="saveTimesheet(\'' + (isEdit ? e.id : '') + '\')"')}
+      `;
+
+      openModal(modalContent, { width: 'max-w-lg' });
+    }
+
+    function toggleRateField() {
+      var billable = document.getElementById('ts_billable').value === 'true';
+      var rateField = document.getElementById('ts_rate');
+      rateField.disabled = !billable;
+      if (!billable) rateField.value = 0;
+    }
+
+    function saveTimesheet(existingId) {
+      var date = document.getElementById('ts_date').value;
+      var employeeId = document.getElementById('ts_employee').value;
+      var projectId = document.getElementById('ts_project').value;
+      var task = document.getElementById('ts_task').value;
+      var hours = parseFloat(document.getElementById('ts_hours').value) || 0;
+      var billable = document.getElementById('ts_billable').value === 'true';
+      var rate = parseFloat(document.getElementById('ts_rate').value) || 0;
+      var description = document.getElementById('ts_description').value.trim();
+      var status = document.getElementById('ts_status').value;
+
+      if (!date || !employeeId || !projectId || hours <= 0) {
+        showToast('Please fill required fields (Date, Employee, Project, Hours)', 'error');
+        return;
+      }
+
+      var employee = employees.find(function(x) { return x.id === employeeId; });
+      var project = projects.find(function(x) { return x.id === projectId; });
+
+      if (existingId) {
+        var t = timesheets.find(function(x) { return x.id === existingId; });
+        if (t) {
+          t.date = date;
+          t.employeeId = employeeId;
+          t.employeeName = employee ? employee.name : '';
+          t.projectId = projectId;
+          t.projectName = project ? project.name : '';
+          t.task = task;
+          t.hours = hours;
+          t.billable = billable;
+          t.rate = billable ? rate : 0;
+          t.description = description;
+          t.status = status;
+          showToast('Timesheet updated successfully', 'success');
+        }
+      } else {
+        var newTS = {
+          id: 'TS-' + String(nextTSNo++).padStart(3, '0'),
+          date: date,
+          employeeId: employeeId,
+          employeeName: employee ? employee.name : '',
+          projectId: projectId,
+          projectName: project ? project.name : '',
+          task: task,
+          hours: hours,
+          billable: billable,
+          rate: billable ? rate : 0,
+          description: description,
+          status: status
+        };
+        timesheets.unshift(newTS);
+        showToast('Timesheet saved successfully', 'success');
+      }
+
+      closeModal();
+      renderTimesheet();
+    }
+
+    function viewTimesheet(id) {
+      var t = timesheets.find(function(x) { return x.id === id; });
+      if (!t) return;
+
+      var modalContent = `
+        ${modalHeader('Timesheet Details', t.id)}
+        <div class="px-5 py-4">
+          <div class="grid grid-cols-2 gap-3 text-sm">
+            <div><span class="text-gray-500">Employee</span><br><span class="font-semibold">${t.employeeName}</span></div>
+            <div><span class="text-gray-500">Date</span><br><span class="font-semibold">${formatDate(t.date)}</span></div>
+            <div><span class="text-gray-500">Project</span><br><span class="font-semibold">${t.projectName}</span></div>
+            <div><span class="text-gray-500">Task</span><br><span class="font-semibold">${t.task}</span></div>
+            <div><span class="text-gray-500">Hours</span><br><span class="font-semibold">${t.hours}h</span></div>
+            <div><span class="text-gray-500">Type</span><br>${billableBadge(t.billable)}</div>
+            <div><span class="text-gray-500">Rate</span><br><span class="font-semibold">${t.billable ? money(t.rate) + '/hr' : '—'}</span></div>
+            <div><span class="text-gray-500">Amount</span><br><span class="font-semibold text-primary">${t.billable ? money(t.hours * t.rate) : '—'}</span></div>
+            <div class="col-span-2"><span class="text-gray-500">Description</span><br><span>${t.description || '—'}</span></div>
+            <div><span class="text-gray-500">Status</span><br>${statusBadge(t.status)}</div>
+          </div>
+        </div>
+        ${modalFooter('Close', 'onclick="closeModal()"')}
+      `;
+
+      openModal(modalContent, { width: 'max-w-lg' });
+    }
+
+    function approveTimesheet(id) {
+      var t = timesheets.find(function(x) { return x.id === id; });
+      if (!t) return;
+      t.status = 'approved';
+      renderTimesheet();
+      showToast('Timesheet ' + t.id + ' approved!', 'success');
+    }
+
+    function delTimesheet(id) {
+      if (confirm('Delete this timesheet entry?')) {
+        timesheets = timesheets.filter(function(x) { return x.id !== id; });
+        renderTimesheet();
+        showToast('Timesheet deleted', 'warning');
+      }
+    }
+
+    function exportTimesheet() {
+      showToast('Exporting timesheet report...', 'info');
+      setTimeout(function() {
+        showToast('Timesheet exported successfully!', 'success');
+      }, 1200);
+    }
+
+    // =============================================================
+    // SEARCH
+    // =============================================================
+
+    (function addSearchToTopbar() {
+      var searchContainer = document.querySelector('.app-main header');
+      if (searchContainer) {
+        var searchHtml = `
+          <div class="hidden sm:flex flex-1 max-w-[420px] relative ml-4">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">${iconSearch()}</span>
+            <input type="text" id="searchInput" placeholder="Search timesheets by employee, project, task…"
+              onkeyup="filterTimesheet()"
+              class="w-full border border-gray-200 bg-gray-50 focus:bg-white rounded-lg pl-9 pr-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition placeholder:text-gray-400">
+          </div>
+        `;
+        var headerContent = searchContainer.innerHTML;
+        var hamburgerIndex = headerContent.indexOf('lg:hidden');
+        if (hamburgerIndex !== -1) {
+          var firstDivEnd = headerContent.indexOf('</div>', hamburgerIndex) + 6;
+          var before = headerContent.substring(0, firstDivEnd);
+          var after = headerContent.substring(firstDivEnd);
+          searchContainer.innerHTML = before + searchHtml + after;
+        }
+      }
+    })();
+
+    function filterTimesheet() {
+      var q = document.getElementById('searchInput').value.toLowerCase();
+      var rows = document.querySelectorAll('#tbody-anchor tr');
+      rows.forEach(function(row) {
+        var text = row.textContent.toLowerCase();
+        row.style.display = text.indexOf(q) !== -1 ? '' : 'none';
+      });
+    }
+
+    // =============================================================
+    // INIT
+    // =============================================================
+
+    renderTimesheet();
+
+    console.log('⏱️ Timesheet Module Loaded Successfully');
+    console.log('📊 Total Entries:', timesheets.length);
+    console.log('⏰ Total Hours:', timesheets.reduce(function(s, t) { return s + t.hours; }, 0));
+    console.log('💰 Billable Amount:', money(timesheets.filter(function(t) { return t.billable; }).reduce(function(s, t) { return s + (t.hours * t.rate); }, 0)));
+
+  </script>
+
+</body>
+</html>

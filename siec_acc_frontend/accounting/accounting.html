@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">`
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+<link rel="manifest" href="/favicon_io/site.webmanifest">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<title>Accounting</title>
+
+<script>
+  (function () {
+    try {
+      var collapsed = localStorage.getItem("sidebarCollapsed") === "true";
+      document.documentElement.classList.add(collapsed ? "sidebar-collapsed" : "sidebar-expanded");
+    } catch (e) {
+      document.documentElement.classList.add("sidebar-expanded");
+    }
+  })();
+</script>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: { DEFAULT: "#6da84c", dark: "#5c9140", soft: "#eef5e8" },
+          secondary: { DEFAULT: "#1985bf", soft: "#e7f3fa" },
+        },
+      },
+    },
+  };
+</script>
+
+<link rel="stylesheet" href="/assets/css/nav-sidebar.css" />
+
+<style>
+  body {
+    font-size: 12px;
+    background: #f3f4f6;
+  }
+
+  .form-input {
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fafafa;
+    color: #1a1a2e;
+  }
+  .form-input:focus {
+    border-color: #6da84c;
+    box-shadow: 0 0 0 3px rgba(109, 168, 76, 0.12);
+    background: #ffffff;
+  }
+  .form-input:disabled {
+    background: #f3f4f6;
+    cursor: not-allowed;
+  }
+
+  .form-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #374151;
+    display: block;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .form-label .required { color: #ef4444; margin-left: 2px; }
+  .form-hint { font-size: 9.5px; color: #9ca3af; margin-top: 2px; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+  }
+  .badge-green { background: #dcfce7; color: #166534; }
+  .badge-amber { background: #fef3c7; color: #92400e; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  .badge-gray { background: #f1f5f9; color: #475569; }
+  .badge-blue { background: #dbeafe; color: #1e40af; }
+  .badge-purple { background: #ede9fe; color: #5b21b6; }
+  .badge-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .badge-dot-green { background: #22c55e; }
+  .badge-dot-amber { background: #f59e0b; }
+  .badge-dot-red { background: #ef4444; }
+  .badge-dot-gray { background: #94a3b8; }
+  .badge-dot-blue { background: #3b82f6; }
+  .badge-dot-purple { background: #8b5cf6; }
+
+  .stat-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    padding: 10px 14px !important;
+  }
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  }
+  .stat-card .stat-label {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+  }
+  .stat-card .stat-value {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-top: 2px;
+  }
+
+  .table-row-hover:hover {
+    background: #f8fafc;
+  }
+
+  .btn-icon-action {
+    transition: all 0.15s ease;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-icon-action:hover {
+    background: #f1f5f9;
+    color: #6da84c;
+  }
+  .btn-icon-action.danger:hover {
+    background: #fee2e2;
+    color: #ef4444;
+  }
+  .btn-icon-action.primary:hover {
+    background: #eef5e8;
+    color: #6da84c;
+  }
+
+  .toast {
+    animation: fadeIn 0.2s ease;
+    font-size: 12px;
+  }
+  .toast-success { background: #16a34a; }
+  .toast-error { background: #dc2626; }
+  .toast-warning { background: #f59e0b; }
+  .toast-info { background: #6da84c; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.96) translateY(6px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .animate-modal { animation: modalIn 0.18s ease; }
+
+  .modal-scroll {
+    max-height: 55vh;
+    overflow-y: auto;
+  }
+  .modal-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+  .modal-scroll::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+  }
+
+  .empty-icon-svg {
+    opacity: 0.2;
+    width: 40px;
+    height: 40px;
+    color: #94a3b8;
+  }
+
+  .page-title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .page-subtitle {
+    font-size: 12px;
+    color: #6b7280;
+  }
+  .page-breadcrumb {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6da84c;
+  }
+
+  table th {
+    font-size: 9.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+    padding: 8px 12px;
+  }
+  table td {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+  table td .font-mono {
+    font-size: 11px;
+  }
+
+  .modal-title {
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .modal-subtitle {
+    font-size: 11px;
+    color: #6b7280;
+  }
+
+  .filter-btn {
+    font-size: 11px;
+    padding: 5px 12px;
+  }
+  .filter-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Page tabs */
+  .page-tab-btn {
+    transition: all 0.2s ease;
+    padding: 8px 14px;
+    font-size: 11px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    color: #6b7280;
+    cursor: pointer;
+    background: transparent;
+    white-space: nowrap;
+  }
+  .page-tab-btn.active {
+    color: #6da84c;
+    border-bottom-color: #6da84c;
+    font-weight: 600;
+  }
+  .page-tab-btn:hover:not(.active) {
+    color: #1f2937;
+    border-bottom-color: #d1d5db;
+  }
+  .page-tab-panel { display: none; }
+  .page-tab-panel.active { display: block; animation: fadeIn 0.25s ease; }
+
+  /* Ledger / Trial Balance / P&L / Balance Sheet */
+  .report-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .report-table th {
+    background: #f8fafc;
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6b7280;
+    border-bottom: 2px solid #e5e7eb;
+  }
+  .report-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .report-table .text-right { text-align: right; }
+  .report-table .text-center { text-align: center; }
+  .report-table .indent-1 { padding-left: 24px; }
+  .report-table .indent-2 { padding-left: 40px; }
+  .report-table .group-header {
+    background: #f1f5f9;
+    font-weight: 700;
+    color: #1f2937;
+  }
+  .report-table .total-row {
+    border-top: 2px solid #e5e7eb;
+    border-bottom: 2px solid #e5e7eb;
+    font-weight: 700;
+    background: #f8fafc;
+  }
+  .report-table .grand-total {
+    font-weight: 700;
+    color: #6da84c;
+    background: #eef5e8;
+  }
+</style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 antialiased text-sm">
+
+  <div class="flex min-h-screen">
+    <div id="sidebar-root"></div>
+
+    <div class="app-main flex-1 flex flex-col min-w-0">
+      <div id="topbar-root"></div>
+
+      <main class="p-3 sm:p-4 lg:p-5">
+
+        <div id="toastWrap" class="fixed bottom-5 right-5 z-[200] flex flex-col gap-2 items-end"></div>
+        <div id="modalRoot"></div>
+
+        <div class="max-w-7xl mx-auto">
+
+          <!-- ===== PAGE HEADER ===== -->
+          <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+            <div>
+              <div class="page-breadcrumb">Finance</div>
+              <h1 class="page-title text-gray-900">Accounting / General Ledger</h1>
+              <p class="page-subtitle mt-0.5">Chart of accounts, journal entries, general ledger, trial balance, P&L and balance sheet.</p>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <button onclick="openAddJournal()" class="inline-flex items-center gap-1.5 bg-primary hover:bg-primary-dark text-white text-[11px] font-semibold px-3 py-2 rounded-lg transition shadow-sm">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+                New Journal Entry
+              </button>
+              <button onclick="downloadReport()" class="inline-flex items-center gap-1.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-[11px] font-semibold px-3 py-2 rounded-lg transition">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                  <path d="M7 10l5 5 5-5"/>
+                  <path d="M12 15V3"/>
+                </svg>
+                Download
+              </button>
+            </div>
+          </div>
+
+          <!-- ===== STATS CARDS ===== -->
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-2.5 mb-4">
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Total Assets</div>
+              <div class="stat-value text-primary" id="totalAssets">₹0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Total Liabilities</div>
+              <div class="stat-value text-red-600" id="totalLiabilities">₹0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Income</div>
+              <div class="stat-value text-green-600" id="totalIncome">₹0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Expenses</div>
+              <div class="stat-value text-amber-600" id="totalExpenses">₹0</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm stat-card">
+              <div class="stat-label">Net Profit</div>
+              <div class="stat-value text-primary" id="netProfit">₹0</div>
+            </div>
+          </div>
+
+          <!-- ===== TABS ===== -->
+          <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+            <div class="flex overflow-x-auto border-b border-gray-200 px-4 pt-2 gap-1" id="acctTabs">
+              <button class="page-tab-btn active" data-tab="tab-coa">
+                <svg class="w-3.5 h-3.5 inline mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4.5A2.5 2.5 0 016.5 2H20v18H6.5A2.5 2.5 0 014 17.5v-13z"/>
+                  <path d="M4 17.5A2.5 2.5 0 016.5 20H20"/>
+                </svg>
+                Chart of Accounts
+              </button>
+              <button class="page-tab-btn" data-tab="tab-journal">
+                <svg class="w-3.5 h-3.5 inline mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 20h9"/>
+                  <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                </svg>
+                Journal Entries
+              </button>
+              <button class="page-tab-btn" data-tab="tab-ledger">
+                <svg class="w-3.5 h-3.5 inline mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4.5A2.5 2.5 0 016.5 2H20v18H6.5A2.5 2.5 0 014 17.5v-13z"/>
+                </svg>
+                General Ledger
+              </button>
+              <button class="page-tab-btn" data-tab="tab-trial">
+                <svg class="w-3.5 h-3.5 inline mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 3v18h18"/>
+                  <path d="M7 15l4-5 3 3 5-7"/>
+                </svg>
+                Trial Balance
+              </button>
+              <button class="page-tab-btn" data-tab="tab-pl">
+                <svg class="w-3.5 h-3.5 inline mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2v20M2 12h20"/>
+                </svg>
+                Profit &amp; Loss
+              </button>
+              <button class="page-tab-btn" data-tab="tab-bs">
+                <svg class="w-3.5 h-3.5 inline mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 21h18"/>
+                  <path d="M5 21V10M10 21V10M14 21V10M19 21V10"/>
+                  <path d="M2 10l10-6 10 6"/>
+                </svg>
+                Balance Sheet
+              </button>
+            </div>
+
+            <div class="p-5">
+              <!-- ===== TAB 1: CHART OF ACCOUNTS ===== -->
+              <div id="tab-coa" class="page-tab-panel active">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="text-sm font-semibold text-gray-800">Chart of Accounts</div>
+                  <button onclick="openAddAccount()" class="text-[11px] font-semibold text-primary hover:underline flex items-center gap-1">
+                    <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                    Add Account
+                  </button>
+                </div>
+                <div id="coaPanel"></div>
+              </div>
+
+              <!-- ===== TAB 2: JOURNAL ENTRIES ===== -->
+              <div id="tab-journal" class="page-tab-panel">
+                <div id="journalPanel"></div>
+              </div>
+
+              <!-- ===== TAB 3: GENERAL LEDGER ===== -->
+              <div id="tab-ledger" class="page-tab-panel">
+                <div id="ledgerPanel"></div>
+              </div>
+
+              <!-- ===== TAB 4: TRIAL BALANCE ===== -->
+              <div id="tab-trial" class="page-tab-panel">
+                <div id="trialPanel"></div>
+              </div>
+
+              <!-- ===== TAB 5: PROFIT & LOSS ===== -->
+              <div id="tab-pl" class="page-tab-panel">
+                <div id="plPanel"></div>
+              </div>
+
+              <!-- ===== TAB 6: BALANCE SHEET ===== -->
+              <div id="tab-bs" class="page-tab-panel">
+                <div id="bsPanel"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ========================================================== -->
+  <!-- SCRIPTS -->
+  <!-- ========================================================== -->
+
+  <script src="/assets/js/nav-sidebar.js"></script>
+  <script>
+    // =============================================================
+    // NAV-SIDEBAR INIT
+    // =============================================================
+    NavSidebar.init({
+      basePath: "",
+      activePage: "accounts",
+      pageTitle: "Accounting",
+      user: {
+        name: "Admin",
+        role: "Super Admin",
+        avatarUrl: "",
+      },
+    });
+
+    // =============================================================
+    // SVG ICONS
+    // =============================================================
+    function iconPlus() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>`;
+    }
+    function iconEdit() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`;
+    }
+    function iconTrash() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>`;
+    }
+    function iconEye() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    }
+    function iconX() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg>`;
+    }
+    function iconSave() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>`;
+    }
+    function iconInfo() {
+      return `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>`;
+    }
+    function iconSearch() {
+      return `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>`;
+    }
+
+    // =============================================================
+    // TOAST
+    // =============================================================
+    function showToast(message, kind) {
+      kind = kind || 'success';
+      var wrap = document.getElementById('toastWrap');
+      var colors = {
+        success: 'bg-green-600',
+        info: 'bg-primary',
+        warning: 'bg-amber-600',
+        error: 'bg-red-600'
+      };
+      var el = document.createElement('div');
+      el.className = 'toast ' + colors[kind] + ' text-white font-semibold px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 max-w-xs';
+      el.innerHTML = '<span>' + message + '</span>';
+      wrap.appendChild(el);
+      setTimeout(function() {
+        el.style.transition = 'opacity .3s';
+        el.style.opacity = '0';
+        setTimeout(function() { el.remove(); }, 300);
+      }, 2600);
+    }
+
+    // =============================================================
+    // MODAL
+    // =============================================================
+    function openModal(innerHtml, opts) {
+      opts = opts || {};
+      var root = document.getElementById('modalRoot');
+      root.innerHTML = `
+        <div class="fixed inset-0 z-[100] flex items-center justify-center p-3" id="modalOverlay">
+          <div class="absolute inset-0 bg-black/40 backdrop-blur-[1px]" id="modalBackdrop"></div>
+          <div class="relative bg-white rounded-xl shadow-2xl w-full ${opts.width || 'max-w-4xl'} max-h-[92vh] overflow-hidden animate-modal">
+            ${innerHtml}
+          </div>
+        </div>`;
+      document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      var root = document.getElementById('modalRoot');
+      root.innerHTML = '';
+      document.body.style.overflow = '';
+    }
+
+    function modalHeader(title, subtitle) {
+      return `
+        <div class="flex items-start justify-between px-5 py-3.5 border-b border-gray-100 sticky top-0 bg-white z-10">
+          <div>
+            <h3 class="modal-title text-gray-900">${title}</h3>
+            ${subtitle ? '<p class="modal-subtitle mt-0.5">' + subtitle + '</p>' : ''}
+          </div>
+          <button onclick="closeModal()" class="w-7 h-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 transition">${iconX()}</button>
+        </div>`;
+    }
+
+    function modalFooter(saveLabel, onSaveAttr, extraBtns) {
+      return `
+        <div class="flex items-center justify-between gap-2 px-5 py-3 border-t border-gray-100 bg-gray-50 rounded-b-xl sticky bottom-0">
+          <div>${extraBtns || ''}</div>
+          <div class="flex gap-2">
+            <button onclick="closeModal()" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-600 border border-gray-200 hover:bg-white transition">Cancel</button>
+            <button ${onSaveAttr} class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-primary hover:bg-primary-dark transition shadow-sm flex items-center gap-1.5">
+              ${iconSave()} ${saveLabel}
+            </button>
+          </div>
+        </div>`;
+    }
+
+    function fld(label, inputHtml, hint) {
+      return `
+        <div class="mb-2">
+          <label class="form-label">${label}</label>
+          ${inputHtml}
+          ${hint ? '<div class="form-hint">' + hint + '</div>' : ''}
+        </div>`;
+    }
+
+    function inputBase() { return "form-input"; }
+
+    // =============================================================
+    // PAGE TABS
+    // =============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+      var tabs = document.querySelectorAll('#acctTabs .page-tab-btn');
+      tabs.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          tabs.forEach(function(b) { b.classList.remove('active'); });
+          this.classList.add('active');
+          var panels = document.querySelectorAll('.page-tab-panel');
+          panels.forEach(function(p) { p.classList.remove('active'); });
+          document.getElementById(this.dataset.tab).classList.add('active');
+        });
+      });
+    });
+
+    // =============================================================
+    // HELPERS
+    // =============================================================
+    function money(n) { return '₹' + Number(n).toLocaleString('en-IN'); }
+
+    function panelWrap(titleHtml, bodyHtml, extraHead) {
+      return `
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+          <div class="flex items-center justify-between gap-3 flex-wrap px-4 py-2.5 border-b border-gray-100">
+            <div class="font-semibold text-sm text-gray-800 flex items-center gap-2">${titleHtml}</div>
+            ${extraHead || ''}
+          </div>
+          <div>${bodyHtml}</div>
+        </div>`;
+    }
+
+    function tableHtml(cols, rowsHtml) {
+      var colHeaders = cols.map(function(c) {
+        return '<th class="text-left font-semibold whitespace-nowrap">' + c + '</th>';
+      }).join('');
+      return `
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gray-50 border-b border-gray-200">${colHeaders}</tr>
+            </thead>
+            <tbody id="tbody-anchor">${rowsHtml}</tbody>
+          </table>
+        </div>`;
+    }
+
+    // =============================================================
+    // DATA — Chart of Accounts
+    // =============================================================
+
+    var chartOfAccounts = [
+      // ASSETS
+      { id: 'ACC-1001', code: '1001', name: 'Cash in Hand', type: 'Asset', subType: 'Current Asset', balance: 60000, status: 'active' },
+      { id: 'ACC-1002', code: '1002', name: 'HDFC Bank — Current', type: 'Asset', subType: 'Current Asset', balance: 840000, status: 'active' },
+      { id: 'ACC-1003', code: '1003', name: 'ICICI Bank — Current', type: 'Asset', subType: 'Current Asset', balance: 360000, status: 'active' },
+      { id: 'ACC-1004', code: '1004', name: 'Accounts Receivable', type: 'Asset', subType: 'Current Asset', balance: 372580, status: 'active' },
+      { id: 'ACC-1005', code: '1005', name: 'Inventory', type: 'Asset', subType: 'Current Asset', balance: 800000, status: 'active' },
+      { id: 'ACC-1006', code: '1006', name: 'Furniture & Fixtures', type: 'Asset', subType: 'Fixed Asset', balance: 250000, status: 'active' },
+      { id: 'ACC-1007', code: '1007', name: 'Equipment', type: 'Asset', subType: 'Fixed Asset', balance: 450000, status: 'active' },
+
+      // LIABILITIES
+      { id: 'ACC-2001', code: '2001', name: 'Accounts Payable', type: 'Liability', subType: 'Current Liability', balance: 249849, status: 'active' },
+      { id: 'ACC-2002', code: '2002', name: 'GST Payable', type: 'Liability', subType: 'Current Liability', balance: 315000, status: 'active' },
+      { id: 'ACC-2003', code: '2003', name: 'Salaries Payable', type: 'Liability', subType: 'Current Liability', balance: 72000, status: 'active' },
+      { id: 'ACC-2004', code: '2004', name: 'Bank Loan — Long Term', type: 'Liability', subType: 'Long Term Liability', balance: 500000, status: 'active' },
+
+      // EQUITY
+      { id: 'ACC-3001', code: '3001', name: 'Owner\'s Capital', type: 'Equity', subType: 'Capital', balance: 1500000, status: 'active' },
+      { id: 'ACC-3002', code: '3002', name: 'Retained Earnings', type: 'Equity', subType: 'Reserves', balance: 625731, status: 'active' },
+
+      // INCOME
+      { id: 'ACC-4001', code: '4001', name: 'Product Sales', type: 'Income', subType: 'Operating Income', balance: 4250000, status: 'active' },
+      { id: 'ACC-4002', code: '4002', name: 'Service Income', type: 'Income', subType: 'Operating Income', balance: 850000, status: 'active' },
+      { id: 'ACC-4003', code: '4003', name: 'Other Income', type: 'Income', subType: 'Non-Operating Income', balance: 125000, status: 'active' },
+
+      // EXPENSES
+      { id: 'ACC-5001', code: '5001', name: 'Cost of Goods Sold', type: 'Expense', subType: 'Direct Expense', balance: 1820000, status: 'active' },
+      { id: 'ACC-5002', code: '5002', name: 'Office Rent', type: 'Expense', subType: 'Indirect Expense', balance: 85000, status: 'active' },
+      { id: 'ACC-5003', code: '5003', name: 'Staff Salaries', type: 'Expense', subType: 'Indirect Expense', balance: 720000, status: 'active' },
+      { id: 'ACC-5004', code: '5004', name: 'Utilities', type: 'Expense', subType: 'Indirect Expense', balance: 18750, status: 'active' },
+      { id: 'ACC-5005', code: '5005', name: 'Transport & Logistics', type: 'Expense', subType: 'Direct Expense', balance: 31200, status: 'active' },
+      { id: 'ACC-5006', code: '5006', name: 'Marketing & Advertising', type: 'Expense', subType: 'Indirect Expense', balance: 25000, status: 'active' },
+    ];
+
+    // JOURNAL ENTRIES
+    var journalEntries = [{
+      id: 'JV-001',
+      date: '2026-01-05',
+      narration: 'Office rent paid for January 2026',
+      reference: 'EXP-001',
+      status: 'posted',
+      lines: [
+        { accountId: 'ACC-5002', accountName: 'Office Rent', debit: 85000, credit: 0 },
+        { accountId: 'ACC-1002', accountName: 'HDFC Bank — Current', debit: 0, credit: 85000 }
+      ]
+    }, {
+      id: 'JV-002',
+      date: '2026-01-10',
+      narration: 'Staff salaries paid',
+      reference: 'EXP-002',
+      status: 'posted',
+      lines: [
+        { accountId: 'ACC-5003', accountName: 'Staff Salaries', debit: 72000, credit: 0 },
+        { accountId: 'ACC-1002', accountName: 'HDFC Bank — Current', debit: 0, credit: 72000 }
+      ]
+    }, {
+      id: 'JV-003',
+      date: '2026-01-15',
+      narration: 'Sale to XYZ Retail Store — Invoice INV/25-26/001',
+      reference: 'INV-001',
+      status: 'posted',
+      lines: [
+        { accountId: 'ACC-1004', accountName: 'Accounts Receivable', debit: 167029, credit: 0 },
+        { accountId: 'ACC-4001', accountName: 'Product Sales', debit: 0, credit: 141550 },
+        { accountId: 'ACC-2002', accountName: 'GST Payable', debit: 0, credit: 25479 }
+      ]
+    }, {
+      id: 'JV-004',
+      date: '2026-01-20',
+      narration: 'Purchase from Global Imports — Bill PUR/25-26/001',
+      reference: 'PUR-001',
+      status: 'posted',
+      lines: [
+        { accountId: 'ACC-1005', accountName: 'Inventory', debit: 100000, credit: 0 },
+        { accountId: 'ACC-2002', accountName: 'GST Payable', debit: 18000, credit: 0 },
+        { accountId: 'ACC-2001', accountName: 'Accounts Payable', debit: 0, credit: 118000 }
+      ]
+    }, {
+      id: 'JV-005',
+      date: '2026-01-25',
+      narration: 'Payment received from XYZ Retail Store',
+      reference: 'RCPT-001',
+      status: 'posted',
+      lines: [
+        { accountId: 'ACC-1002', accountName: 'HDFC Bank — Current', debit: 100000, credit: 0 },
+        { accountId: 'ACC-1004', accountName: 'Accounts Receivable', debit: 0, credit: 100000 }
+      ]
+    }, {
+      id: 'JV-006',
+      date: '2026-02-01',
+      narration: 'Digital marketing campaign',
+      reference: 'EXP-006',
+      status: 'draft',
+      lines: [
+        { accountId: 'ACC-5006', accountName: 'Marketing & Advertising', debit: 25000, credit: 0 },
+        { accountId: 'ACC-1002', accountName: 'HDFC Bank — Current', debit: 0, credit: 25000 }
+      ]
+    }];
+
+    // =============================================================
+    // RENDER CHART OF ACCOUNTS
+    // =============================================================
+
+    function renderCOA() {
+      var groups = ['Asset', 'Liability', 'Equity', 'Income', 'Expense'];
+      var groupLabels = {
+        'Asset': 'ASSETS',
+        'Liability': 'LIABILITIES',
+        'Equity': 'EQUITY',
+        'Income': 'INCOME',
+        'Expense': 'EXPENSES'
+      };
+
+      var rowsHtml = '';
+      groups.forEach(function(group) {
+        var accounts = chartOfAccounts.filter(function(a) { return a.type === group; });
+        if (accounts.length === 0) return;
+
+        var groupTotal = accounts.reduce(function(sum, a) { return sum + a.balance; }, 0);
+        var totalColor = group === 'Asset' || group === 'Expense' ? 'text-primary' : 'text-red-600';
+
+        rowsHtml += '<tr class="group-header"><td colspan="5">' + groupLabels[group] + '</td></tr>';
+        accounts.forEach(function(a) {
+          rowsHtml += `
+            <tr class="border-b border-gray-100 table-row-hover">
+              <td class="px-3 py-2.5 font-mono text-xs text-gray-500">${a.code}</td>
+              <td class="px-3 py-2.5 text-sm text-gray-800 indent-1">${a.name}</td>
+              <td class="px-3 py-2.5 text-xs text-gray-500">${a.subType}</td>
+              <td class="px-3 py-2.5 text-right font-mono font-semibold text-sm ${totalColor}">${money(a.balance)}</td>
+              <td class="px-3 py-2.5 text-center">${statusBadge(a.status)}</td>
+            </tr>`;
+        });
+        rowsHtml += `
+          <tr class="total-row">
+            <td colspan="3" class="px-3 py-2.5 text-right font-semibold">Total ${groupLabels[group]}</td>
+            <td class="px-3 py-2.5 text-right font-mono font-bold ${totalColor}">${money(groupTotal)}</td>
+            <td></td>
+          </tr>`;
+      });
+
+      var panelHtml = panelWrap(
+        'Chart of Accounts <span class="text-[10px] font-bold bg-primary-soft text-primary-dark px-2 py-0.5 rounded-full ml-1">' + chartOfAccounts.length + '</span>',
+        `
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gray-50 border-b border-gray-200">
+                <th class="text-left font-semibold whitespace-nowrap px-3 py-2.5 text-[9.5px] uppercase tracking-wide text-gray-500">Code</th>
+                <th class="text-left font-semibold whitespace-nowrap px-3 py-2.5 text-[9.5px] uppercase tracking-wide text-gray-500">Account Name</th>
+                <th class="text-left font-semibold whitespace-nowrap px-3 py-2.5 text-[9.5px] uppercase tracking-wide text-gray-500">Sub Type</th>
+                <th class="text-right font-semibold whitespace-nowrap px-3 py-2.5 text-[9.5px] uppercase tracking-wide text-gray-500">Balance</th>
+                <th class="text-center font-semibold whitespace-nowrap px-3 py-2.5 text-[9.5px] uppercase tracking-wide text-gray-500">Status</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </div>`,
+        '<div class="flex items-center gap-2"><span class="text-[10px] text-gray-400">Total Accounts:</span><span class="text-[11px] font-semibold text-gray-700">' + chartOfAccounts.length + '</span></div>'
+      );
+
+      document.getElementById('coaPanel').innerHTML = panelHtml;
+    }
+
+    // =============================================================
+    // RENDER JOURNAL ENTRIES
+    // =============================================================
+
+    function renderJournal() {
+      var rowsHtml = journalEntries.map(function(j) {
+        var totalDebit = j.lines.reduce(function(sum, l) { return sum + l.debit; }, 0);
+        return `
+          <tr class="border-b border-gray-100 table-row-hover">
+            <td class="px-3 py-2.5">
+              <div class="font-semibold text-gray-800 text-sm">${j.id}</div>
+              <div class="text-[10px] text-gray-400">${j.date}</div>
+            </td>
+            <td class="px-3 py-2.5 text-sm text-gray-700">${j.narration}</td>
+            <td class="px-3 py-2.5 text-xs text-gray-500">${j.reference || '—'}</td>
+            <td class="px-3 py-2.5 font-mono font-semibold text-sm text-right text-primary">${money(totalDebit)}</td>
+            <td class="px-3 py-2.5 text-center">${statusBadge(j.status)}</td>
+            <td class="px-3 py-2.5 text-center">
+              <button onclick="viewJournal('${j.id}')" class="btn-icon-action" title="View">${iconEye()}</button>
+              <button onclick="editJournal('${j.id}')" class="btn-icon-action" title="Edit">${iconEdit()}</button>
+              <button onclick="deleteJournal('${j.id}')" class="btn-icon-action danger" title="Delete">${iconTrash()}</button>
+            </td>
+          </tr>`;
+      }).join('');
+
+      if (journalEntries.length === 0) {
+        rowsHtml = `
+          <tr>
+            <td colspan="6" class="text-center py-10 text-gray-400 text-sm">
+              <div class="flex justify-center mb-2 empty-icon-svg">
+                <svg class="w-10 h-10 opacity-30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              </div>
+              No journal entries found.
+            </td>
+          </tr>`;
+      }
+
+      var panelHtml = panelWrap(
+        'Journal Entries <span class="text-[10px] font-bold bg-primary-soft text-primary-dark px-2 py-0.5 rounded-full ml-1">' + journalEntries.length + '</span>',
+        tableHtml(['Journal #', 'Narration', 'Reference', 'Total Debit', 'Status', 'Actions'], rowsHtml),
+        '<div class="flex items-center gap-2"><span class="text-[10px] text-gray-400">Show:</span><select id="pageSizeSelect" class="text-[10px] border border-gray-200 rounded-lg px-2 py-1 bg-white outline-none"><option value="10">10</option><option value="25" selected>25</option><option value="50">50</option></select></div>'
+      );
+
+      document.getElementById('journalPanel').innerHTML = panelHtml;
+    }
+
+    // =============================================================
+    // RENDER GENERAL LEDGER
+    // =============================================================
+
+    function renderLedger() {
+      var accountOptions = chartOfAccounts.map(function(a) {
+        return '<option value="' + a.id + '">' + a.code + ' - ' + a.name + '</option>';
+      }).join('');
+
+      // Sample ledger for Accounts Receivable (ACC-1004)
+      var ledgerData = {
+        'ACC-1004': {
+          openingBalance: 0,
+          transactions: [
+            { date: '2026-01-15', narration: 'Sale to XYZ Retail Store', ref: 'INV/25-26/001', debit: 167029, credit: 0 },
+            { date: '2026-01-25', narration: 'Payment received from XYZ Retail Store', ref: 'RCPT-001', debit: 0, credit: 100000 },
+            { date: '2026-01-30', narration: 'Sale to ABC Enterprises', ref: 'INV/25-26/002', debit: 141865, credit: 0 },
+          ]
+        },
+        'ACC-1002': {
+          openingBalance: 0,
+          transactions: [
+            { date: '2026-01-05', narration: 'Rent paid', ref: 'EXP-001', debit: 0, credit: 85000 },
+            { date: '2026-01-10', narration: 'Salaries paid', ref: 'EXP-002', debit: 0, credit: 72000 },
+            { date: '2026-01-25', narration: 'Payment received from client', ref: 'RCPT-001', debit: 100000, credit: 0 },
+          ]
+        }
+      };
+
+      var rowsHtml = '';
+      var runningBalance = 0;
+      var accountId = Object.keys(ledgerData)[0];
+      var ledger = ledgerData[accountId];
+
+      if (ledger) {
+        runningBalance = ledger.openingBalance;
+        rowsHtml += `
+          <tr class="bg-gray-50">
+            <td class="px-3 py-2 font-semibold text-sm">Opening Balance</td>
+            <td></td><td></td>
+            <td class="text-right font-mono font-semibold">${money(runningBalance)}</td>
+            <td></td>
+          </tr>`;
+
+        ledger.transactions.forEach(function(t) {
+          runningBalance += (t.debit - t.credit);
+          rowsHtml += `
+            <tr class="border-b border-gray-100 table-row-hover">
+              <td class="px-3 py-2.5 text-xs text-gray-500">${t.date}</td>
+              <td class="px-3 py-2.5 text-sm">${t.narration}</td>
+              <td class="px-3 py-2.5 text-xs text-gray-500">${t.ref}</td>
+              <td class="px-3 py-2.5 text-right font-mono text-sm ${t.debit > 0 ? 'text-primary' : 'text-red-600'}">${t.debit > 0 ? money(t.debit) : (t.credit > 0 ? money(t.credit) : '—')}</td>
+              <td class="px-3 py-2.5 text-right font-mono font-semibold text-sm">${money(runningBalance)}</td>
+            </tr>`;
+        });
+
+        rowsHtml += `
+          <tr class="total-row">
+            <td colspan="3" class="px-3 py-2.5 text-right font-bold">Closing Balance</td>
+            <td class="px-3 py-2.5 text-right font-mono font-bold text-primary">${money(runningBalance)}</td>
+            <td></td>
+          </tr>`;
+      }
+
+      var panelHtml = panelWrap(
+        'General Ledger',
+        `
+        <div class="flex items-center gap-3 mb-3">
+          <label class="form-label mb-0">Select Account</label>
+          <select class="form-input text-[11px] max-w-xs" onchange="switchLedger(this.value)">
+            ${accountOptions}
+          </select>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gray-50 border-b border-gray-200">
+                <th class="text-left font-semibold whitespace-nowrap px-3 py-2.5 text-[9.5px] uppercase tracking-wide text-gray-500">Date</th>
+                <th class="text-left font-semibold whitespace-nowrap px-3 py-2.5 text-[9.5px] uppercase tracking-wide text-gray-500">Narration</th>
+                <th class="text-left font-semibold whitespace-nowrap px-3 py-2.5 text-[9.5px] uppercase tracking-wide text-gray-500">Reference</th>
+                <th class="text-right font-semibold whitespace-nowrap px-3 py-2.5 text-[9.5px] uppercase tracking-wide text-gray-500">Debit / Credit</th>
+                <th class="text-right font-semibold whitespace-nowrap px-3 py-2.5 text-[9.5px] uppercase tracking-wide text-gray-500">Balance</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml || '<tr><td colspan="5" class="text-center py-6 text-gray-400 text-sm">Select an account to view its ledger</td></tr>'}</tbody>
+          </table>
+        </div>`,
+        '<div class="text-[10px] text-gray-400">Showing: ' + (chartOfAccounts.find(function(a) { return a.id === accountId; }) || {}).name + '</div>'
+      );
+
+      document.getElementById('ledgerPanel').innerHTML = panelHtml;
+    }
+
+    function switchLedger(accountId) {
+      // In a real app, this would load the ledger for the selected account
+      showToast('Loading ledger for account...', 'info');
+    }
+
+    // =============================================================
+    // RENDER TRIAL BALANCE
+    // =============================================================
+
+    function renderTrialBalance() {
+      var groups = ['Asset', 'Liability', 'Equity', 'Income', 'Expense'];
+      var rowsHtml = '';
+      var totalDebit = 0;
+      var totalCredit = 0;
+
+      groups.forEach(function(group) {
+        var accounts = chartOfAccounts.filter(function(a) { return a.type === group; });
+        if (accounts.length === 0) return;
+
+        rowsHtml += '<tr class="group-header"><td colspan="3">' + group.toUpperCase() + 'S</td></tr>';
+        accounts.forEach(function(a) {
+          var debit = 0, credit = 0;
+          if (a.type === 'Asset' || a.type === 'Expense') {
+            debit = a.balance;
+            totalDebit += debit;
+          } else {
+            credit = a.balance;
+            totalCredit += credit;
+          }
+          rowsHtml += `
+            <tr class="border-b border-gray-100 table-row-hover">
+              <td class="px-3 py-2.5 font-mono text-xs text-gray-500">${a.code}</td>
+              <td class="px-3 py-2.5 text-sm text-gray-800 indent-1">${a.name}</td>
+              <td class="px-3 py-2.5 text-right font-mono text-sm ${debit > 0 ? 'text-primary' : 'text-red-600'}">${debit > 0 ? money(debit) : (credit > 0 ? money(credit) : '—')}</td>
+            </tr>`;
+        });
+      });
+
+      rowsHtml += `
+        <tr class="total-row grand-total">
+          <td colspan="2" class="px-3 py-2.5 text-right font-bold">TOTAL</td>
+          <td class="px-3 py-2.5 text-right font-mono font-bold text-primary">${money(totalDebit)}</td>
+        </tr>`;
+
+      var panelHtml = panelWrap(
+        'Trial Balance <span class="text-[10px] font-bold bg-primary-soft text-primary-dark px-2 py-0.5 rounded-full ml-1">As of ' + new Date().toLocaleDateString('en-IN') + '</span>',
+        `
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gray-50 border-b border-gray-200">
+                <th class="text-left font-semibold whitespace-nowrap px-3 py-2.5 text-[9.5px] uppercase tracking-wide text-gray-500">Code</th>
+                <th class="text-left font-semibold whitespace-nowrap px-3 py-2.5 text-[9.5px] uppercase tracking-wide text-gray-500">Account</th>
+                <th class="text-right font-semibold whitespace-nowrap px-3 py-2.5 text-[9.5px] uppercase tracking-wide text-gray-500">Debit / Credit</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </div>
+        <div class="mt-3 p-3 bg-gray-50 rounded-lg text-xs text-gray-600">
+          <div class="flex justify-between">
+            <span>Total Debits: <b class="text-primary">${money(totalDebit)}</b></span>
+            <span>Total Credits: <b class="text-red-600">${money(totalCredit)}</b></span>
+            <span class="${totalDebit === totalCredit ? 'text-green-600' : 'text-amber-600'} font-semibold">
+              ${totalDebit === totalCredit ? '✓ Balanced' : '⚠️ Difference: ' + money(Math.abs(totalDebit - totalCredit))}
+            </span>
+          </div>
+        </div>`,
+        '<div class="text-[10px] text-gray-400">Trial Balance shows all accounts with debit/credit balances</div>'
+      );
+
+      document.getElementById('trialPanel').innerHTML = panelHtml;
+    }
+
+    // =============================================================
+    // RENDER PROFIT & LOSS
+    // =============================================================
+
+    function renderPL() {
+      var income = chartOfAccounts.filter(function(a) { return a.type === 'Income'; });
+      var expenses = chartOfAccounts.filter(function(a) { return a.type === 'Expense'; });
+      var totalIncome = income.reduce(function(sum, a) { return sum + a.balance; }, 0);
+      var totalExpense = expenses.reduce(function(sum, a) { return sum + a.balance; }, 0);
+      var netProfit = totalIncome - totalExpense;
+
+      var incomeRows = income.map(function(a) {
+        return `
+          <tr class="border-b border-gray-100 table-row-hover">
+            <td class="px-3 py-2.5 text-sm text-gray-800 indent-1">${a.name}</td>
+            <td class="px-3 py-2.5 text-right font-mono text-sm text-green-600">${money(a.balance)}</td>
+          </tr>`;
+      }).join('');
+
+      var expenseRows = expenses.map(function(a) {
+        return `
+          <tr class="border-b border-gray-100 table-row-hover">
+            <td class="px-3 py-2.5 text-sm text-gray-800 indent-1">${a.name}</td>
+            <td class="px-3 py-2.5 text-right font-mono text-sm text-red-600">${money(a.balance)}</td>
+          </tr>`;
+      }).join('');
+
+      var panelHtml = panelWrap(
+        'Profit & Loss Statement <span class="text-[10px] font-bold bg-primary-soft text-primary-dark px-2 py-0.5 rounded-full ml-1">' + new Date().toLocaleDateString('en-IN') + '</span>',
+        `
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th class="text-left">Particulars</th>
+              <th class="text-right" style="width:150px;">Amount (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="group-header"><td colspan="2">INCOME</td></tr>
+            ${incomeRows}
+            <tr class="total-row">
+              <td class="text-right font-semibold">Total Income</td>
+              <td class="text-right font-mono font-bold text-green-600">${money(totalIncome)}</td>
+            </tr>
+
+            <tr class="group-header"><td colspan="2">EXPENSES</td></tr>
+            ${expenseRows}
+            <tr class="total-row">
+              <td class="text-right font-semibold">Total Expenses</td>
+              <td class="text-right font-mono font-bold text-red-600">${money(totalExpense)}</td>
+            </tr>
+
+            <tr class="grand-total">
+              <td class="text-right font-bold">NET PROFIT / (LOSS)</td>
+              <td class="text-right font-mono font-bold ${netProfit >= 0 ? 'text-primary' : 'text-red-600'}">${money(netProfit)}</td>
+            </tr>
+          </tbody>
+        </table>`,
+        '<div class="text-[10px] text-gray-400">Net Profit = Total Income — Total Expenses</div>'
+      );
+
+      document.getElementById('plPanel').innerHTML = panelHtml;
+    }
+
+    // =============================================================
+    // RENDER BALANCE SHEET
+    // =============================================================
+
+    function renderBS() {
+      var assets = chartOfAccounts.filter(function(a) { return a.type === 'Asset'; });
+      var liabilities = chartOfAccounts.filter(function(a) { return a.type === 'Liability'; });
+      var equity = chartOfAccounts.filter(function(a) { return a.type === 'Equity'; });
+
+      var totalAssets = assets.reduce(function(sum, a) { return sum + a.balance; }, 0);
+      var totalLiabilities = liabilities.reduce(function(sum, a) { return sum + a.balance; }, 0);
+      var totalEquity = equity.reduce(function(sum, a) { return sum + a.balance; }, 0);
+
+      var assetRows = assets.map(function(a) {
+        return `
+          <tr class="border-b border-gray-100">
+            <td class="px-3 py-2 text-sm text-gray-800 indent-1">${a.name}</td>
+            <td class="px-3 py-2 text-right font-mono text-sm">${money(a.balance)}</td>
+          </tr>`;
+      }).join('');
+
+      var liabilityRows = liabilities.map(function(a) {
+        return `
+          <tr class="border-b border-gray-100">
+            <td class="px-3 py-2 text-sm text-gray-800 indent-1">${a.name}</td>
+            <td class="px-3 py-2 text-right font-mono text-sm text-red-600">${money(a.balance)}</td>
+          </tr>`;
+      }).join('');
+
+      var equityRows = equity.map(function(a) {
+        return `
+          <tr class="border-b border-gray-100">
+            <td class="px-3 py-2 text-sm text-gray-800 indent-1">${a.name}</td>
+            <td class="px-3 py-2 text-right font-mono text-sm text-primary">${money(a.balance)}</td>
+          </tr>`;
+      }).join('');
+
+      var panelHtml = panelWrap(
+        'Balance Sheet <span class="text-[10px] font-bold bg-primary-soft text-primary-dark px-2 py-0.5 rounded-full ml-1">' + new Date().toLocaleDateString('en-IN') + '</span>',
+        `
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th class="text-left">Particulars</th>
+              <th class="text-right" style="width:150px;">Amount (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="group-header"><td colspan="2">ASSETS</td></tr>
+            ${assetRows}
+            <tr class="total-row">
+              <td class="text-right font-semibold">Total Assets</td>
+              <td class="text-right font-mono font-bold text-primary">${money(totalAssets)}</td>
+            </tr>
+
+            <tr class="group-header"><td colspan="2">LIABILITIES</td></tr>
+            ${liabilityRows}
+            <tr class="total-row">
+              <td class="text-right font-semibold">Total Liabilities</td>
+              <td class="text-right font-mono font-bold text-red-600">${money(totalLiabilities)}</td>
+            </tr>
+
+            <tr class="group-header"><td colspan="2">EQUITY</td></tr>
+            ${equityRows}
+            <tr class="total-row">
+              <td class="text-right font-semibold">Total Equity</td>
+              <td class="text-right font-mono font-bold text-primary">${money(totalEquity)}</td>
+            </tr>
+
+            <tr class="grand-total">
+              <td class="text-right font-bold">TOTAL LIABILITIES + EQUITY</td>
+              <td class="text-right font-mono font-bold text-primary">${money(totalLiabilities + totalEquity)}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="mt-3 p-3 bg-gray-50 rounded-lg text-xs text-gray-600">
+          <div class="flex justify-between">
+            <span>Total Assets: <b class="text-primary">${money(totalAssets)}</b></span>
+            <span>Total Liabilities + Equity: <b class="text-primary">${money(totalLiabilities + totalEquity)}</b></span>
+            <span class="${totalAssets === totalLiabilities + totalEquity ? 'text-green-600' : 'text-amber-600'} font-semibold">
+              ${totalAssets === totalLiabilities + totalEquity ? '✓ Balanced' : '⚠️ Difference: ' + money(Math.abs(totalAssets - totalLiabilities - totalEquity))}
+            </span>
+          </div>
+        </div>`,
+        '<div class="text-[10px] text-gray-400">Balance Sheet = Assets = Liabilities + Equity</div>'
+      );
+
+      document.getElementById('bsPanel').innerHTML = panelHtml;
+    }
+
+    // =============================================================
+    // STATS RENDER
+    // =============================================================
+
+    function renderStats() {
+      var assets = chartOfAccounts.filter(function(a) { return a.type === 'Asset'; }).reduce(function(sum, a) { return sum + a.balance; }, 0);
+      var liabilities = chartOfAccounts.filter(function(a) { return a.type === 'Liability'; }).reduce(function(sum, a) { return sum + a.balance; }, 0);
+      var income = chartOfAccounts.filter(function(a) { return a.type === 'Income'; }).reduce(function(sum, a) { return sum + a.balance; }, 0);
+      var expenses = chartOfAccounts.filter(function(a) { return a.type === 'Expense'; }).reduce(function(sum, a) { return sum + a.balance; }, 0);
+      var netProfit = income - expenses;
+
+      document.getElementById('totalAssets').textContent = money(assets);
+      document.getElementById('totalLiabilities').textContent = money(liabilities);
+      document.getElementById('totalIncome').textContent = money(income);
+      document.getElementById('totalExpenses').textContent = money(expenses);
+      document.getElementById('netProfit').textContent = money(netProfit);
+    }
+
+    // =============================================================
+    // JOURNAL ACTIONS
+    // =============================================================
+
+    function openAddJournal() { openJournalModal(null); }
+
+    function editJournal(id) {
+      var j = journalEntries.find(function(x) { return x.id === id; });
+      if (j) openJournalModal(j);
+    }
+
+    function openJournalModal(existing) {
+      var e = existing || {
+        id: 'JV-' + String(journalEntries.length + 1).padStart(3, '0'),
+        date: new Date().toISOString().split('T')[0],
+        narration: '',
+        reference: '',
+        status: 'draft',
+        lines: [
+          { accountId: '', accountName: '', debit: 0, credit: 0 },
+          { accountId: '', accountName: '', debit: 0, credit: 0 }
+        ]
+      };
+      var isEdit = !!existing;
+
+      var accountOptions = chartOfAccounts.map(function(a) {
+        return '<option value="' + a.id + '">' + a.code + ' - ' + a.name + '</option>';
+      }).join('');
+
+      var linesHtml = e.lines.map(function(line, idx) {
+        return `
+          <tr class="border-b border-gray-100 line-item-row">
+            <td class="px-2 py-1">
+              <select class="form-input text-[10px] jv-account" data-idx="${idx}">
+                <option value="">Select Account</option>
+                ${accountOptions}
+              </select>
+            </td>
+            <td class="px-2 py-1">
+              <input type="number" class="form-input text-[10px] jv-debit" value="${line.debit || 0}" placeholder="0.00" onchange="calcJournalTotal()">
+            </td>
+            <td class="px-2 py-1">
+              <input type="number" class="form-input text-[10px] jv-credit" value="${line.credit || 0}" placeholder="0.00" onchange="calcJournalTotal()">
+            </td>
+            <td class="px-2 py-1 text-center">
+              <button onclick="removeJournalLine(this)" class="text-red-500 hover:text-red-700 transition">${iconX()}</button>
+            </td>
+          </tr>`;
+      }).join('');
+
+      var modalContent = `
+        ${modalHeader(isEdit ? 'Edit Journal Entry' : 'New Journal Entry', isEdit ? e.id : 'Record a journal entry')}
+        <div class="px-5 py-4 modal-scroll">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            ${fld('Journal #', '<input type="text" class="form-input" id="f_jvNumber" value="' + e.id + '" disabled>')}
+            ${fld('Date *', '<input type="date" class="form-input" id="f_jvDate" value="' + e.date + '">')}
+            ${fld('Reference', '<input type="text" class="form-input" id="f_jvReference" value="' + (e.reference || '') + '" placeholder="Reference">')}
+            ${fld('Status', '<select class="form-input" id="f_jvStatus"><option ' + (e.status === 'draft' ? 'selected' : '') + ' value="draft">Draft</option><option ' + (e.status === 'posted' ? 'selected' : '') + ' value="posted">Posted</option></select>')}
+          </div>
+
+          ${fld('Narration *', '<input type="text" class="form-input" id="f_jvNarration" value="' + (e.narration || '') + '" placeholder="Brief description of entry">')}
+
+          <div class="mt-3">
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="form-label mb-0">Journal Lines</label>
+              <button onclick="addJournalLine()" class="text-[10px] font-semibold text-primary hover:underline flex items-center gap-1">
+                ${iconPlus()} Add Line
+              </button>
+            </div>
+            <div class="border border-gray-200 rounded-lg overflow-hidden">
+              <table class="w-full text-xs">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-2 py-1.5 text-left font-semibold text-gray-600">Account</th>
+                    <th class="px-2 py-1.5 text-center font-semibold text-gray-600" style="width:120px;">Debit (₹)</th>
+                    <th class="px-2 py-1.5 text-center font-semibold text-gray-600" style="width:120px;">Credit (₹)</th>
+                    <th class="px-2 py-1.5 text-center font-semibold text-gray-600" style="width:36px;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="journalLinesBody">
+                  ${linesHtml}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="mt-3 grid grid-cols-3 gap-3">
+            ${fld('Total Debit', '<input type="text" class="form-input" id="f_jvTotalDebit" value="₹0" disabled style="font-weight:bold;color:#6da84c;">')}
+            ${fld('Total Credit', '<input type="text" class="form-input" id="f_jvTotalCredit" value="₹0" disabled style="font-weight:bold;color:#dc2626;">')}
+            ${fld('Difference', '<input type="text" class="form-input" id="f_jvDifference" value="₹0" disabled style="font-weight:bold;">')}
+          </div>
+        </div>
+        ${modalFooter(isEdit ? 'Update Journal' : 'Save Journal', 'onclick="saveJournal(\'' + (isEdit ? e.id : '') + '\')"')}
+      `;
+
+      openModal(modalContent, { width: 'max-w-3xl' });
+      setTimeout(function() { calcJournalTotal(); }, 100);
+    }
+
+    function addJournalLine() {
+      var tbody = document.getElementById('journalLinesBody');
+      if (!tbody) return;
+
+      var idx = tbody.children.length;
+      var accountOptions = chartOfAccounts.map(function(a) {
+        return '<option value="' + a.id + '">' + a.code + ' - ' + a.name + '</option>';
+      }).join('');
+
+      var row = document.createElement('tr');
+      row.className = 'border-b border-gray-100 line-item-row';
+      row.innerHTML = `
+        <td class="px-2 py-1">
+          <select class="form-input text-[10px] jv-account" data-idx="${idx}">
+            <option value="">Select Account</option>
+            ${accountOptions}
+          </select>
+        </td>
+        <td class="px-2 py-1">
+          <input type="number" class="form-input text-[10px] jv-debit" value="0" placeholder="0.00" onchange="calcJournalTotal()">
+        </td>
+        <td class="px-2 py-1">
+          <input type="number" class="form-input text-[10px] jv-credit" value="0" placeholder="0.00" onchange="calcJournalTotal()">
+        </td>
+        <td class="px-2 py-1 text-center">
+          <button onclick="removeJournalLine(this)" class="text-red-500 hover:text-red-700 transition">${iconX()}</button>
+        </td>
+      `;
+      tbody.appendChild(row);
+    }
+
+    function removeJournalLine(btn) {
+      var row = btn.closest('tr');
+      if (row) row.remove();
+      calcJournalTotal();
+    }
+
+    function calcJournalTotal() {
+      var rows = document.querySelectorAll('#journalLinesBody tr');
+      var totalDebit = 0, totalCredit = 0;
+      rows.forEach(function(row) {
+        var debit = parseFloat(row.querySelector('.jv-debit').value) || 0;
+        var credit = parseFloat(row.querySelector('.jv-credit').value) || 0;
+        totalDebit += debit;
+        totalCredit += credit;
+      });
+      var diff = totalDebit - totalCredit;
+
+      document.getElementById('f_jvTotalDebit').value = money(totalDebit);
+      document.getElementById('f_jvTotalCredit').value = money(totalCredit);
+      var diffEl = document.getElementById('f_jvDifference');
+      diffEl.value = money(Math.abs(diff));
+      diffEl.style.color = diff === 0 ? '#16a34a' : '#dc2626';
+    }
+
+    function saveJournal(existingId) {
+      var date = document.getElementById('f_jvDate').value;
+      var narration = document.getElementById('f_jvNarration').value.trim();
+      var reference = document.getElementById('f_jvReference').value.trim();
+      var status = document.getElementById('f_jvStatus').value;
+
+      if (!date || !narration) {
+        showToast('Please fill required fields (Date, Narration)', 'error');
+        return;
+      }
+
+      var lines = [];
+      var rows = document.querySelectorAll('#journalLinesBody tr');
+      var totalDebit = 0, totalCredit = 0;
+
+      rows.forEach(function(row) {
+        var accountId = row.querySelector('.jv-account').value;
+        var debit = parseFloat(row.querySelector('.jv-debit').value) || 0;
+        var credit = parseFloat(row.querySelector('.jv-credit').value) || 0;
+
+        if (accountId && (debit > 0 || credit > 0)) {
+          var account = chartOfAccounts.find(function(a) { return a.id === accountId; });
+          lines.push({
+            accountId: accountId,
+            accountName: account ? account.name : '',
+            debit: debit,
+            credit: credit
+          });
+          totalDebit += debit;
+          totalCredit += credit;
+        }
+      });
+
+      if (lines.length < 2) {
+        showToast('At least 2 journal lines are required', 'error');
+        return;
+      }
+
+      if (totalDebit !== totalCredit) {
+        showToast('Journal entry must be balanced! Debit: ' + money(totalDebit) + ', Credit: ' + money(totalCredit), 'error');
+        return;
+      }
+
+      if (existingId) {
+        var j = journalEntries.find(function(x) { return x.id === existingId; });
+        if (j) {
+          j.date = date;
+          j.narration = narration;
+          j.reference = reference;
+          j.status = status;
+          j.lines = lines;
+          showToast('Journal entry updated successfully', 'success');
+        }
+      } else {
+        var newJournal = {
+          id: 'JV-' + String(journalEntries.length + 1).padStart(3, '0'),
+          date: date,
+          narration: narration,
+          reference: reference,
+          status: status,
+          lines: lines
+        };
+        journalEntries.unshift(newJournal);
+        showToast('Journal entry created successfully', 'success');
+      }
+
+      closeModal();
+      renderJournal();
+    }
+
+    function viewJournal(id) {
+      var j = journalEntries.find(function(x) { return x.id === id; });
+      if (!j) return;
+
+      var linesHtml = j.lines.map(function(l) {
+        return `
+          <tr class="border-b border-gray-100">
+            <td class="px-3 py-2 text-sm">${l.accountName}</td>
+            <td class="px-3 py-2 text-right font-mono text-sm text-primary">${l.debit > 0 ? money(l.debit) : '—'}</td>
+            <td class="px-3 py-2 text-right font-mono text-sm text-red-600">${l.credit > 0 ? money(l.credit) : '—'}</td>
+          </tr>`;
+      }).join('');
+
+      var modalContent = `
+        ${modalHeader('Journal Entry', j.id)}
+        <div class="px-5 py-4">
+          <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+            <div><span class="text-gray-500">Date</span><br><span class="font-semibold">${j.date}</span></div>
+            <div><span class="text-gray-500">Reference</span><br><span class="font-semibold">${j.reference || '—'}</span></div>
+            <div class="col-span-2"><span class="text-gray-500">Narration</span><br><span class="font-semibold">${j.narration}</span></div>
+            <div><span class="text-gray-500">Status</span><br>${statusBadge(j.status)}</div>
+          </div>
+
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th class="text-left">Account</th>
+                <th class="text-right" style="width:130px;">Debit</th>
+                <th class="text-right" style="width:130px;">Credit</th>
+              </tr>
+            </thead>
+            <tbody>${linesHtml}</tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td class="text-right font-semibold">Total</td>
+                <td class="text-right font-mono font-bold text-primary">${money(j.lines.reduce(function(s, l) { return s + l.debit; }, 0))}</td>
+                <td class="text-right font-mono font-bold text-red-600">${money(j.lines.reduce(function(s, l) { return s + l.credit; }, 0))}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        ${modalFooter('Close', 'onclick="closeModal()"')}
+      `;
+
+      openModal(modalContent, { width: 'max-w-lg' });
+    }
+
+    function deleteJournal(id) {
+      if (confirm('Delete this journal entry?')) {
+        journalEntries = journalEntries.filter(function(x) { return x.id !== id; });
+        renderJournal();
+        showToast('Journal entry deleted', 'warning');
+      }
+    }
+
+    // =============================================================
+    // GENERAL ACTIONS
+    // =============================================================
+
+    function openAddAccount() {
+      showToast('Chart of accounts editing — coming soon!', 'info');
+    }
+
+    function downloadReport() {
+      showToast('Downloading report as PDF/Excel...', 'info');
+      setTimeout(function() {
+        showToast('Report downloaded successfully!', 'success');
+      }, 1200);
+    }
+
+    function statusBadge(status) {
+      var map = {
+        active: 'badge-green',
+        draft: 'badge-gray',
+        posted: 'badge-blue'
+      };
+      var dot = {
+        active: 'badge-dot-green',
+        draft: 'badge-dot-gray',
+        posted: 'badge-dot-blue'
+      };
+      var label = status.charAt(0).toUpperCase() + status.slice(1);
+      return '<span class="badge ' + map[status] + '"><span class="badge-dot ' + dot[status] + '"></span>' + label + '</span>';
+    }
+
+    // =============================================================
+    // SEARCH
+    // =============================================================
+
+    (function addSearchToTopbar() {
+      var searchContainer = document.querySelector('.app-main header');
+      if (searchContainer) {
+        var searchHtml = `
+          <div class="hidden sm:flex flex-1 max-w-[420px] relative ml-4">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">${iconSearch()}</span>
+            <input type="text" id="searchInput" placeholder="Search accounts, journals…"
+              onkeyup="filterAcct()"
+              class="w-full border border-gray-200 bg-gray-50 focus:bg-white rounded-lg pl-9 pr-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition placeholder:text-gray-400">
+          </div>
+        `;
+        var headerContent = searchContainer.innerHTML;
+        var hamburgerIndex = headerContent.indexOf('lg:hidden');
+        if (hamburgerIndex !== -1) {
+          var firstDivEnd = headerContent.indexOf('</div>', hamburgerIndex) + 6;
+          var before = headerContent.substring(0, firstDivEnd);
+          var after = headerContent.substring(firstDivEnd);
+          searchContainer.innerHTML = before + searchHtml + after;
+        }
+      }
+    })();
+
+    function filterAcct() {
+      var q = document.getElementById('searchInput').value.toLowerCase();
+      var rows = document.querySelectorAll('#tbody-anchor tr');
+      rows.forEach(function(row) {
+        var text = row.textContent.toLowerCase();
+        row.style.display = text.indexOf(q) !== -1 ? '' : 'none';
+      });
+    }
+
+    // =============================================================
+    // INIT
+    // =============================================================
+
+    renderCOA();
+    renderJournal();
+    renderLedger();
+    renderTrialBalance();
+    renderPL();
+    renderBS();
+    renderStats();
+
+    console.log('📊 Accounting Module Loaded Successfully');
+    console.log('📚 Chart of Accounts:', chartOfAccounts.length);
+    console.log('📝 Journal Entries:', journalEntries.length);
+
+  </script>
+
+</body>
+</html>
