@@ -207,7 +207,7 @@ public class ClientServiceImpl implements ClientService {
         if (paged) {
             pageNo = (page == null || page < 1) ? 1 : page;
             pageSize = (size == null || size < 1) ? DEFAULT_PAGE_SIZE : size;
-            Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.by(Sort.Direction.DESC, "clientPrimeId"));
+            Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.by(Sort.Direction.ASC, "clientPrimeId"));
 
             Page<ClientEntity> resultPage = clientRepository.findAll(spec, pageable);
             customers = resultPage.getContent().stream().map(this::mapToResponse).collect(Collectors.toList());

@@ -537,6 +537,21 @@
     // ---------- Helpers ----------
     function money(n) { return '₹' + Number(n).toLocaleString('en-IN'); }
 
+    // Empty / null value -> dash (used in View modal so blank fields show "—")
+    function dash(v) {
+      return (v !== null && v !== undefined && String(v).trim() !== '') ? v : '—';
+    }
+
+    // Escape value for use inside HTML attributes / text (quotes in names broke the Edit form)
+    function esc(v) {
+      if (v === null || v === undefined) return '';
+      return String(v)
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
     function badge(text, color) {
       var map = { green: 'badge-green', amber: 'badge-amber', red: 'badge-red', gray: 'badge-gray', blue: 'badge-blue', purple: 'badge-purple' };
       var dot = { green: 'badge-dot-green', amber: 'badge-dot-amber', red: 'badge-dot-red', gray: 'badge-dot-gray', blue: 'badge-dot-blue', purple: 'badge-dot-purple' };
@@ -609,6 +624,18 @@
 
     var customerColors = ['#6da84c', '#1985bf', '#d97706', '#7c3aed', '#dc2626', '#0891b2', '#4f46e5', '#e11d48', '#0d9488'];
 
+    // Avatar color is picked from the client id number (CUS-001 -> 1, CUS-002 -> 2 ...),
+    // so consecutive clients always get different colors and a client keeps the same color every time.
+    function colorForClient(c) {
+      var digits = String(c.id || '').replace(/\D/g, '');
+      var n = digits ? parseInt(digits, 10) : 0;
+      if (!digits) {
+        var s = String(c.id || c.name || '');
+        for (var i = 0; i < s.length; i++) n = (n * 31 + s.charCodeAt(i)) >>> 0;
+      }
+      return customerColors[n % customerColors.length];
+    }
+
     // Backend base URL (Spring Boot, server.port in application.properties)
     var API_BASE = 'http://localhost:9093/api/clients/v1';
 
@@ -645,7 +672,7 @@
       c.creditLimit = Number(c.creditLimit) || 0;
       c.receivable = Number(c.receivable) || 0;
       c.gstRegistered = !!c.gstRegistered;
-      if (!c.color) c.color = customerColors[0];
+      c.color = colorForClient(c);
       return c;
     }
 
@@ -878,20 +905,23 @@
             <div><span class="text-gray-500">Client ID</span><br><span class="font-mono font-semibold">${c.id}</span></div>
             <div><span class="text-gray-500">Status</span><br>${c.status === 'active' ? badge('Active', 'green') : badge('Inactive', 'gray')}</div>
             <div><span class="text-gray-500">Client Type</span><br>${c.customerType === 'business' ? badge('Business', 'purple') : c.customerType === 'government' ? badge('Government', 'blue') : badge('Individual', 'gray')}</div>
-            <div><span class="text-gray-500">GSTIN</span><br><span class="font-mono">${c.gstin || '—'}</span></div>
-            <div><span class="text-gray-500">PAN</span><br><span class="font-mono">${c.pan || '—'}</span></div>
+            <div><span class="text-gray-500">GSTIN</span><br><span class="font-mono">${dash(c.gstin)}</span></div>
+            <div><span class="text-gray-500">PAN</span><br><span class="font-mono">${dash(c.pan)}</span></div>
             <div><span class="text-gray-500">GST Status</span><br>${c.gstRegistered ? badge('Registered', 'blue') : badge('Unregistered', 'amber')}</div>
-            <div><span class="text-gray-500">Email</span><br><span class="text-gray-700">${c.email}</span></div>
-            <div><span class="text-gray-500">Phone</span><br><span class="text-gray-700">${c.phone}</span></div>
-            <div class="col-span-2"><span class="text-gray-500">Billing Address</span><br><span class="text-gray-700">${c.billingAddress}, ${c.city}, ${c.state} - ${c.pincode}</span></div>
-            ${c.shippingAddress && c.shippingAddress !== c.billingAddress ? '<div class="col-span-2"><span class="text-gray-500">Shipping Address</span><br><span class="text-gray-700">' + c.shippingAddress + ', ' + c.city + ', ' + c.state + ' - ' + c.pincode + '</span></div>' : ''}
-            <div><span class="text-gray-500">Payment Terms</span><br><span class="font-semibold">${c.paymentTerms}</span></div>
+            <div><span class="text-gray-500">Email</span><br><span class="text-gray-700">${dash(c.email)}</span></div>
+            <div><span class="text-gray-500">Phone</span><br><span class="text-gray-700">${dash(c.phone)}</span></div>
+            <div class="col-span-2"><span class="text-gray-500">Billing Address</span><br><span class="text-gray-700">${dash(c.billingAddress)}</span></div>
+            <div class="col-span-2"><span class="text-gray-500">Shipping Address</span><br><span class="text-gray-700">${dash(c.shippingAddress)}</span></div>
+            <div><span class="text-gray-500">City</span><br><span class="text-gray-700">${dash(c.city)}</span></div>
+            <div><span class="text-gray-500">State</span><br><span class="text-gray-700">${dash(c.state)}</span></div>
+            <div><span class="text-gray-500">Pincode</span><br><span class="text-gray-700">${dash(c.pincode)}</span></div>
+            <div><span class="text-gray-500">Payment Terms</span><br><span class="font-semibold">${dash(c.paymentTerms)}</span></div>
             <div><span class="text-gray-500">Credit Limit</span><br><span class="font-semibold">${c.creditLimit > 0 ? money(c.creditLimit) : '—'}</span></div>
             <div><span class="text-gray-500">Total Receivable</span><br><span class="font-semibold text-amber-600">${money(c.receivable)}</span></div>
           </div>
 
           <div class="mt-4 text-[11px] text-gray-400 flex items-center gap-1.5">
-            ${iconInfo()} Created on ${c.createdAt}
+            ${iconInfo()} Created on ${dash(c.createdAt)}
           </div>
         </div>
         ${modalFooter('Close', 'onclick="closeModal()"')}
@@ -901,6 +931,7 @@
     }
 
     function openCustomerModal(existing) {
+      // For a NEW client the state is blank (no forced Maharashtra) so nothing is saved unless the user picks it
       var e = existing || {
         name: '',
         companyName: '',
@@ -912,8 +943,8 @@
         billingAddress: '',
         shippingAddress: '',
         city: '',
-        state: 'Maharashtra',
-        stateCode: '27',
+        state: '',
+        stateCode: '',
         pincode: '',
         paymentTerms: 'Net 15 days',
         creditLimit: '',
@@ -945,31 +976,31 @@
 
           <div id="tab-basic" class="modal-tab-panel active">
             <div class="grid grid-cols-2 form-grid-2 gap-x-4 gap-y-4">
-              ${fld('Client Name', '<input id="f_name" value="' + e.name + '" placeholder="e.g. XYZ Retail Store" class="' + inputBase() + '">')}
-              ${fld('Company Name', '<input id="f_company" value="' + (e.companyName || '') + '" placeholder="Company legal name" class="' + inputBase() + '">')}
+              ${fld('Client Name', '<input id="f_name" value="' + esc(e.name) + '" placeholder="e.g. XYZ Retail Store" class="' + inputBase() + '">')}
+              ${fld('Company Name', '<input id="f_company" value="' + esc(e.companyName) + '" placeholder="Company legal name" class="' + inputBase() + '">')}
               ${fld('Client Type', '<select id="f_type" class="' + inputBase() + '"><option ' + (e.customerType === 'business' ? 'selected' : '') + ' value="business">Business</option><option ' + (e.customerType === 'individual' ? 'selected' : '') + ' value="individual">Individual</option><option ' + (e.customerType === 'government' ? 'selected' : '') + ' value="government">Government</option></select>', null, 'col-span-2')}
-              ${fld('Email', '<input id="f_email" type="email" value="' + e.email + '" placeholder="client@domain.com" class="' + inputBase() + '">')}
-              ${fld('Phone', '<input id="f_phone" value="' + e.phone + '" placeholder="+91-XXXXXXXXXX" class="' + inputBase() + '">')}
+              ${fld('Email', '<input id="f_email" type="email" value="' + esc(e.email) + '" placeholder="client@domain.com" class="' + inputBase() + '">')}
+              ${fld('Phone', '<input id="f_phone" value="' + esc(e.phone) + '" placeholder="+91-XXXXXXXXXX" class="' + inputBase() + '">')}
             </div>
           </div>
 
           <div id="tab-address" class="modal-tab-panel">
             <div class="grid grid-cols-1 gap-y-4 mb-4">
-              ${fld('Billing Address', '<textarea id="f_billingAddress" rows="2" class="' + inputBase() + '" placeholder="Street address">' + (e.billingAddress || '') + '</textarea>')}
-              ${fld('Shipping Address', '<textarea id="f_shippingAddress" rows="2" class="' + inputBase() + '" placeholder="Shipping address (if different)">' + (e.shippingAddress || '') + '</textarea>')}
+              ${fld('Billing Address', '<textarea id="f_billingAddress" rows="2" class="' + inputBase() + '" placeholder="Street address">' + esc(e.billingAddress) + '</textarea>')}
+              ${fld('Shipping Address', '<textarea id="f_shippingAddress" rows="2" class="' + inputBase() + '" placeholder="Shipping address (if different)">' + esc(e.shippingAddress) + '</textarea>')}
             </div>
             <div class="grid grid-cols-3 form-grid-3 gap-x-4 gap-y-4">
-              ${fld('City', '<input id="f_city" value="' + (e.city || '') + '" placeholder="City" class="' + inputBase() + '">')}
-              ${fld('State', '<select id="f_state" class="' + inputBase() + '" onchange="updateCustomerStateCode()">' + stateOptions.map(function(s) { return '<option ' + (s === e.state ? 'selected' : '') + '>' + s + '</option>'; }).join('') + '</select>')}
-              ${fld('State Code', '<input id="f_stateCode" value="' + (e.stateCode || '27') + '" class="' + inputBase() + '" disabled>')}
-              ${fld('Pincode', '<input id="f_pincode" value="' + (e.pincode || '') + '" placeholder="6-digit PIN" class="' + inputBase() + '">')}
+              ${fld('City', '<input id="f_city" value="' + esc(e.city) + '" placeholder="City" class="' + inputBase() + '">')}
+              ${fld('State', '<select id="f_state" class="' + inputBase() + '" onchange="updateCustomerStateCode()"><option value="">— Select —</option>' + stateOptions.map(function(s) { return '<option ' + (s === e.state ? 'selected' : '') + '>' + s + '</option>'; }).join('') + '</select>')}
+              ${fld('State Code', '<input id="f_stateCode" value="' + esc(e.stateCode) + '" class="' + inputBase() + '" disabled>')}
+              ${fld('Pincode', '<input id="f_pincode" value="' + esc(e.pincode) + '" placeholder="6-digit PIN" class="' + inputBase() + '">')}
             </div>
           </div>
 
           <div id="tab-tax" class="modal-tab-panel">
             <div class="grid grid-cols-2 form-grid-2 gap-x-4 gap-y-4 mb-4">
-              ${fld('GSTIN', '<input id="f_gstin" value="' + (e.gstin || '') + '" placeholder="15-digit GSTIN" class="' + inputBase() + '">', 'Format: 2-digit state code + 10-digit PAN + 3-digit entity code')}
-              ${fld('PAN', '<input id="f_pan" value="' + (e.pan || '') + '" placeholder="10-digit PAN" class="' + inputBase() + '">')}
+              ${fld('GSTIN', '<input id="f_gstin" value="' + esc(e.gstin) + '" placeholder="15-digit GSTIN" class="' + inputBase() + '">', 'Format: 2-digit state code + 10-digit PAN + 3-digit entity code')}
+              ${fld('PAN', '<input id="f_pan" value="' + esc(e.pan) + '" placeholder="10-digit PAN" class="' + inputBase() + '">')}
             </div>
             ${fld('GST Registered?', '<div class="form-radio-row"><label><input type="radio" name="gstReg" value="true" ' + (e.gstRegistered ? 'checked' : '') + '> <span class="font-medium">Yes</span></label><label><input type="radio" name="gstReg" value="false" ' + (!e.gstRegistered ? 'checked' : '') + '> <span class="font-medium">No</span></label></div>')}
           </div>
@@ -1044,8 +1075,8 @@
       var billingAddress = document.getElementById('f_billingAddress') ? document.getElementById('f_billingAddress').value.trim() : '';
       var shippingAddress = document.getElementById('f_shippingAddress') ? document.getElementById('f_shippingAddress').value.trim() : '';
       var city = document.getElementById('f_city') ? document.getElementById('f_city').value.trim() : '';
-      var state = document.getElementById('f_state') ? document.getElementById('f_state').value : 'Maharashtra';
-      var stateCode = document.getElementById('f_stateCode') ? document.getElementById('f_stateCode').value : '27';
+      var state = document.getElementById('f_state') ? document.getElementById('f_state').value : '';
+      var stateCode = document.getElementById('f_stateCode') ? document.getElementById('f_stateCode').value : '';
       var pincode = document.getElementById('f_pincode') ? document.getElementById('f_pincode').value.trim() : '';
       var gstin = document.getElementById('f_gstin') ? document.getElementById('f_gstin').value.trim().toUpperCase() : '';
       var pan = document.getElementById('f_pan') ? document.getElementById('f_pan').value.trim().toUpperCase() : '';
@@ -1063,7 +1094,7 @@
         email: email,
         phone: phone,
         billingAddress: billingAddress,
-        shippingAddress: shippingAddress || billingAddress,
+        shippingAddress: shippingAddress,   // exactly what the user typed — no copy from billing
         city: city,
         state: state,
         stateCode: stateCode,
