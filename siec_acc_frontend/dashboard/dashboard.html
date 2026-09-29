@@ -35,13 +35,17 @@
   };
 </script>
 
+<!-- Apache ECharts -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<script>window.echarts || document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.1/echarts.min.js"><\/script>');</script>
+
 <link rel="stylesheet" href="/assets/css/nav-sidebar.css" />
 
 <style>
   :root {
     --ink: #16182a;
     --muted: #64748b;
-    --hair: #e7eaf0;
+    --hair: #6da84c;
     --panel: #ffffff;
     --bg: #f4f5f7;
   }
@@ -106,7 +110,7 @@
   }
   .card-header {
     padding: 13px 16px;
-    border-bottom: 1px solid #f1f3f6;
+    border-bottom: 1px solid #dcebd2;
     display: flex; align-items: center; justify-content: space-between;
     gap: 8px;
     flex-wrap: wrap;
@@ -172,7 +176,7 @@
   .lc-summary-row {
     display: flex; flex-wrap: wrap; justify-content: space-between;
     gap: 10px 18px;
-    margin-top: 14px; padding-top: 12px; border-top: 1px solid #f1f3f6;
+    margin-top: 14px; padding-top: 12px; border-top: 1px solid #dcebd2;
     font-size: 12px; color: var(--muted);
   }
   .lc-summary-row b { color: var(--ink); font-weight: 700; }
@@ -267,12 +271,12 @@
     padding: 10px 12px;
     border-radius: 10px;
     background: #fafbfc;
-    border: 1px solid #f1f3f6;
+    border: 1px solid #6da84c;
     border-left-width: 3px;
     margin-bottom: 6px;
     transition: all 0.15s ease;
   }
-  .alert-item:hover { background: #f4f6f8; border-color: #e7eaf0; }
+  .alert-item:hover { background: #f4f6f8; }
   .alert-item.al-red { border-left-color: #ef4444; }
   .alert-item.al-amber { border-left-color: #f59e0b; }
   .alert-item.al-blue { border-left-color: #3b82f6; }
@@ -312,7 +316,7 @@
     display: flex; align-items: center; gap: 9px;
     padding: 9px 12px;
     border-radius: 10px;
-    border: 1px solid var(--hair);
+    border: 1px solid #6da84c;
     background: #ffffff;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -343,17 +347,17 @@
   .period-dropdown-btn {
     display: inline-flex; align-items: center; gap: 6px;
     font-size: 11px; font-weight: 600; color: #334155;
-    background: #ffffff; border: 1px solid var(--hair);
+    background: #ffffff; border: 1px solid #6da84c;
     padding: 6px 10px; border-radius: 8px; cursor: pointer;
     transition: border-color .15s ease, background .15s ease;
   }
-  .period-dropdown-btn:hover { border-color: #c7ccd6; background: #f8fafc; }
+  .period-dropdown-btn:hover { background: #f8fbf6; }
   .period-dropdown-btn i { font-size: 9px; color: #94a3b8; transition: transform .15s ease; }
   .period-dropdown.open .period-dropdown-btn i { transform: rotate(180deg); }
   .period-dropdown-menu {
     display: none;
     position: absolute; top: calc(100% + 6px); right: 0;
-    background: #fff; border: 1px solid var(--hair);
+    background: #fff; border: 1px solid #6da84c;
     border-radius: 10px; min-width: 168px;
     box-shadow: 0 12px 28px -8px rgba(16,24,40,0.18);
     z-index: 50; overflow: hidden; padding: 4px;
@@ -368,10 +372,7 @@
   .period-dropdown-item.active { background: #6da84c; color: #fff; }
 
   /* ========== PIE / DONUT CHART ========== */
-  .pie-donut {
-    width: 168px; height: 168px;
-    flex-shrink: 0;
-  }
+  .pie-donut { width: 100%; max-width: 168px; aspect-ratio: 1 / 1; flex-shrink: 0; }
   .pie-svg { width: 100%; height: 100%; display: block; overflow: visible; }
   .pie-seg {
     cursor: pointer;
@@ -379,12 +380,17 @@
     transition: stroke-width .15s ease, opacity .15s ease;
   }
   .pie-seg:hover, .pie-seg.pie-seg-active { stroke-width: 40; }
-  .pie-legend { display: flex; flex-direction: column; gap: 10px; flex: 1; min-width: 0; }
+  .pie-legend { display: flex; flex-direction: column; gap: 10px; width: 100%; min-width: 0; }
   .pie-legend-item { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: #475569; cursor: pointer; padding: 2px 4px; border-radius: 6px; transition: background .12s ease; }
   .pie-legend-item:hover, .pie-legend-item.pie-seg-active { background: #f1f5f9; }
   .pie-legend-item .pl-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-  .pie-legend-item .pl-label { font-weight: 600; color: var(--ink); }
+  .pie-legend-item .pl-label { font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .pie-legend-item .pl-pct { margin-left: auto; font-weight: 700; color: var(--ink); padding-left: 8px; }
+
+  /* ========== #6da84c BORDER OVERRIDES ========== */
+  .stat-card { border-color: #6da84c !important; }
+  .card, .period-dropdown-btn, .period-dropdown-menu, .quick-action { border-color: #6da84c !important; }
+  .divide-y > :not([hidden]) ~ :not([hidden]) { border-color: #dcebd2 !important; }
 </style>
 </head>
 
@@ -400,6 +406,7 @@
 
         <div id="toastWrap" class="fixed bottom-5 right-5 z-[200] flex flex-col gap-2 items-end"></div>
         <div id="chartTooltip" class="chart-tooltip"></div>
+        <div id="projectModalRoot"></div>
 
         <div class="page-shell mx-auto">
 
@@ -424,7 +431,8 @@
             </div>
           </div>
 
-          <!-- ===== HERO: PROJECT LIFECYCLE ===== -->
+          <!-- ===== HERO: PROJECT LIFECYCLE (WHE) — COMMENTED OUT ===== -->
+          <!--
           <div class="hero-gradient mb-5">
             <div class="flex flex-wrap justify-between items-start gap-3 mb-4 relative z-10">
               <div>
@@ -493,6 +501,7 @@
               </div>
             </div>
           </div>
+          -->
 
           <!-- ===== STAT CARDS ===== -->
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3 mb-5">
@@ -549,7 +558,7 @@
           <!-- ===== CHARTS: INCOME vs EXPENSE + TOP EXPENSES ===== -->
           <div class="grid lg:grid-cols-3 gap-4 mb-5">
 
-            <!-- Income & Expense Line Chart -->
+            <!-- Income & Expense (Apache ECharts) -->
             <div class="card lg:col-span-2">
               <div class="card-header">
                 <div class="card-title-row">
@@ -559,66 +568,19 @@
                     <div class="card-sub">Last 6 months</div>
                   </div>
                 </div>
-                <div class="flex items-center gap-3 flex-wrap">
-                  <div class="lc-legend">
-                    <span><span class="dot" style="background:#6da84c;"></span>Income</span>
-                    <span><span class="dot" style="background:#ef4444;"></span>Expense</span>
-                  </div>
-                  <div class="period-dropdown" id="incomeExpPeriod">
-                    <button class="period-dropdown-btn" onclick="togglePeriodDropdown('incomeExpPeriod')" type="button">
-                      <span class="pd-label">This Fiscal Year</span> <i class="fa-solid fa-chevron-down"></i>
-                    </button>
-                    <div class="period-dropdown-menu">
-                      <div class="period-dropdown-item active" onclick="selectPeriod(this,'incomeExpPeriod')">This Fiscal Year</div>
-                      <div class="period-dropdown-item" onclick="selectPeriod(this,'incomeExpPeriod')">Previous Fiscal Year</div>
-                      <div class="period-dropdown-item" onclick="selectPeriod(this,'incomeExpPeriod')">Last 12 Months</div>
-                    </div>
+                <div class="period-dropdown" id="incomeExpPeriod">
+                  <button class="period-dropdown-btn" onclick="togglePeriodDropdown('incomeExpPeriod')" type="button">
+                    <span class="pd-label">This Fiscal Year</span> <i class="fa-solid fa-chevron-down"></i>
+                  </button>
+                  <div class="period-dropdown-menu">
+                    <div class="period-dropdown-item active" onclick="selectPeriod(this,'incomeExpPeriod')">This Fiscal Year</div>
+                    <div class="period-dropdown-item" onclick="selectPeriod(this,'incomeExpPeriod')">Previous Fiscal Year</div>
+                    <div class="period-dropdown-item" onclick="selectPeriod(this,'incomeExpPeriod')">Last 12 Months</div>
                   </div>
                 </div>
               </div>
               <div class="card-body">
-                <div class="line-chart-wrap">
-                  <svg class="line-chart-svg" viewBox="0 0 600 210" preserveAspectRatio="none" role="img" aria-label="Income and expense trend over the last 6 months">
-                    <line class="lc-grid-line" x1="50" y1="40" x2="550" y2="40"></line>
-                    <line class="lc-grid-line" x1="50" y1="90" x2="550" y2="90"></line>
-                    <line class="lc-grid-line" x1="50" y1="140" x2="550" y2="140"></line>
-                    <line class="lc-grid-line" x1="50" y1="190" x2="550" y2="190"></line>
-
-                    <defs>
-                      <linearGradient id="incFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#6da84c" stop-opacity="0.22"></stop>
-                        <stop offset="100%" stop-color="#6da84c" stop-opacity="0"></stop>
-                      </linearGradient>
-                      <linearGradient id="expFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#ef4444" stop-opacity="0.16"></stop>
-                        <stop offset="100%" stop-color="#ef4444" stop-opacity="0"></stop>
-                      </linearGradient>
-                    </defs>
-
-                    <path d="M50,84.8 L150,65.6 L250,52.8 L350,75.2 L450,46.4 L550,59.2 L550,190 L50,190 Z" fill="url(#incFill)"></path>
-                    <path d="M50,123.2 L150,110.4 L250,97.6 L350,84.8 L450,91.2 L550,68.8 L550,190 L50,190 Z" fill="url(#expFill)"></path>
-
-                    <polyline points="50,84.8 150,65.6 250,52.8 350,75.2 450,46.4 550,59.2" fill="none" stroke="#6da84c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
-                    <polyline points="50,123.2 150,110.4 250,97.6 350,84.8 450,91.2 550,68.8" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
-
-                    <g class="lc-point-group"><circle class="lc-dot" cx="50" cy="84.8" r="4.5" fill="#6da84c" data-series="Income" data-month="Jan" data-value="₹96,282" data-color="#6da84c"></circle></g>
-                    <g class="lc-point-group"><circle class="lc-dot" cx="150" cy="65.6" r="4.5" fill="#6da84c" data-series="Income" data-month="Feb" data-value="₹1,12,329" data-color="#6da84c"></circle></g>
-                    <g class="lc-point-group"><circle class="lc-dot" cx="250" cy="52.8" r="4.5" fill="#6da84c" data-series="Income" data-month="Mar" data-value="₹1,23,043" data-color="#6da84c"></circle></g>
-                    <g class="lc-point-group"><circle class="lc-dot" cx="350" cy="75.2" r="4.5" fill="#6da84c" data-series="Income" data-month="Apr" data-value="₹1,04,306" data-color="#6da84c"></circle></g>
-                    <g class="lc-point-group"><circle class="lc-dot" cx="450" cy="46.4" r="4.5" fill="#6da84c" data-series="Income" data-month="May" data-value="₹1,28,376" data-color="#6da84c"></circle></g>
-                    <g class="lc-point-group"><circle class="lc-dot" cx="550" cy="59.2" r="4.5" fill="#6da84c" data-series="Income" data-month="Jun" data-value="₹1,17,663" data-color="#6da84c"></circle></g>
-
-                    <g class="lc-point-group"><circle class="lc-dot" cx="50" cy="123.2" r="4.5" fill="#ef4444" data-series="Expense" data-month="Jan" data-value="₹51,077" data-color="#ef4444"></circle></g>
-                    <g class="lc-point-group"><circle class="lc-dot" cx="150" cy="110.4" r="4.5" fill="#ef4444" data-series="Expense" data-month="Feb" data-value="₹59,590" data-color="#ef4444"></circle></g>
-                    <g class="lc-point-group"><circle class="lc-dot" cx="250" cy="97.6" r="4.5" fill="#ef4444" data-series="Expense" data-month="Mar" data-value="₹68,103" data-color="#ef4444"></circle></g>
-                    <g class="lc-point-group"><circle class="lc-dot" cx="350" cy="84.8" r="4.5" fill="#ef4444" data-series="Expense" data-month="Apr" data-value="₹76,615" data-color="#ef4444"></circle></g>
-                    <g class="lc-point-group"><circle class="lc-dot" cx="450" cy="91.2" r="4.5" fill="#ef4444" data-series="Expense" data-month="May" data-value="₹72,359" data-color="#ef4444"></circle></g>
-                    <g class="lc-point-group"><circle class="lc-dot" cx="550" cy="68.8" r="4.5" fill="#ef4444" data-series="Expense" data-month="Jun" data-value="₹87,256" data-color="#ef4444"></circle></g>
-                  </svg>
-                  <div class="lc-axis-labels">
-                    <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
-                  </div>
-                </div>
+                <div id="incExpChart" style="width:100%;height:328px;margin-top:-28px;"></div>
                 <div class="lc-summary-row">
                   <span>Total Income: <b>₹6,82,000</b></span>
                   <span>Total Expense: <b>₹4,15,000</b></span>
@@ -646,8 +608,8 @@
                 </div>
               </div>
               <div class="card-body">
-                <div class="flex items-center gap-5 flex-wrap sm:flex-nowrap">
-                  <div class="pie-donut mx-auto sm:mx-0">
+                <div class="flex flex-col items-center gap-4">
+                  <div class="pie-donut">
                     <svg class="pie-svg" viewBox="0 0 200 200" role="img" aria-label="Top expenses breakdown by category">
                       <g transform="rotate(-90 100 100)">
                         <circle class="pie-seg" id="pieSeg0" cx="100" cy="100" r="70" fill="none" stroke="#6da84c" stroke-width="34"
@@ -704,7 +666,8 @@
             </div>
           </div>
 
-          <!-- ===== CASH FLOW ===== -->
+          <!-- ===== CASH FLOW — COMMENTED OUT ===== -->
+          <!--
           <div class="card mb-5">
             <div class="card-header">
               <div class="card-title-row">
@@ -782,6 +745,7 @@
               </div>
             </div>
           </div>
+          -->
 
           <!-- ===== RECEIVABLES / PAYABLES ===== -->
           <div class="grid lg:grid-cols-2 gap-4 mb-5">
@@ -839,8 +803,8 @@
             </div>
           </div>
 
-          <!-- ===== ACTIVE PROJECTS + BANK ACCOUNTS ===== -->
-          <div class="grid lg:grid-cols-2 gap-4 mb-5">
+          <!-- ===== ACTIVE PROJECTS (Bank Accounts commented out → full width) ===== -->
+          <div class="grid gap-4 mb-5">
 
             <!-- Active Projects -->
             <div class="card">
@@ -852,7 +816,7 @@
                 <a href="/projects/projects.html" class="card-link">View All →</a>
               </div>
               <div class="divide-y divide-gray-100">
-                <div class="flex items-center gap-3.5 px-4 py-3.5 table-row-hover">
+                <a href="/projects/projects.html?project=PRJ-001" onclick="openProjectModal('PRJ-001'); return false;" class="flex items-center gap-3.5 px-4 py-3.5 table-row-hover cursor-pointer" title="Open project">
                   <div class="ring-wrap">
                     <svg viewBox="0 0 40 40" class="w-11 h-11">
                       <circle cx="20" cy="20" r="17" fill="none" stroke="#E8EDED" stroke-width="4" />
@@ -865,8 +829,8 @@
                     <div class="text-[11px] text-gray-400">Sustro Speciality Oils</div>
                     <div class="prog-bar"><div class="fill prog-green" style="width:62%"></div></div>
                   </div>
-                </div>
-                <div class="flex items-center gap-3.5 px-4 py-3.5 table-row-hover">
+                </a>
+                <a href="/projects/projects.html?project=PRJ-002" onclick="openProjectModal('PRJ-002'); return false;" class="flex items-center gap-3.5 px-4 py-3.5 table-row-hover cursor-pointer" title="Open project">
                   <div class="ring-wrap">
                     <svg viewBox="0 0 40 40" class="w-11 h-11">
                       <circle cx="20" cy="20" r="17" fill="none" stroke="#E8EDED" stroke-width="4" />
@@ -879,8 +843,8 @@
                     <div class="text-[11px] text-gray-400">XYZ Technologies</div>
                     <div class="prog-bar"><div class="fill prog-amber" style="width:31%"></div></div>
                   </div>
-                </div>
-                <div class="flex items-center gap-3.5 px-4 py-3.5 table-row-hover">
+                </a>
+                <a href="/projects/projects.html?project=PRJ-003" onclick="openProjectModal('PRJ-003'); return false;" class="flex items-center gap-3.5 px-4 py-3.5 table-row-hover cursor-pointer" title="Open project">
                   <div class="ring-wrap">
                     <svg viewBox="0 0 40 40" class="w-11 h-11">
                       <circle cx="20" cy="20" r="17" fill="none" stroke="#E8EDED" stroke-width="4" />
@@ -893,11 +857,12 @@
                     <div class="text-[11px] text-gray-400">ABC Distributor Group</div>
                     <div class="prog-bar"><div class="fill prog-green" style="width:88%"></div></div>
                   </div>
-                </div>
+                </a>
               </div>
             </div>
 
-            <!-- Bank Accounts -->
+            <!-- Bank Accounts — COMMENTED OUT -->
+            <!--
             <div class="card">
               <div class="card-header">
                 <div class="card-title-row">
@@ -945,6 +910,7 @@
                 </div>
               </div>
             </div>
+            -->
           </div>
 
           <!-- ===== ALERTS & QUICK ACTIONS ===== -->
@@ -1115,7 +1081,7 @@
     }
 
     // =============================================================
-    // CHART POINT TOOLTIPS
+    // CHART POINT TOOLTIPS (pie segments + any SVG dots)
     // =============================================================
     (function () {
       var tip = document.getElementById('chartTooltip');
@@ -1155,7 +1121,6 @@
       }
 
       document.querySelectorAll('.lc-dot').forEach(function (dot) {
-        // Desktop hover (ignored while a point is pinned open by a tap/click)
         dot.addEventListener('mouseenter', function () {
           if (pinnedDot) return;
           showTip(dot);
@@ -1168,7 +1133,6 @@
           if (pinnedDot) return;
           hideTip();
         });
-        // Tap / click a point to pin its info in a small overlay — tap again (or elsewhere) to close
         dot.addEventListener('click', function (evt) {
           evt.stopPropagation();
           if (pinnedDot === dot) {
@@ -1184,10 +1148,10 @@
         if (!evt.target.closest('.lc-dot') && !evt.target.closest('.pie-seg') && !evt.target.closest('.pie-legend-item')) hideTip();
       });
       window.addEventListener('scroll', function () {
-        if (pinnedDot) positionAtDot(pinnedDot);
+        if (pinnedDot && pinnedDot.classList.contains('lc-dot')) positionAtDot(pinnedDot);
       }, true);
       window.addEventListener('resize', function () {
-        if (pinnedDot) positionAtDot(pinnedDot);
+        if (pinnedDot && pinnedDot.classList.contains('lc-dot')) positionAtDot(pinnedDot);
       });
 
       // ---- Pie chart segments (Top Expenses) ----
@@ -1272,6 +1236,7 @@
       if (label) label.textContent = itemEl.textContent.trim();
       dropdown.classList.remove('open');
       showToast('Showing data for "' + itemEl.textContent.trim() + '"', 'info');
+      if (dropdownId === 'incomeExpPeriod' && window.replayIncExpChart) window.replayIncExpChart();
     }
 
     document.addEventListener('click', function (evt) {
@@ -1281,14 +1246,206 @@
     });
 
     // =============================================================
+    // INCOME & EXPENSE — Apache ECharts (mix-line-bar)
+    // =============================================================
+    function initIncExpChart() {
+      var dom = document.getElementById('incExpChart');
+      if (!dom) return;
+      if (typeof echarts === 'undefined') {
+        dom.innerHTML = '<div style="padding:60px 10px;text-align:center;color:#ef4444;font-size:12px;font-weight:600;">ECharts load zali nahi. Internet / ad-blocker tapasa (F12 → Console).</div>';
+        return;
+      }
+      try {
+        var existing = echarts.getInstanceByDom(dom);
+        if (existing) existing.dispose();
+        var chart = echarts.init(dom, null, {
+          width: dom.clientWidth || (dom.parentNode ? dom.parentNode.clientWidth : 600) || 600,
+          height: 328
+        });
+        var inr = function (v) { return '₹' + Number(v).toLocaleString('en-IN'); };
+        var short = function (v) { return '₹' + (v / 1000) + 'k'; };
+
+        var option = {
+          color: ['#6da84c', '#ef4444', '#1985bf'],
+          animation: true,
+          animationDuration: 1200,
+          animationEasing: 'cubicOut',
+          animationDurationUpdate: 600,
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'cross', crossStyle: { color: '#999' } },
+            formatter: function (params) {
+              var out = params[0].axisValueLabel;
+              params.forEach(function (p) {
+                out += '<br/>' + p.marker + p.seriesName + ': <b>' + inr(p.value) + '</b>';
+              });
+              return out;
+            }
+          },
+          toolbox: {
+            top: 28,
+            feature: {
+              dataView: { show: true, readOnly: false, title: 'Data View' },
+              magicType: { show: true, type: ['line', 'bar'],
+                title: { line: 'Switch to Line Chart', bar: 'Switch to Bar Chart' } },
+              restore: { show: true, title: 'Restore' }
+            },
+            emphasis: {
+              iconStyle: {
+                textPosition: 'top',
+                textAlign: 'right',
+                textFill: '#ffffff',
+                textBackgroundColor: '#000000',
+                textPadding: [5, 9],
+                textBorderRadius: 4
+              }
+            }
+          },
+          legend: { data: ['Income', 'Expense', 'Net'], bottom: 0 },
+          grid: { left: 10, right: 10, top: 88, bottom: 40, containLabel: true },
+          xAxis: [{
+            type: 'category',
+            data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            axisPointer: { type: 'shadow' }
+          }],
+          yAxis: [
+            { type: 'value', name: 'Amount', min: 0, max: 150000, interval: 30000,
+              axisLabel: { formatter: short } },
+            { type: 'value', name: 'Net', min: 0, max: 75000, interval: 15000,
+              axisLabel: { formatter: short }, splitLine: { show: false } }
+          ],
+          series: [
+            { name: 'Income', type: 'bar', barMaxWidth: 26,
+              animationDuration: 1000,
+              animationDelay: function (i) { return i * 120; },
+              data: [96282, 112329, 123043, 104306, 128376, 117663] },
+            { name: 'Expense', type: 'bar', barMaxWidth: 26,
+              animationDuration: 1000,
+              animationDelay: function (i) { return 200 + i * 120; },
+              data: [51077, 59590, 68103, 76615, 72359, 87256] },
+            { name: 'Net', type: 'line', yAxisIndex: 1, symbolSize: 8,
+              animationDuration: 1800,
+              animationDelay: 900,
+              data: [45205, 52739, 54940, 27691, 56017, 30407] }
+          ]
+        };
+
+        // Chart pahilyanda screen var disla ki draw hoto (bars vadhtat, Net line kadhli jate)
+        var drawn = false;
+        function play() {
+          if (drawn) return;
+          drawn = true;
+          chart.resize({ width: dom.clientWidth || undefined, height: 328 });
+          chart.setOption(option, true);
+        }
+        window.replayIncExpChart = function () {
+          chart.clear();
+          chart.resize({ width: dom.clientWidth || undefined, height: 328 });
+          chart.setOption(option, true);
+        };
+
+        if ('IntersectionObserver' in window) {
+          var io = new IntersectionObserver(function (entries) {
+            if (entries[0].isIntersecting) { play(); io.disconnect(); }
+          }, { threshold: 0.25 });
+          io.observe(dom);
+          setTimeout(play, 1500); // fallback
+        } else {
+          play();
+        }
+
+        var fit = function () {
+          chart.resize({ width: dom.clientWidth || undefined, height: 328 });
+        };
+        window.addEventListener('resize', fit);
+        if (window.ResizeObserver) new ResizeObserver(fit).observe(dom);
+      } catch (err) {
+        console.error('Income & Expense chart error:', err);
+        dom.innerHTML = '<div style="padding:60px 10px;text-align:center;color:#ef4444;font-size:12px;">Chart error: ' + err.message + '</div>';
+      }
+    }
+    if (document.readyState === 'complete') initIncExpChart();
+    else window.addEventListener('load', initIncExpChart);
+
+    // =============================================================
+    // PROJECT DETAILS POPUP (dashboard varunach details dakhva)
+    // =============================================================
+    var DASH_PROJECTS = {
+      'PRJ-001': { name: 'Operation & Supervision — WHE', code: '26LW069', customer: 'Sustro Speciality Oils Pvt Ltd', status: 'active', pm: 'Rajesh Sharma', startDate: '2025-11-01', endDate: '2026-06-30', progress: 62, budget: 500000, actualCost: 310000, revenue: 450000, profit: 140000, description: 'Operation and supervision contract for WHE' },
+      'PRJ-002': { name: 'Odor Control Unit — Retrofit', code: '26LW070', customer: 'XYZ Technologies', status: 'active', pm: 'Priya Patel', startDate: '2025-12-15', endDate: '2026-05-31', progress: 31, budget: 350000, actualCost: 120000, revenue: 200000, profit: 80000, description: 'Retrofit of odor control unit' },
+      'PRJ-003': { name: 'Dual Media Filter — Phase II', code: '26LW071', customer: 'ABC Distributor Group', status: 'completed', pm: 'Rajesh Sharma', startDate: '2025-08-01', endDate: '2026-01-15', progress: 100, budget: 750000, actualCost: 720000, revenue: 950000, profit: 230000, description: 'Dual media filter installation phase II' }
+    };
+
+    function pmMoney(n) { return '₹' + Number(n || 0).toLocaleString('en-IN'); }
+
+    function openProjectModal(id) {
+      var p = DASH_PROJECTS[id];
+      if (!p) { window.location.href = '/projects/projects.html?project=' + id; return; }
+      var st = {
+        active:    { label: 'Active',    cls: 'bg-blue-100 text-blue-800',   bar: '#3b82f6' },
+        completed: { label: 'Completed', cls: 'bg-green-100 text-green-800', bar: '#22c55e' },
+        onhold:    { label: 'On Hold',   cls: 'bg-amber-100 text-amber-800', bar: '#f59e0b' }
+      }[p.status] || { label: p.status, cls: 'bg-gray-100 text-gray-700', bar: '#94a3b8' };
+      var margin = p.revenue > 0 ? ((p.profit / p.revenue) * 100).toFixed(1) : '0';
+      var profitCls = p.profit >= 0 ? 'text-emerald-600' : 'text-rose-600';
+
+      function row(label, value, extra) {
+        return '<div class="px-4 py-3 border-b border-gray-100 last:border-b-0">' +
+          '<div class="text-[10.5px] font-semibold uppercase tracking-wide text-gray-400">' + label + '</div>' +
+          '<div class="text-[13px] font-semibold text-gray-900 mt-0.5 ' + (extra || '') + '">' + value + '</div></div>';
+      }
+      function line(label, value, cls) {
+        return '<tr class="border-b border-gray-100"><td class="py-2.5 text-gray-500">' + label + '</td>' +
+          '<td class="py-2.5 text-right font-mono font-semibold ' + (cls || '') + '">' + value + '</td></tr>';
+      }
+
+      document.getElementById('projectModalRoot').innerHTML =
+        '<div class="fixed inset-0 z-[150] flex items-center justify-center p-4">' +
+          '<div class="absolute inset-0 bg-black/40" onclick="closeProjectModal()"></div>' +
+          '<div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] overflow-y-auto animate-fade">' +
+            '<div class="flex items-center gap-3 flex-wrap px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10">' +
+              '<h2 class="text-[18px] sm:text-[20px] font-bold text-gray-900">' + p.name + '</h2>' +
+              '<span class="text-[11px] font-bold px-2.5 py-1 rounded-full ' + st.cls + '">' + st.label + '</span>' +
+              '<div class="flex-1"></div>' +
+              '<button onclick="closeProjectModal()" class="w-8 h-8 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 flex items-center justify-center" title="Close"><i class="fa-solid fa-xmark"></i></button>' +
+            '</div>' +
+            '<div class="p-6 grid grid-cols-1 md:grid-cols-[280px_1fr] gap-5">' +
+              '<div class="border border-gray-200 rounded-xl bg-gray-50/60 h-fit">' +
+                row('Project Code', p.code) +
+                row('Customer', p.customer, 'text-secondary') +
+                row('Project Manager', p.pm) +
+                row('Start Date', p.startDate) +
+                row('End Date', p.endDate) +
+                row('Progress', p.progress + '%<div class="prog-bar" style="margin-top:8px;"><div class="fill" style="width:' + p.progress + '%;background:' + st.bar + ';"></div></div>') +
+                row('Description', p.description, 'font-medium text-gray-600 text-[12.5px]') +
+              '</div>' +
+              '<div class="border border-gray-200 rounded-xl p-5">' +
+                '<div class="font-bold text-[14px] text-gray-800 mb-3"><i class="fa-solid fa-chart-pie text-primary mr-2"></i>Financial Summary</div>' +
+                '<table class="w-full text-[13px]"><tbody>' +
+                  line('Total Budget', pmMoney(p.budget)) +
+                  line('Revenue Generated', pmMoney(p.revenue), 'text-primary') +
+                  line('Actual Cost', pmMoney(p.actualCost), 'text-rose-600') +
+                  line('Net Profit', pmMoney(p.profit), profitCls) +
+                  line('Margin', margin + '%') +
+                '</tbody></table>' +
+                '<div class="text-[11px] text-gray-400 font-mono mt-4">Project ID: ' + id + '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeProjectModal() {
+      document.getElementById('projectModalRoot').innerHTML = '';
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeProjectModal(); });
+
+    // =============================================================
     // INIT
     // =============================================================
-
     console.log('📊 Dashboard Module Loaded Successfully');
-    console.log('💰 Business metrics displayed');
-    console.log('📈 Charts: Income/Expense, Cash Flow (working)');
-    console.log('📁 Projects, Banking, Alerts loaded');
-
   </script>
 
 </body>
