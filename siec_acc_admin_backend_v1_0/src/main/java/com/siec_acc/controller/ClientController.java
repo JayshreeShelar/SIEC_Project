@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -80,5 +81,13 @@ public class ClientController {
         logger.info("API HIT: GET /get-meta");
         Map<String, Object> response = clientService.getMeta();
         return ResponseEntity.ok(ApiResponse.success("Meta fetched successfully.", response));
+    }
+
+    // Dropdown values for "Client Type" (form + "All Types" filter)
+    @GetMapping("/get-client-types")
+    public ResponseEntity<ApiResponse<List<String>>> getClientTypes() {
+        logger.info("API HIT: GET /get-client-types");
+        List<String> response = clientService.getClientTypes();
+        return ResponseEntity.ok(ApiResponse.success("Client types fetched successfully.", response));
     }
 }

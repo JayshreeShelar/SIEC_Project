@@ -115,6 +115,7 @@
     width: 36px;
     height: 36px;
     border-radius: 10px;
+    border: 1px solid #6da84c;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -219,7 +220,7 @@
     justify-content: center;
     color: #94a3b8;
     background: transparent;
-    border: none;
+    border: 1px solid #b0b8c9;
     cursor: pointer;
   }
   .btn-icon-action:hover {
@@ -503,18 +504,22 @@
         </div>`;
     }
 
-    function modalFooter(saveLabel, onSaveAttr, extraBtns) {
-      return `
-        <div class="flex items-center justify-between gap-2 px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl shrink-0">
-          <div>${extraBtns || ''}</div>
-          <div class="flex gap-2 ml-auto">
-            <button onclick="closeModal()" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-white transition">Cancel</button>
-            <button ${onSaveAttr} class="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary-dark transition shadow-sm inline-flex items-center gap-1.5">
-              ${iconSave()} ${saveLabel}
-            </button>
-          </div>
-        </div>`;
-    }
+    function modalFooter(saveLabel, onSaveAttr, extraBtns, variant) {
+  variant = variant || 'primary';
+  var btnClass = variant === 'danger'
+    ? 'bg-red-600 hover:bg-red-700'
+    : 'bg-primary hover:bg-primary-dark';
+  return `
+    <div class="flex items-center justify-between gap-2 px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl shrink-0">
+      <div>${extraBtns || ''}</div>
+      <div class="flex gap-2 ml-auto">
+        <button onclick="closeModal()" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-white transition">Cancel</button>
+        <button ${onSaveAttr} class="px-4 py-2 rounded-lg text-sm font-semibold text-white ${btnClass} transition shadow-sm inline-flex items-center gap-1.5">
+          ${iconSave()} ${saveLabel}
+        </button>
+      </div>
+    </div>`;
+}
 
     function fld(label, inputHtml, hint, extraClass) {
       return `
@@ -537,25 +542,80 @@
     // ---------- Helpers ----------
     function money(n) { return '₹' + Number(n).toLocaleString('en-IN'); }
 
-    // Empty / null value -> dash (used in View modal so blank fields show "—")
-    function dash(v) {
-      return (v !== null && v !== undefined && String(v).trim() !== '') ? v : '—';
-    }
-
-    // Escape value for use inside HTML attributes / text (quotes in names broke the Edit form)
-    function esc(v) {
-      if (v === null || v === undefined) return '';
-      return String(v)
-        .replace(/&/g, '&amp;')
-        .replace(/"/g, '&quot;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-    }
-
     function badge(text, color) {
       var map = { green: 'badge-green', amber: 'badge-amber', red: 'badge-red', gray: 'badge-gray', blue: 'badge-blue', purple: 'badge-purple' };
       var dot = { green: 'badge-dot-green', amber: 'badge-dot-amber', red: 'badge-dot-red', gray: 'badge-dot-gray', blue: 'badge-dot-blue', purple: 'badge-dot-purple' };
       return '<span class="badge ' + map[color] + '"><span class="badge-dot ' + dot[color] + '"></span>' + text + '</span>';
+    }
+
+    // Client type badge: business / government / individual have fixed styles,
+    // anything else (custom "Other" text typed by the user) is shown as a gray badge.
+    var STANDARD_CLIENT_TYPES = ['business', 'individual', 'government'];
+
+    function typeBadgeHtml(t) {
+      var key = (t || '').toLowerCase();
+      if (key === 'business') return badge('Business', 'purple');
+      if (key === 'government') return badge('Government', 'blue');
+      if (key === 'individual') return badge('Individual', 'gray');
+      return badge(t ? escHtml(t) : 'Other', 'gray');
+    }
+
+    // ---------- small helpers ----------
+    function escHtml(v) {
+      return String(v == null ? '' : v)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    // ---------- Client types (dropdown values come from backend: GET /get-client-types) ----------
+    // Starts with the 3 standard types so the page still works if the API is unreachable.
+    var CLIENT_TYPES = STANDARD_CLIENT_TYPES.slice();
+    var OTHER_TYPE_VALUE = '__other__';   // value of the "Other" option in the form dropdown
+
+    function typeLabel(t) {
+      if (STANDARD_CLIENT_TYPES.indexOf(String(t).toLowerCase()) !== -1) {
+        return t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
+      }
+      return t;
+    }
+
+    function typeOptionsHtml(selected) {
+      var sel = (selected || '').toLowerCase();
+      return CLIENT_TYPES.map(function(t) {
+        return '<option value="' + escHtml(t) + '"' + (t.toLowerCase() === sel ? ' selected' : '') + '>' + escHtml(typeLabel(t)) + '</option>';
+      }).join('');
+    }
+
+    // ---------- Countries / States (static lists, no backend needed) ----------
+    var COUNTRIES = ['India', 'Indonesia', 'Nepal', 'New Zealand', 'North Korea', 'Russia','Singapore', 'South Africa'];
+
+    var INDIA_STATES = ['Maharashtra', 'Delhi', 'Karnataka', 'Tamil Nadu', 'Gujarat', 'Uttar Pradesh', 'Rajasthan', 'Kerala', 'Telangana', 'West Bengal', 'Andhra Pradesh', 'Bihar', 'Chhattisgarh', 'Goa', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Madhya Pradesh', 'Odisha', 'Punjab', 'Uttarakhand',
+      'Arunachal Pradesh', 'Assam', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Sikkim', 'Tripura',
+      'Andaman and Nicobar Islands', 'Chandigarh', 'Dadra and Nagar Haveli and Daman and Diu', 'Jammu and Kashmir', 'Ladakh', 'Lakshadweep', 'Puducherry'];
+
+    function countrySelectHtml(current) {
+      current = current || '';
+      var list = COUNTRIES.slice();
+      // a country saved earlier as free text that is not in the list must not be lost
+      if (current && list.indexOf(current) === -1) list.push(current);
+      return '<select id="f_country" class="form-input" onchange="onCountryChange()">' +
+        '<option value=""' + (current ? '' : ' selected') + '>Select Country</option>' +
+        list.map(function(c) {
+          return '<option value="' + escHtml(c) + '"' + (c === current ? ' selected' : '') + '>' + escHtml(c) + '</option>';
+        }).join('') + '</select>';
+    }
+
+    // India -> dropdown of states / UTs.  Any other country -> plain text input (state / province).
+    function stateFieldHtml(country, current, keepUnknown) {
+      current = current || '';
+      if (country === 'India') {
+        var list = INDIA_STATES.slice();
+        if (keepUnknown && current && list.indexOf(current) === -1) list.push(current);
+        return '<select id="f_state" class="form-input">' + list.map(function(st) {
+          return '<option value="' + escHtml(st) + '"' + (st === current ? ' selected' : '') + '>' + escHtml(st) + '</option>';
+        }).join('') + '</select>';
+      }
+      return '<input id="f_state" value="' + escHtml(current) + '" placeholder="State / Province" class="form-input">';
     }
 
     function rowActionsHtml(editFn, delFn, viewFn) {
@@ -590,7 +650,7 @@
         <div class="overflow-x-auto">
           <table class="w-full text-[13px]">
             <thead>
-              <tr class="bg-gray-50 border-b border-gray-200">${colHeaders}</tr>
+              <tr class="bg-gray-200 border border-[#6da84c]">${colHeaders}</tr>
             </thead>
             <tbody id="tbody-anchor">${rowsHtml}</tbody>
           </table>
@@ -624,18 +684,6 @@
 
     var customerColors = ['#6da84c', '#1985bf', '#d97706', '#7c3aed', '#dc2626', '#0891b2', '#4f46e5', '#e11d48', '#0d9488'];
 
-    // Avatar color is picked from the client id number (CUS-001 -> 1, CUS-002 -> 2 ...),
-    // so consecutive clients always get different colors and a client keeps the same color every time.
-    function colorForClient(c) {
-      var digits = String(c.id || '').replace(/\D/g, '');
-      var n = digits ? parseInt(digits, 10) : 0;
-      if (!digits) {
-        var s = String(c.id || c.name || '');
-        for (var i = 0; i < s.length; i++) n = (n * 31 + s.charCodeAt(i)) >>> 0;
-      }
-      return customerColors[n % customerColors.length];
-    }
-
     // Backend base URL (Spring Boot, server.port in application.properties)
     var API_BASE = 'http://localhost:9093/api/clients/v1';
 
@@ -667,12 +715,12 @@
     // Backend can return null for optional fields; the page code expects strings/numbers
     function normalizeCustomer(c) {
       ['name', 'companyName', 'customerType', 'gstin', 'pan', 'email', 'phone', 'billingAddress',
-       'shippingAddress', 'city', 'state', 'stateCode', 'pincode', 'paymentTerms', 'status', 'createdAt']
+       'shippingAddress', 'city', 'state', 'country', 'pincode', 'paymentTerms', 'status', 'createdAt']
         .forEach(function(k) { if (c[k] == null) c[k] = ''; });
       c.creditLimit = Number(c.creditLimit) || 0;
       c.receivable = Number(c.receivable) || 0;
       c.gstRegistered = !!c.gstRegistered;
-      c.color = colorForClient(c);
+      if (!c.color) c.color = customerColors[0];
       return c;
     }
 
@@ -693,6 +741,15 @@
       params.set('page', currentPage);
       params.set('size', pageSize);
       return params.toString();
+    }
+
+    // Fetch client types (standard + custom saved in DB) for the form and the "All Types" filter
+    function loadClientTypes() {
+      return api('GET', '/get-client-types')
+        .then(function(list) {
+          if (Array.isArray(list) && list.length) CLIENT_TYPES = list;
+        })
+        .catch(function(err) { console.warn('Could not load client types, using defaults:', err.message); });
     }
 
     function loadCustomers() {
@@ -729,24 +786,22 @@
     // Filter toolbar shown inside the table panel header
     function filtersToolbarHtml() {
       return `
-        <div class="flex items-center gap-2 flex-wrap">
-          <select id="filterStatus" onchange="filterCustomers()" class="mini-select">
+        <div class="flex items-center gap-2  flex-wrap">
+          <select id="filterStatus" onchange="filterCustomers()" class="mini-select border-gray-400">
             <option value="all">All Status</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
-          <select id="filterGST" onchange="filterCustomers()" class="mini-select">
+          <select id="filterGST" onchange="filterCustomers()" class="mini-select border-gray-400">
             <option value="all">All GST</option>
             <option value="registered">Registered</option>
             <option value="unregistered">Unregistered</option>
           </select>
-          <select id="filterType" onchange="filterCustomers()" class="mini-select">
+          <select id="filterType" onchange="filterCustomers()" class="mini-select border-gray-400">
             <option value="all">All Types</option>
-            <option value="business">Business</option>
-            <option value="individual">Individual</option>
-            <option value="government">Government</option>
+            ${typeOptionsHtml('')}
           </select>
-          <button onclick="resetFilters()" class="btn-reset" title="Reset all filters &amp; search">
+          <button onclick="resetFilters()" class="btn-reset border border-gray-400" title="Reset all filters &amp; search">
             ${iconRefresh()} Reset
           </button>
         </div>`;
@@ -767,11 +822,9 @@
         rowsHtml = customers.map(function(c) {
           var statusBadgeHtml = c.status === 'active' ? badge('Active', 'green') : badge('Inactive', 'gray');
           var gstBadge = c.gstRegistered ? badge('GST Registered', 'blue') : badge('Unregistered', 'amber');
-          var typeBadge = c.customerType === 'business' ? badge('Business', 'purple') :
-                          c.customerType === 'government' ? badge('Government', 'blue') :
-                          badge('Individual', 'gray');
+          var typeBadge = typeBadgeHtml(c.customerType);
           return `
-            <tr class="border-b border-gray-100 table-row-hover">
+            <tr class="border-b border-gray-400 table-row-hover">
               <td class="px-4 py-3 align-middle">
                 <div class="flex items-center gap-3">
                   <div class="customer-avatar" style="background:${c.color}">${getInitials(c.name)}</div>
@@ -890,48 +943,103 @@
 
     function showCustomerDetails(c) {
 
-      var modalContent = `
-        ${modalHeader('Client Details — ' + c.name, c.id)}
-        <div class="px-6 py-5 modal-scroll">
-          <div class="flex items-center gap-4 mb-5">
-            <div class="customer-avatar" style="background:${c.color}; width:48px; height:48px; font-size:18px;">${getInitials(c.name)}</div>
-            <div>
-              <div class="text-lg font-semibold">${c.name}</div>
-              <div class="text-sm text-gray-500">${c.companyName || 'Individual Client'}</div>
-            </div>
-          </div>
+  // small helper so every row looks identical: bordered card + label + value
+  function detailCard(label, valueHtml) {
+    return `
+      <div class="border border-gray-200 rounded-lg bg-white px-3.5 py-2.5">
+        <div class="text-[10.5px] font-semibold uppercase tracking-wider text-gray-500 mb-1">${label}</div>
+        <div class="text-[13px] text-gray-800">${valueHtml}</div>
+      </div>`;
+  }
 
-          <div class="grid grid-cols-2 form-grid-2 gap-x-6 gap-y-4 text-sm border-t border-gray-100 pt-5">
-            <div><span class="text-gray-500">Client ID</span><br><span class="font-mono font-semibold">${c.id}</span></div>
-            <div><span class="text-gray-500">Status</span><br>${c.status === 'active' ? badge('Active', 'green') : badge('Inactive', 'gray')}</div>
-            <div><span class="text-gray-500">Client Type</span><br>${c.customerType === 'business' ? badge('Business', 'purple') : c.customerType === 'government' ? badge('Government', 'blue') : badge('Individual', 'gray')}</div>
-            <div><span class="text-gray-500">GSTIN</span><br><span class="font-mono">${dash(c.gstin)}</span></div>
-            <div><span class="text-gray-500">PAN</span><br><span class="font-mono">${dash(c.pan)}</span></div>
-            <div><span class="text-gray-500">GST Status</span><br>${c.gstRegistered ? badge('Registered', 'blue') : badge('Unregistered', 'amber')}</div>
-            <div><span class="text-gray-500">Email</span><br><span class="text-gray-700">${dash(c.email)}</span></div>
-            <div><span class="text-gray-500">Phone</span><br><span class="text-gray-700">${dash(c.phone)}</span></div>
-            <div class="col-span-2"><span class="text-gray-500">Billing Address</span><br><span class="text-gray-700">${dash(c.billingAddress)}</span></div>
-            <div class="col-span-2"><span class="text-gray-500">Shipping Address</span><br><span class="text-gray-700">${dash(c.shippingAddress)}</span></div>
-            <div><span class="text-gray-500">City</span><br><span class="text-gray-700">${dash(c.city)}</span></div>
-            <div><span class="text-gray-500">State</span><br><span class="text-gray-700">${dash(c.state)}</span></div>
-            <div><span class="text-gray-500">Pincode</span><br><span class="text-gray-700">${dash(c.pincode)}</span></div>
-            <div><span class="text-gray-500">Payment Terms</span><br><span class="font-semibold">${dash(c.paymentTerms)}</span></div>
-            <div><span class="text-gray-500">Credit Limit</span><br><span class="font-semibold">${c.creditLimit > 0 ? money(c.creditLimit) : '—'}</span></div>
-            <div><span class="text-gray-500">Total Receivable</span><br><span class="font-semibold text-amber-600">${money(c.receivable)}</span></div>
-          </div>
+  function sectionTitle(icon, text) {
+    return `
+      <div class="flex items-center gap-2 mt-5 mb-2.5 first:mt-0">
+        <span class="text-primary">${icon}</span>
+        <span class="text-[11px] font-bold uppercase tracking-wider text-gray-600">${text}</span>
+        <div class="flex-1 h-px bg-gray-200"></div>
+      </div>`;
+  }
 
-          <div class="mt-4 text-[11px] text-gray-400 flex items-center gap-1.5">
-            ${iconInfo()} Created on ${dash(c.createdAt)}
+  // Builds the full address only when the street address actually exists.
+  // If the street address is empty, show a dash instead of ", City, State - Pincode".
+  function buildFullAddress(street, cust) {
+    street = (street || '').trim();
+    if (!street) return '—';
+    return street +
+      (cust.city ? ', ' + cust.city : '') +
+      (cust.state ? ', ' + cust.state : '') +
+      (cust.country ? ', ' + cust.country : '') +
+      (cust.pincode ? ' - ' + cust.pincode : '');
+  }
+
+  var modalContent = `
+    ${modalHeader('Client Details — ' + c.name, c.id)}
+    <div class="px-6 py-5 modal-scroll">
+
+      <!-- Header card -->
+      <div class="flex items-center gap-4 mb-2 p-4 border border-gray-200 rounded-xl bg-gray-50">
+        <div class="customer-avatar" style="background:${c.color}; width:52px; height:52px; font-size:20px;">${getInitials(c.name)}</div>
+        <div class="min-w-0">
+          <div class="text-lg font-bold text-gray-900 truncate">${c.name}</div>
+          <div class="text-[12.5px] text-gray-500 truncate">${c.companyName || 'Individual Client'}</div>
+          <div class="mt-1.5 flex gap-1.5 flex-wrap">
+            ${c.status === 'active' ? badge('Active', 'green') : badge('Inactive', 'gray')}
+            ${c.gstRegistered ? badge('GST Registered', 'blue') : badge('Unregistered', 'amber')}
           </div>
         </div>
-        ${modalFooter('Close', 'onclick="closeModal()"')}
-      `;
+      </div>
 
-      openModal(modalContent, { width: 'max-w-2xl' });
-    }
+      <!-- Identity -->
+      ${sectionTitle(iconUser(), 'Identity')}
+      <div class="grid grid-cols-2 form-grid-2 gap-3">
+        ${detailCard('Client ID', '<span class="font-mono font-semibold">' + c.id + '</span>')}
+        ${detailCard('Client Type', typeBadgeHtml(c.customerType))}
+        ${detailCard('Company Name', c.companyName || '—')}
+        ${detailCard('Created On', '<span class="text-gray-600">' + (c.createdAt || '—') + '</span>')}
+      </div>
+
+      <!-- Contact -->
+      ${sectionTitle(iconMail(), 'Contact')}
+      <div class="grid grid-cols-2 form-grid-2 gap-3">
+        ${detailCard('Email', c.email ? '<a href="mailto:' + c.email + '" class="text-secondary hover:underline">' + c.email + '</a>' : '—')}
+        ${detailCard('Phone', c.phone ? '<a href="tel:' + c.phone + '" class="text-secondary hover:underline">' + c.phone + '</a>' : '—')}
+      </div>
+
+      <!-- Address -->
+      ${sectionTitle(iconLocation(), 'Address')}
+      <div class="grid grid-cols-1 gap-3">
+        ${detailCard('Billing Address', buildFullAddress(c.billingAddress, c))}
+        ${detailCard('Shipping Address', buildFullAddress(c.shippingAddress || c.billingAddress, c))}
+        ${detailCard('Country', c.country || '—')}
+      </div>
+
+      <!-- Tax -->
+      ${sectionTitle(iconGST(), 'Tax & GST')}
+      <div class="grid grid-cols-2 form-grid-2 gap-3">
+        ${detailCard('GSTIN', '<span class="font-mono">' + (c.gstin || '—') + '</span>')}
+        ${detailCard('PAN', '<span class="font-mono">' + (c.pan || '—') + '</span>')}
+        ${detailCard('GST Status',
+          c.gstRegistered ? badge('Registered', 'blue') : badge('Unregistered', 'amber')
+        )}
+      </div>
+
+      <!-- Financials -->
+      ${sectionTitle(iconCredit(), 'Payment & Credit')}
+      <div class="grid grid-cols-3 form-grid-3 gap-3">
+        ${detailCard('Payment Terms', '<span class="font-semibold">' + (c.paymentTerms || '—') + '</span>')}
+        ${detailCard('Credit Limit', '<span class="font-semibold">' + (c.creditLimit > 0 ? money(c.creditLimit) : '—') + '</span>')}
+        ${detailCard('Total Receivable', '<span class="font-semibold text-amber-600">' + money(c.receivable) + '</span>')}
+      </div>
+
+    </div>
+    ${modalFooter('Close', 'onclick="closeModal()"')}
+  `;
+
+  openModal(modalContent, { width: 'max-w-2xl' });
+}
 
     function openCustomerModal(existing) {
-      // For a NEW client the state is blank (no forced Maharashtra) so nothing is saved unless the user picks it
       var e = existing || {
         name: '',
         companyName: '',
@@ -943,8 +1051,8 @@
         billingAddress: '',
         shippingAddress: '',
         city: '',
-        state: '',
-        stateCode: '',
+        state: 'Maharashtra',
+        country: 'India',
         pincode: '',
         paymentTerms: 'Net 15 days',
         creditLimit: '',
@@ -954,7 +1062,11 @@
       };
       var isEdit = !!existing;
 
-      var stateOptions = ['Maharashtra', 'Delhi', 'Karnataka', 'Tamil Nadu', 'Gujarat', 'Uttar Pradesh', 'Rajasthan', 'Kerala', 'Telangana', 'West Bengal', 'Andhra Pradesh', 'Bihar', 'Chhattisgarh', 'Goa', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Madhya Pradesh', 'Odisha', 'Punjab', 'Uttarakhand'];
+      // Client type: custom types (added via "Other" -> Add) come from the backend list.
+      // If this client has a type that is somehow not in the list yet, keep it so it is not lost.
+      if (e.customerType && CLIENT_TYPES.map(function(t) { return t.toLowerCase(); }).indexOf(e.customerType.toLowerCase()) === -1) {
+        CLIENT_TYPES = CLIENT_TYPES.concat([e.customerType]);
+      }
 
       var modalContent = `
         ${modalHeader(isEdit ? 'Edit Client' : 'Add New Client', isEdit ? e.id : 'Create a new client master record')}
@@ -976,31 +1088,39 @@
 
           <div id="tab-basic" class="modal-tab-panel active">
             <div class="grid grid-cols-2 form-grid-2 gap-x-4 gap-y-4">
-              ${fld('Client Name', '<input id="f_name" value="' + esc(e.name) + '" placeholder="e.g. XYZ Retail Store" class="' + inputBase() + '">')}
-              ${fld('Company Name', '<input id="f_company" value="' + esc(e.companyName) + '" placeholder="Company legal name" class="' + inputBase() + '">')}
-              ${fld('Client Type', '<select id="f_type" class="' + inputBase() + '"><option ' + (e.customerType === 'business' ? 'selected' : '') + ' value="business">Business</option><option ' + (e.customerType === 'individual' ? 'selected' : '') + ' value="individual">Individual</option><option ' + (e.customerType === 'government' ? 'selected' : '') + ' value="government">Government</option></select>', null, 'col-span-2')}
-              ${fld('Email', '<input id="f_email" type="email" value="' + esc(e.email) + '" placeholder="client@domain.com" class="' + inputBase() + '">')}
-              ${fld('Phone', '<input id="f_phone" value="' + esc(e.phone) + '" placeholder="+91-XXXXXXXXXX" class="' + inputBase() + '">')}
+              ${fld('Client Name', '<input id="f_name" value="' + e.name + '" placeholder="e.g. XYZ Retail Store" class="' + inputBase() + '">')}
+              ${fld('Company Name', '<input id="f_company" value="' + (e.companyName || '') + '" placeholder="Company legal name" class="' + inputBase() + '">')}
+              ${fld('Client Type', '<select id="f_type" class="' + inputBase() + '" onchange="toggleTypeOther()">' + typeOptionsHtml(e.customerType) + '<option value="' + OTHER_TYPE_VALUE + '">Other</option></select>', null, 'col-span-2')}
+              <div id="f_typeOtherWrap" class="col-span-2 hidden">
+                ${fld('Specify Client Type', `<div style="display:flex;align-items:center;gap:8px;">
+                    <input id="f_typeOther" maxlength="30" placeholder="e.g. Trust, NGO, Partnership" class="form-input" style="flex:1;min-width:0;"
+                      onkeydown="if(event.key==='Enter'){event.preventDefault();addCustomClientType();}">
+                    <button type="button" id="f_typeAddBtn" onclick="addCustomClientType()"
+                      class="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary-dark transition shadow-sm whitespace-nowrap">Add</button>
+                  </div>`, )}
+              </div>
+              ${fld('Email', '<input id="f_email" type="email" value="' + e.email + '" placeholder="client@domain.com" class="' + inputBase() + '">')}
+              ${fld('Phone', '<input id="f_phone" value="' + e.phone + '" placeholder="+91-XXXXXXXXXX" class="' + inputBase() + '">')}
             </div>
           </div>
 
           <div id="tab-address" class="modal-tab-panel">
             <div class="grid grid-cols-1 gap-y-4 mb-4">
-              ${fld('Billing Address', '<textarea id="f_billingAddress" rows="2" class="' + inputBase() + '" placeholder="Street address">' + esc(e.billingAddress) + '</textarea>')}
-              ${fld('Shipping Address', '<textarea id="f_shippingAddress" rows="2" class="' + inputBase() + '" placeholder="Shipping address (if different)">' + esc(e.shippingAddress) + '</textarea>')}
+              ${fld('Billing Address', '<textarea id="f_billingAddress" rows="2" class="' + inputBase() + '" placeholder="Street address">' + (e.billingAddress || '') + '</textarea>')}
+              ${fld('Shipping Address', '<textarea id="f_shippingAddress" rows="2" class="' + inputBase() + '" placeholder="Shipping address (if different)">' + (e.shippingAddress || '') + '</textarea>')}
             </div>
             <div class="grid grid-cols-3 form-grid-3 gap-x-4 gap-y-4">
-              ${fld('City', '<input id="f_city" value="' + esc(e.city) + '" placeholder="City" class="' + inputBase() + '">')}
-              ${fld('State', '<select id="f_state" class="' + inputBase() + '" onchange="updateCustomerStateCode()"><option value="">— Select —</option>' + stateOptions.map(function(s) { return '<option ' + (s === e.state ? 'selected' : '') + '>' + s + '</option>'; }).join('') + '</select>')}
-              ${fld('State Code', '<input id="f_stateCode" value="' + esc(e.stateCode) + '" class="' + inputBase() + '" disabled>')}
-              ${fld('Pincode', '<input id="f_pincode" value="' + esc(e.pincode) + '" placeholder="6-digit PIN" class="' + inputBase() + '">')}
+              ${fld('City', '<input id="f_city" value="' + (e.city || '') + '" placeholder="City" class="' + inputBase() + '">')}
+              ${fld('State', '<div id="f_stateWrap">' + stateFieldHtml(e.country, e.state, true) + '</div>')}
+              ${fld('Country', countrySelectHtml(e.country))}
+              ${fld('Pincode', '<input id="f_pincode" value="' + (e.pincode || '') + '" placeholder="6-digit PIN" class="' + inputBase() + '">')}
             </div>
           </div>
 
           <div id="tab-tax" class="modal-tab-panel">
             <div class="grid grid-cols-2 form-grid-2 gap-x-4 gap-y-4 mb-4">
-              ${fld('GSTIN', '<input id="f_gstin" value="' + esc(e.gstin) + '" placeholder="15-digit GSTIN" class="' + inputBase() + '">', 'Format: 2-digit state code + 10-digit PAN + 3-digit entity code')}
-              ${fld('PAN', '<input id="f_pan" value="' + esc(e.pan) + '" placeholder="10-digit PAN" class="' + inputBase() + '">')}
+              ${fld('GSTIN', '<input id="f_gstin" value="' + (e.gstin || '') + '" placeholder="15-digit GSTIN" class="' + inputBase() + '">', 'Format: 2-digit state code + 10-digit PAN + 3-digit entity code')}
+              ${fld('PAN', '<input id="f_pan" value="' + (e.pan || '') + '" placeholder="10-digit PAN" class="' + inputBase() + '">')}
             </div>
             ${fld('GST Registered?', '<div class="form-radio-row"><label><input type="radio" name="gstReg" value="true" ' + (e.gstRegistered ? 'checked' : '') + '> <span class="font-medium">Yes</span></label><label><input type="radio" name="gstReg" value="false" ' + (!e.gstRegistered ? 'checked' : '') + '> <span class="font-medium">No</span></label></div>')}
           </div>
@@ -1033,33 +1153,58 @@
       }, 50);
     }
 
-    // State code updater
-    function updateCustomerStateCode() {
-      var state = document.getElementById('f_state').value;
-      var stateCodeMap = {
-        'Maharashtra': '27',
-        'Delhi': '07',
-        'Karnataka': '29',
-        'Tamil Nadu': '33',
-        'Gujarat': '24',
-        'Uttar Pradesh': '09',
-        'Rajasthan': '08',
-        'Kerala': '32',
-        'Telangana': '36',
-        'West Bengal': '19',
-        'Andhra Pradesh': '28',
-        'Bihar': '10',
-        'Chhattisgarh': '22',
-        'Goa': '30',
-        'Haryana': '06',
-        'Himachal Pradesh': '02',
-        'Jharkhand': '20',
-        'Madhya Pradesh': '23',
-        'Odisha': '21',
-        'Punjab': '03',
-        'Uttarakhand': '05'
-      };
-      document.getElementById('f_stateCode').value = stateCodeMap[state] || '';
+    // Show / hide the "Specify Client Type" input when "Other" is chosen
+    function toggleTypeOther() {
+      var sel = document.getElementById('f_type');
+      var wrap = document.getElementById('f_typeOtherWrap');
+      if (!sel || !wrap) return;
+      if (sel.value === OTHER_TYPE_VALUE) {
+        wrap.classList.remove('hidden');
+        var inp = document.getElementById('f_typeOther');
+        if (inp) inp.focus();
+      } else {
+        wrap.classList.add('hidden');
+      }
+    }
+
+    // "Other" -> Add button: puts the typed type in the Client Type dropdown and selects it.
+    // It is saved in the DB when the client is saved; after that it also appears in the
+    // "All Types" filter (loaded from GET /get-client-types).
+    function addCustomClientType() {
+      var inp = document.getElementById('f_typeOther');
+      var sel = document.getElementById('f_type');
+      if (!inp || !sel) return;
+      var name = inp.value.trim().replace(/\s+/g, ' ');
+      if (!name) { showToast('Please enter a client type', 'warning'); inp.focus(); return; }
+      if (name.toLowerCase() === 'other') { showToast('"Other" is reserved, please enter a specific type', 'warning'); return; }
+
+      // already in the dropdown (any casing)? just select it
+      var found = null;
+      for (var k = 0; k < sel.options.length; k++) {
+        if (sel.options[k].value !== OTHER_TYPE_VALUE && sel.options[k].value.toLowerCase() === name.toLowerCase()) { found = sel.options[k]; break; }
+      }
+      if (!found) {
+        found = document.createElement('option');
+        found.value = name;
+        found.textContent = name;
+        sel.insertBefore(found, sel.querySelector('option[value="' + OTHER_TYPE_VALUE + '"]'));
+      }
+      sel.value = found.value;
+
+      inp.value = '';
+      document.getElementById('f_typeOtherWrap').classList.add('hidden');
+      showToast('"' + found.value + '" added. It will be saved when you save the client', 'success');
+    }
+
+    // Country changed -> India shows the state dropdown, other countries get a free-text state
+    function onCountryChange() {
+      var c = document.getElementById('f_country');
+      var wrap = document.getElementById('f_stateWrap');
+      if (!c || !wrap) return;
+      var stEl = document.getElementById('f_state');
+      var cur = stEl ? stEl.value : '';
+      if (c.value === 'India' && INDIA_STATES.indexOf(cur) === -1) cur = 'Maharashtra';
+      wrap.innerHTML = stateFieldHtml(c.value, cur, false);
     }
 
     // =============================================================
@@ -1070,13 +1215,21 @@
       var name = document.getElementById('f_name') ? document.getElementById('f_name').value.trim() : '';
       var companyName = document.getElementById('f_company') ? document.getElementById('f_company').value.trim() : '';
       var customerType = document.getElementById('f_type') ? document.getElementById('f_type').value : 'business';
+      if (customerType === OTHER_TYPE_VALUE) {
+        var otherText = document.getElementById('f_typeOther') ? document.getElementById('f_typeOther').value.trim() : '';
+        if (!otherText) {
+          showToast('Please specify the client type', 'warning');
+          return;
+        }
+        customerType = otherText; // typed but "Add" not clicked -> backend saves it as a new type anyway
+      }
       var email = document.getElementById('f_email') ? document.getElementById('f_email').value.trim() : '';
       var phone = document.getElementById('f_phone') ? document.getElementById('f_phone').value.trim() : '';
       var billingAddress = document.getElementById('f_billingAddress') ? document.getElementById('f_billingAddress').value.trim() : '';
       var shippingAddress = document.getElementById('f_shippingAddress') ? document.getElementById('f_shippingAddress').value.trim() : '';
       var city = document.getElementById('f_city') ? document.getElementById('f_city').value.trim() : '';
-      var state = document.getElementById('f_state') ? document.getElementById('f_state').value : '';
-      var stateCode = document.getElementById('f_stateCode') ? document.getElementById('f_stateCode').value : '';
+      var state = document.getElementById('f_state') ? document.getElementById('f_state').value : 'Maharashtra';
+      var country = document.getElementById('f_country') ? document.getElementById('f_country').value.trim() : '';
       var pincode = document.getElementById('f_pincode') ? document.getElementById('f_pincode').value.trim() : '';
       var gstin = document.getElementById('f_gstin') ? document.getElementById('f_gstin').value.trim().toUpperCase() : '';
       var pan = document.getElementById('f_pan') ? document.getElementById('f_pan').value.trim().toUpperCase() : '';
@@ -1094,10 +1247,10 @@
         email: email,
         phone: phone,
         billingAddress: billingAddress,
-        shippingAddress: shippingAddress,   // exactly what the user typed — no copy from billing
+        shippingAddress: shippingAddress || billingAddress,
         city: city,
         state: state,
-        stateCode: stateCode,
+        country: country,
         pincode: pincode,
         gstin: gstin,
         pan: pan,
@@ -1120,26 +1273,39 @@
         .then(function() {
           closeModal();
           showToast(existingId ? 'Client updated successfully' : 'Client added successfully', 'success');
-          return loadCustomers();
+          return loadClientTypes().then(loadCustomers);
         })
         .catch(function(err) { showToast(err.message, 'error'); });
     }
 
     function delCustomer(id) {
-      var c = customers.find(function(x) { return x.id === id; });
-      if (!c) return;
+  var c = customers.find(function(x) { return x.id === id; });
+  if (!c) return;
 
-      var modalContent = `
-        ${modalHeader('Delete Client', c.name)}
-        <div class="px-6 py-5 text-sm text-gray-600">
-          <p>Are you sure you want to permanently delete <b class="text-gray-800">${c.name}</b>?</p>
-          <p class="text-gray-400 text-[12px] mt-1">This action cannot be undone. All associated transactions will be affected.</p>
-          ${c.receivable > 0 ? '<p class="text-amber-600 text-[12px] mt-2">⚠️ This client has outstanding receivable of ' + money(c.receivable) + '</p>' : ''}
+  var modalContent = `
+    ${modalHeader('Delete Client', c.name)}
+    <div class="px-6 py-5 text-sm text-gray-600">
+      <div class="flex items-start gap-3 p-3.5 border border-red-200 bg-red-50 rounded-lg mb-4">
+        <div class="w-9 h-9 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0">
+          ${iconTrash()}
         </div>
-        ${modalFooter('Delete', 'onclick="confirmDeleteCustomer(\'' + id + '\')"', '')}
-      `;
-      openModal(modalContent, { width: 'max-w-md' });
-    }
+        <div>
+          <p class="font-semibold text-red-700">This action cannot be undone</p>
+          <p class="text-[12px] text-red-600 mt-0.5">The client record and its associations will be permanently removed.</p>
+        </div>
+      </div>
+
+      <p class="mb-2">Are you sure you want to permanently delete
+        <b class="text-gray-900">${c.name}</b>${c.companyName ? ' (' + c.companyName + ')' : ''}?</p>
+
+      ${c.receivable > 0
+        ? '<div class="border border-amber-200 bg-amber-50 rounded-lg px-3.5 py-2.5 mt-3 text-[12.5px] text-amber-700">⚠ This client has an outstanding receivable of <b>' + money(c.receivable) + '</b>.</div>'
+        : ''}
+    </div>
+    ${modalFooter('Delete', 'onclick="confirmDeleteCustomer(\'' + id + '\')"', '', 'danger')}
+  `;
+  openModal(modalContent, { width: 'max-w-md' });
+}
 
     function confirmDeleteCustomer(id) {
       api('DELETE', '/delete-client/' + encodeURIComponent(id))
@@ -1181,7 +1347,7 @@
     // INIT
     // =============================================================
 
-    loadCustomers();
+    loadClientTypes().then(loadCustomers);
 
     console.log('Clients Module Loaded - API:', API_BASE, '| backend-driven pagination');
 

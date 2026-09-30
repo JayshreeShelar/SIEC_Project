@@ -22,9 +22,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,16 +44,11 @@ public class ClientServiceImpl implements ClientService {
             "#0891b2", "#4f46e5", "#e11d48", "#059669", "#ca8a04"
     );
 
-    private static final List<String> PAYMENT_TERMS_OPTIONS = Arrays.asList(
-            "Net 7 days", "Net 15 days", "Net 30 days", "Net 45 days",
-            "Net 60 days", "Advance Payment", "Cash on Delivery"
-    );
+    // Built-in client types (always available in the dropdowns, stored lowercase)
+    private static final List<String> STANDARD_TYPES = Arrays.asList("business", "individual", "government");
 
-    private static final List<String> CUSTOMER_TYPE_OPTIONS = Arrays.asList("business", "individual", "government");
-
-    private static final List<String> STATUS_OPTIONS = Arrays.asList("active", "inactive");
-
-    private static final Map<String, String> STATE_CODE_MAP = buildStateCodeMap();
+    // clients.client_customer_type is VARCHAR(30)
+    private static final int MAX_TYPE_LENGTH = 30;
 
     private final ClientRepository clientRepository;
 
@@ -66,7 +64,8 @@ public class ClientServiceImpl implements ClientService {
         ClientEntity client = new ClientEntity();
         client.setClientName(requestDto.getName());
         client.setClientCompanyName(requestDto.getCompanyName() != null ? requestDto.getCompanyName() : "");
-        client.setClientCustomerType(requestDto.getCustomerType() != null ? requestDto.getCustomerType() : "business");
+        client.setClientCustomerType(requestDto.getCustomerType() != null && !requestDto.getCustomerType().isBlank()
+                ? resolveClientType(requestDto.getCustomerType()) : "business");
         client.setClientGstin(requestDto.getGstin() != null ? requestDto.getGstin() : "");
         client.setClientPan(requestDto.getPan());
         client.setClientEmail(requestDto.getEmail());
@@ -75,7 +74,7 @@ public class ClientServiceImpl implements ClientService {
         client.setClientShippingAddress(requestDto.getShippingAddress());
         client.setClientCity(requestDto.getCity());
         client.setClientState(requestDto.getState());
-        client.setClientStateCode(resolveStateCode(requestDto.getState(), requestDto.getStateCode()));
+        client.setClientCountry(requestDto.getCountry());
         client.setClientPincode(requestDto.getPincode());
         client.setClientPaymentTerms(requestDto.getPaymentTerms());
         client.setClientCreditLimit(requestDto.getCreditLimit() != null ? requestDto.getCreditLimit() : BigDecimal.ZERO);
@@ -103,7 +102,8 @@ public class ClientServiceImpl implements ClientService {
 
         if (requestDto.getName() != null) client.setClientName(requestDto.getName());
         if (requestDto.getCompanyName() != null) client.setClientCompanyName(requestDto.getCompanyName());
-        if (requestDto.getCustomerType() != null) client.setClientCustomerType(requestDto.getCustomerType());
+        if (requestDto.getCustomerType() != null && !requestDto.getCustomerType().isBlank())
+            client.setClientCustomerType(resolveClientType(requestDto.getCustomerType()));
         if (requestDto.getGstin() != null) client.setClientGstin(requestDto.getGstin());
         if (requestDto.getPan() != null) client.setClientPan(requestDto.getPan());
         if (requestDto.getEmail() != null) client.setClientEmail(requestDto.getEmail());
@@ -111,12 +111,8 @@ public class ClientServiceImpl implements ClientService {
         if (requestDto.getBillingAddress() != null) client.setClientBillingAddress(requestDto.getBillingAddress());
         if (requestDto.getShippingAddress() != null) client.setClientShippingAddress(requestDto.getShippingAddress());
         if (requestDto.getCity() != null) client.setClientCity(requestDto.getCity());
-        if (requestDto.getState() != null) {
-            client.setClientState(requestDto.getState());
-            client.setClientStateCode(resolveStateCode(requestDto.getState(), requestDto.getStateCode()));
-        } else if (requestDto.getStateCode() != null) {
-            client.setClientStateCode(requestDto.getStateCode());
-        }
+        if (requestDto.getState() != null) client.setClientState(requestDto.getState());
+        if (requestDto.getCountry() != null) client.setClientCountry(requestDto.getCountry());
         if (requestDto.getPincode() != null) client.setClientPincode(requestDto.getPincode());
         if (requestDto.getPaymentTerms() != null) client.setClientPaymentTerms(requestDto.getPaymentTerms());
         if (requestDto.getCreditLimit() != null) client.setClientCreditLimit(requestDto.getCreditLimit());
@@ -139,7 +135,8 @@ public class ClientServiceImpl implements ClientService {
 
         if (requestDto.getName() != null) client.setClientName(requestDto.getName());
         if (requestDto.getCompanyName() != null) client.setClientCompanyName(requestDto.getCompanyName());
-        if (requestDto.getCustomerType() != null) client.setClientCustomerType(requestDto.getCustomerType());
+        if (requestDto.getCustomerType() != null && !requestDto.getCustomerType().isBlank())
+            client.setClientCustomerType(resolveClientType(requestDto.getCustomerType()));
         if (requestDto.getGstin() != null) client.setClientGstin(requestDto.getGstin());
         if (requestDto.getPan() != null) client.setClientPan(requestDto.getPan());
         if (requestDto.getEmail() != null) client.setClientEmail(requestDto.getEmail());
@@ -147,12 +144,8 @@ public class ClientServiceImpl implements ClientService {
         if (requestDto.getBillingAddress() != null) client.setClientBillingAddress(requestDto.getBillingAddress());
         if (requestDto.getShippingAddress() != null) client.setClientShippingAddress(requestDto.getShippingAddress());
         if (requestDto.getCity() != null) client.setClientCity(requestDto.getCity());
-        if (requestDto.getState() != null) {
-            client.setClientState(requestDto.getState());
-            client.setClientStateCode(resolveStateCode(requestDto.getState(), requestDto.getStateCode()));
-        } else if (requestDto.getStateCode() != null) {
-            client.setClientStateCode(requestDto.getStateCode());
-        }
+        if (requestDto.getState() != null) client.setClientState(requestDto.getState());
+        if (requestDto.getCountry() != null) client.setClientCountry(requestDto.getCountry());
         if (requestDto.getPincode() != null) client.setClientPincode(requestDto.getPincode());
         if (requestDto.getPaymentTerms() != null) client.setClientPaymentTerms(requestDto.getPaymentTerms());
         if (requestDto.getCreditLimit() != null) client.setClientCreditLimit(requestDto.getCreditLimit());
@@ -266,6 +259,7 @@ public class ClientServiceImpl implements ClientService {
                         cb.like(cb.lower(root.get("clientStrId")), like),
                         cb.like(cb.lower(root.get("clientName")), like),
                         cb.like(cb.lower(root.get("clientCompanyName")), like),
+                        cb.like(cb.lower(root.get("clientCustomerType")), like),
                         cb.like(cb.lower(root.get("clientEmail")), like),
                         cb.like(cb.lower(root.get("clientPhone")), like),
                         cb.like(cb.lower(root.get("clientGstin")), like),
@@ -290,6 +284,61 @@ public class ClientServiceImpl implements ClientService {
         return buildMeta(filters);
     }
 
+    // ---------- client types (dropdown values) ----------
+
+    @Override
+    public List<String> getClientTypes() {
+        logger.info("Fetching client types");
+
+        // key = lowercase (to avoid Trust / trust duplicates), value = display text
+        Map<String, String> types = new LinkedHashMap<>();
+        for (String std : STANDARD_TYPES) {
+            types.put(std, std);
+        }
+        // custom types = every other customer_type already saved on a client (added via "Other")
+        List<String> used = new ArrayList<>(usedCustomerTypes());
+        Collections.sort(used, String.CASE_INSENSITIVE_ORDER);
+        for (String value : used) {
+            if (value == null) continue;
+            String trimmed = value.trim();
+            if (!trimmed.isEmpty()) types.putIfAbsent(trimmed.toLowerCase(), trimmed);
+        }
+        return new ArrayList<>(types.values());
+    }
+
+    // distinct customer_type values already saved on clients (no custom query needed)
+    private List<String> usedCustomerTypes() {
+        return clientRepository.findAll().stream()
+                .map(ClientEntity::getClientCustomerType)
+                .filter(t -> t != null && !t.trim().isEmpty())
+                .map(String::trim)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Normalises the client type before saving on a client.
+     * - built-in types come back lowercase (business / individual / government)
+     * - a custom type that already exists on another client (any casing) reuses that casing
+     * - a brand new custom type is saved as typed
+     */
+    private String resolveClientType(String raw) {
+        if (raw == null || raw.isBlank()) {
+            throw new IllegalArgumentException("Client type cannot be empty.");
+        }
+        String type = raw.trim().replaceAll("\\s+", " ");
+        if (type.length() > MAX_TYPE_LENGTH) {
+            throw new IllegalArgumentException("Client type cannot be longer than " + MAX_TYPE_LENGTH + " characters.");
+        }
+        for (String std : STANDARD_TYPES) {
+            if (std.equalsIgnoreCase(type)) return std;
+        }
+        for (String existing : usedCustomerTypes()) {
+            if (existing != null && existing.trim().equalsIgnoreCase(type)) return existing.trim();
+        }
+        return type;
+    }
+
     // ---------- helpers ----------
 
     private ClientEntity getClientEntityOrThrow(String id) {
@@ -309,17 +358,11 @@ public class ClientServiceImpl implements ClientService {
         return COLOR_PALETTE.get(index);
     }
 
-    private String resolveStateCode(String state, String stateCode) {
-        if (stateCode != null && !stateCode.isBlank()) return stateCode;
-        if (state != null && STATE_CODE_MAP.containsKey(state)) return STATE_CODE_MAP.get(state);
-        return stateCode;
-    }
-
     private String normalizeFilter(String value) {
         return (value == null || value.isBlank()) ? "all" : value.trim().toLowerCase();
     }
 
-    // Aggregate stats (cards + dropdown options) are always computed over the WHOLE table,
+    // Aggregate stats (cards) are always computed over the WHOLE table,
     // regardless of the current filters — that part still needs a full read.
     private Map<String, Object> buildMeta(Map<String, Object> filters) {
         List<ClientEntity> allClients = clientRepository.findAll();
@@ -350,37 +393,7 @@ public class ClientServiceImpl implements ClientService {
         meta.put("gstRegisteredCustomers", gstRegisteredCustomers);
         meta.put("totalReceivable", totalReceivable);
         meta.put("filters", filters);
-        meta.put("stateCodeMap", STATE_CODE_MAP);
-        meta.put("paymentTermsOptions", PAYMENT_TERMS_OPTIONS);
-        meta.put("customerTypeOptions", CUSTOMER_TYPE_OPTIONS);
-        meta.put("statusOptions", STATUS_OPTIONS);
         return meta;
-    }
-
-    private static Map<String, String> buildStateCodeMap() {
-        Map<String, String> map = new LinkedHashMap<>();
-        map.put("Maharashtra", "27");
-        map.put("Delhi", "07");
-        map.put("Karnataka", "29");
-        map.put("Tamil Nadu", "33");
-        map.put("Gujarat", "24");
-        map.put("Uttar Pradesh", "09");
-        map.put("Rajasthan", "08");
-        map.put("Kerala", "32");
-        map.put("Telangana", "36");
-        map.put("West Bengal", "19");
-        map.put("Andhra Pradesh", "28");
-        map.put("Bihar", "10");
-        map.put("Chhattisgarh", "22");
-        map.put("Goa", "30");
-        map.put("Haryana", "06");
-        map.put("Himachal Pradesh", "02");
-        map.put("Jharkhand", "20");
-        map.put("Madhya Pradesh", "23");
-        map.put("Odisha", "21");
-        map.put("Punjab", "03");
-        map.put("Uttarakhand", "05");
-        return map;
     }
 
     private ClientResponseDto mapToResponse(ClientEntity client) {
@@ -397,7 +410,7 @@ public class ClientServiceImpl implements ClientService {
         response.setShippingAddress(client.getClientShippingAddress());
         response.setCity(client.getClientCity());
         response.setState(client.getClientState());
-        response.setStateCode(client.getClientStateCode());
+        response.setCountry(client.getClientCountry());
         response.setPincode(client.getClientPincode());
         response.setPaymentTerms(client.getClientPaymentTerms());
         response.setCreditLimit(client.getClientCreditLimit());

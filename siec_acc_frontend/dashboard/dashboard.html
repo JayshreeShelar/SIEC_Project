@@ -391,6 +391,14 @@
   .stat-card { border-color: #6da84c !important; }
   .card, .period-dropdown-btn, .period-dropdown-menu, .quick-action { border-color: #6da84c !important; }
   .divide-y > :not([hidden]) ~ :not([hidden]) { border-color: #dcebd2 !important; }
+
+  /* ========== ICON BORDERS ========== */
+  .stat-card .stat-icon,
+  .card-title-icon,
+  .quick-action .qa-icon,
+  .alert-item .alert-icon {
+    border: 1px solid #6da84c !important;
+  }
 </style>
 </head>
 
@@ -757,7 +765,7 @@
                   <span class="card-title-icon bg-secondary-soft text-secondary"><i class="fa-solid fa-arrow-down"></i></span>
                   <div class="card-title">Receivables</div>
                 </div>
-                <a href="/customer-payments/customer-payments.html" class="card-link">View All</a>
+                <a href="/customer-payments/customer-payments.html" class="card-link">View All →</a>
               </div>
               <div class="card-body">
                 <div class="text-[11.5px] text-gray-500 mb-2">Total Unpaid <b class="text-gray-800">₹3,72,580</b></div>
@@ -782,7 +790,7 @@
                   <span class="card-title-icon bg-rose-50 text-rose-700"><i class="fa-solid fa-arrow-up"></i></span>
                   <div class="card-title">Payables</div>
                 </div>
-                <a href="/vendor-payments/vendor-payments.html" class="card-link">View All</a>
+                <a href="/vendor-payments/vendor-payments.html" class="card-link">View All →</a>
               </div>
               <div class="card-body">
                 <div class="text-[11.5px] text-gray-500 mb-2">Total Unpaid <b class="text-gray-800">₹2,49,849</b></div>
@@ -923,7 +931,7 @@
                   <span class="card-title-icon bg-rose-50 text-rose-700"><i class="fa-solid fa-bell"></i></span>
                   <div class="card-title">Alerts &amp; Notifications</div>
                 </div>
-                <a href="/notifications/notifications.html" class="card-link">View All</a>
+                <a href="/notifications/notifications.html" class="card-link">View All →</a>
               </div>
               <div class="card-body">
                 <div class="alert-item al-red">

@@ -50,8 +50,8 @@ public class ClientEntity {
     @Column(name = "client_state")
     private String clientState;
 
-    @Column(name = "client_state_code", length = 10)
-    private String clientStateCode;
+    @Column(name = "client_country", length = 100)
+    private String clientCountry;
 
     @Column(name = "client_pincode", length = 10)
     private String clientPincode;
@@ -90,7 +90,7 @@ public class ClientEntity {
     public ClientEntity(Long clientPrimeId, String clientStrId, String clientName, String clientCompanyName,
                         String clientCustomerType, String clientGstin, String clientPan, String clientEmail,
                         String clientPhone, String clientBillingAddress, String clientShippingAddress,
-                        String clientCity, String clientState, String clientStateCode, String clientPincode,
+                        String clientCity, String clientState, String clientCountry, String clientPincode,
                         String clientPaymentTerms, BigDecimal clientCreditLimit, Boolean clientGstRegistered,
                         String clientStatus, BigDecimal clientReceivable, LocalDate clientCreatedAt,
                         String clientColor) {
@@ -107,7 +107,7 @@ public class ClientEntity {
         this.clientShippingAddress = clientShippingAddress;
         this.clientCity = clientCity;
         this.clientState = clientState;
-        this.clientStateCode = clientStateCode;
+        this.clientCountry = clientCountry;
         this.clientPincode = clientPincode;
         this.clientPaymentTerms = clientPaymentTerms;
         this.clientCreditLimit = clientCreditLimit;
@@ -222,12 +222,12 @@ public class ClientEntity {
         this.clientState = clientState;
     }
 
-    public String getClientStateCode() {
-        return clientStateCode;
+    public String getClientCountry() {
+        return clientCountry;
     }
 
-    public void setClientStateCode(String clientStateCode) {
-        this.clientStateCode = clientStateCode;
+    public void setClientCountry(String clientCountry) {
+        this.clientCountry = clientCountry;
     }
 
     public String getClientPincode() {
